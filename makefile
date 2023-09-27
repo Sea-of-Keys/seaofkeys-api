@@ -2,4 +2,4 @@ build:
 	@go build -o bin/SeaOfKeysApi
 
 run: build
-	@./bin/SeaOfKeysApi
+	@HOST=localhost USER=mikkel PASSWORD=password PORT=5432 DATABASE=skole ./bin/SeaOfKeysApi
