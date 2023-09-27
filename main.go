@@ -13,5 +13,5 @@ func main() {
 	db := databae.Init()
 	models.Setup(db)
 	fmt.Printf("database: %v\n", db)
-	fmt.Printf("lol %v\n", "kronborg")
+	fmt.Printf("gud: %v\n", "kronborg")
 }
