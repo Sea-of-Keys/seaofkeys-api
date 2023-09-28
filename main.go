@@ -4,13 +4,17 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	databae "github.com/Sea-of-Keys/seaofkeys-api/api/database"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 )
 
 func main() {
-	db := databae.Init()
+	db, err := databae.Init("mysql")
+	if err != nil {
+		log.Panic(err)
+	}
 	models.Setup(db)
 	fmt.Printf("database: %v\n", db)
 	fmt.Printf("gud: %v\n", "kronborg")
