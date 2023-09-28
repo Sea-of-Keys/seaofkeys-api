@@ -12,30 +12,30 @@ import (
 )
 
 type Db struct {
-	
 }
 
 func Init(database string) (*gorm.DB, error) {
 	switch database {
 	case "mysql":
 		dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		os.Getenv("USER"),
-		os.Getenv("PASSWORD"),
-		os.Getenv("HOST"),
-		os.Getenv("PORT"),
-		os.Getenv("DATABASE"),
-	)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+			"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
+			os.Getenv("USER"),
+			os.Getenv("PASSWORD"),
+			os.Getenv("HOST"),
+			os.Getenv("PORT"),
+			os.Getenv("DATABASE"),
+		)
+		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	if err != nil {
-		log.Fatal(err)
-		panic("Failed to connect to database")
-	}
+		if err != nil {
+			log.Fatal(err)
+			panic("Failed to connect to database")
+		}
 
-	return db, err
+		return db, err
 	case "postgres":
-		dsn := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=disable TimeZone=Asia/Shanghai",
+		dsn := fmt.Sprintf(
+			"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable TimeZone=Asia/Shanghai",
 			os.Getenv("USER"),
 			os.Getenv("PASSWORD"),
 			os.Getenv("HOST"),
@@ -54,4 +54,3 @@ func Init(database string) (*gorm.DB, error) {
 	return nil, errors.New("can't connect to database: " + database)
 
 }
-
