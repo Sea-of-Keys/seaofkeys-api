@@ -1,7 +1,6 @@
 package models
 
-
 type Room struct {
-	ID uint `json:"id" gorm:"primaryKey"`
+	ID   int
 	Name string `json:"name"`
 }

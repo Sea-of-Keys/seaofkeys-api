@@ -1,8 +1,7 @@
 package models
 
-
 type Team struct {
-	ID uint `json:"id" gorm:"primaryKey"`
-	Name string `json:"name"`
-	Users []User `json:"users" gorm:"ForeignKey:ID"`
+	ID    uint   `json:"id"    gorm:"primaryKey"`
+	Name  string `json:"name"`
+	Users []User `json:"users" gorm:"many2many:permission_weekdays;"`
 }
