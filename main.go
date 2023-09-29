@@ -12,6 +12,7 @@ import (
 
 func main() {
 	db, err := databae.Init("mysql")
+	// db, err := databae.Init("postgres")
 	if err != nil {
 		log.Panic(err)
 	}
