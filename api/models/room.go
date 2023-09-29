@@ -1,6 +1,6 @@
 package models
 
 type Room struct {
-	ID   int
+	ID   uint
 	Name string `json:"name"`
 }
