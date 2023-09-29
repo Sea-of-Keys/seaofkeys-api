@@ -3,9 +3,12 @@ package models
 // ######TODO######
 
 import (
+	"log"
 	"time"
 
 	"gorm.io/gorm"
+
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 )
 
 func Setup(db *gorm.DB) {
@@ -74,18 +77,31 @@ func Setup(db *gorm.DB) {
 			RoomID: 1,
 		},
 	}
+	userOneCode, err := middleware.HashPassword("2589")
+	if err != nil {
+		log.Panic(err)
+	}
+	userOnePassword, err := middleware.HashPassword("Test")
+	// fmt.Println(userOnePassword)
+	if err != nil {
+		log.Panic(err)
+	}
+	userTwoCode, err := middleware.HashPassword("2589")
+	if err != nil {
+		log.Panic(err)
+	}
 	users := []User{
 		{
 			Name:     "Kronborg",
 			Email:    "mkronborg7@gmail.com",
-			Password: "Test",
-			Code:     "2589",
+			Password: userOnePassword,
+			Code:     userOneCode,
 		},
 		{
-			Name:     "Pissic",
-			Email:    "IMGAY@gmail.com",
-			Password: "Test",
-			Code:     "2589",
+			Name:  "Pissic",
+			Email: "IMGAY@gmail.com",
+			// Password: "Test",
+			Code: userTwoCode,
 		},
 	}
 	teams := []Team{
