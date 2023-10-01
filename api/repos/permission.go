@@ -10,21 +10,21 @@ type PermissionRepo struct {
 	db *gorm.DB
 }
 
-func (repo *PermissionRepo) GetPermission(id uint) (models.Permission, error) {
+func (r *PermissionRepo) GetPermission(id uint) (models.Permission, error) {
 	return models.Permission{}, nil
 }
-func (repo *PermissionRepo) GetPermissions() ([]models.Permission, error) {
+func (r *PermissionRepo) GetPermissions() ([]models.Permission, error) {
 	return nil, nil
 }
-func (repo *PermissionRepo) PostPermission(per models.Permission) (models.Permission, error) {
+func (r *PermissionRepo) PostPermission(per models.Permission) (models.Permission, error) {
 	return models.Permission{}, nil
 }
-func (repo *PermissionRepo) PutPermission(per models.Permission) (models.Permission, error) {
+func (r *PermissionRepo) PutPermission(per models.Permission) (models.Permission, error) {
 	return models.Permission{}, nil
 }
-func (repo *PermissionRepo) DelPermission(id uint) (bool, error) {
+func (r *PermissionRepo) DelPermission(id uint) (bool, error) {
 	return true, nil
 }
-func (repo *PermissionRepo) CleanPermission() error {
+func (r *PermissionRepo) CleanPermission() error {
 	return nil
 }
