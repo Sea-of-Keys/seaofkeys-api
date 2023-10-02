@@ -86,7 +86,7 @@ func Setup(db *gorm.DB) {
 	if err != nil {
 		log.Panic(err)
 	}
-	userTwoCode, err := middleware.HashPassword("2589")
+	userTwoCode, err := middleware.HashPassword("1234")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -133,8 +133,9 @@ func Setup(db *gorm.DB) {
 	}
 	permission := []Permission{
 		{
-			RoomID:    1,
-			UserID:    1,
+			RoomID: 1,
+			// UserID:    1,
+			TeamID:    1,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),
 			StartTime: time.Now(),

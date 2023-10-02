@@ -1,8 +1,11 @@
 package repos
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 )
 
@@ -33,8 +36,24 @@ func (r *EmbeddedRepo) GetSetup(id uint) error {
 func (r *EmbeddedRepo) PostSetup() error {
 	return nil
 }
-func (r *EmbeddedRepo) PostCode(code string) (bool, error) {
-	return true, nil
+func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (*models.Permission, error) {
+	var per models.Permission
+	if err := r.db.Debug().Preload("User").Preload("Team.Users").Find(&per, ID, RoomID).Error; err != nil {
+		return nil, err
+	}
+	if per.Team != nil {
+		// var team models.Team
+		for _, v := range per.Team.Users {
+			if middleware.CheckPasswordHash(code, v.Code) {
+				fmt.Println(v.Email)
+				fmt.Println("Coden Passer")
+			}
+		}
+		// check team frist
+		// if err r.db.Debug.
+		return &per, nil
+	}
+	return &per, nil
 }
 
 func NewEmbeddedRepo(db *gorm.DB) *EmbeddedRepo {
