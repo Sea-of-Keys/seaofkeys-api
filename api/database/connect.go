@@ -22,7 +22,7 @@ func Init(database string) (*gorm.DB, error) {
 			os.Getenv("USER"),
 			os.Getenv("PASSWORD"),
 			os.Getenv("HOST"),
-			os.Getenv("PORT"),
+			os.Getenv("DBPORT"),
 			os.Getenv("DATABASE"),
 		)
 		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -39,7 +39,7 @@ func Init(database string) (*gorm.DB, error) {
 			os.Getenv("USER"),
 			os.Getenv("PASSWORD"),
 			os.Getenv("HOST"),
-			os.Getenv("PORT"),
+			os.Getenv("DBPORT"),
 			os.Getenv("DATABASE"),
 		)
 		// dsn1 := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
