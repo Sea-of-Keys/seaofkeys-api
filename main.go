@@ -15,6 +15,14 @@ import (
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 )
 
+func getPort() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+	return "0.0.0.0:" + port
+}
+
 func main() {
 	db, err := databae.Init(os.Getenv("DATABASETYPE"))
 	app := fiber.New()
@@ -30,6 +38,6 @@ func main() {
 
 	controllers.RegisterAuthController(db, api)
 
-	log.Fatal(app.Listen(":8000"))
+	log.Fatal(app.Listen(getPort()))
 
 }
