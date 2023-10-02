@@ -45,7 +45,10 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(fiber.Map{"user": data, "token": tokenString})
+	return c.JSON(&fiber.Map{
+		"token": tokenString,
+		"user":  data,
+	})
 }
 
 func NewAuthController(repo *repos.AuthRepo) *AuthController {
