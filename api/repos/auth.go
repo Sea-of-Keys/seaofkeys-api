@@ -28,6 +28,11 @@ func (repo *AuthRepo) PostLogout() (bool, error) {
 	return true, nil
 }
 
+// Change Embedde Password ### CHANGE CODE TO int ?????
+func (repo *AuthRepo) PutPassword(id uint, code string) (*models.User, error) {
+	return nil, nil
+}
+
 func NewAuthRepo(db *gorm.DB) *AuthRepo {
 	return &AuthRepo{db}
 }
