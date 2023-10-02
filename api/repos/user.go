@@ -38,8 +38,12 @@ func (r *UserRepo) PostUsers(users []models.User) ([]models.User, error) {
 	}
 	return users, nil
 }
-func (r *UserRepo) PutUser(user models.User) (models.User, error) {
-	return models.User{}, nil
+func (r *UserRepo) PutUser(user models.User) (*models.User, error) {
+
+	if err := r.db.Debug().Model(&user).Updates(&user).Error; err != nil {
+		return nil, errors.New("ERROR 12: " + err.Error())
+	}
+	return &user, nil
 }
 func (r *UserRepo) DelUser(id uint) (bool, error) {
 	var user models.User
