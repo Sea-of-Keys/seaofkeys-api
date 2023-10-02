@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
@@ -11,6 +14,12 @@ import (
 type AuthController struct {
 	repo *repos.AuthRepo
 }
+type Claims struct {
+	Email string `json:"email"`
+	jwt.RegisteredClaims
+}
+
+var jwtKey = []byte("my_secret_key")
 
 func (con *AuthController) Login(c *fiber.Ctx) error {
 	var user models.User
@@ -22,8 +31,21 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusNoContent, err.Error())
 	}
-	// fmt.Println(data)
-	return c.JSON(data)
+	expirationTime := time.Now().Add(5 * time.Minute)
+	claims := &Claims{
+		Email: data.Email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			// In JWT, the expiry time is expressed as unix milliseconds
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(fiber.Map{"user": data, "token": tokenString})
 }
 
 func NewAuthController(repo *repos.AuthRepo) *AuthController {

@@ -139,7 +139,7 @@ func Setup(db *gorm.DB) {
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
 			EndTime:   time.Now(),
-			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
 			RoomID:    3,
@@ -148,7 +148,7 @@ func Setup(db *gorm.DB) {
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
 			EndTime:   time.Now(),
-			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
 		},
 	}
 	// create domy data in the database
