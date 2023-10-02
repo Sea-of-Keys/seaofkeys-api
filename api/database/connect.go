@@ -11,6 +11,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// ######TODO######
+// Fix Postgres db
+
 type Db struct {
 }
 
@@ -35,7 +38,7 @@ func Init(database string) (*gorm.DB, error) {
 		return db, err
 	case "postgres":
 		dsn := fmt.Sprintf(
-			"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable TimeZone=Asia/Shanghai",
+			"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable TimeZone=Europe/Copenhagen",
 			os.Getenv("USER"),
 			os.Getenv("PASSWORD"),
 			os.Getenv("HOST"),
@@ -48,6 +51,7 @@ func Init(database string) (*gorm.DB, error) {
 			log.Fatal(err)
 			panic("Failed to connect to database")
 		}
+		db.Exec("SET client_encoding TO 'UTF8'")
 		return db, err
 	}
 	log.Fatal("failed to connect to database")
