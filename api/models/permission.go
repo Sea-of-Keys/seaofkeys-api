@@ -11,9 +11,9 @@ type Permission struct {
 	UserID    uint `json:"user_id"    gorm:"default:null"`
 	Team      *Team
 	User      *User
-	StartDate time.Time  `json:"start_date"`
-	EndDate   time.Time  `json:"end_date"`
-	StartTime time.Time  `json:"start_time"`
-	EndTime   time.Time  `json:"end_time"`
-	Weekdays  []*Weekday `json:"weekdays"   gorm:"many2many:permissions_weekdays;"`
+	StartDate time.Time   `json:"start_date"`
+	EndDate   time.Time   `json:"end_date"`
+	StartTime time.Time   `json:"start_time"`
+	EndTime   time.Time   `json:"end_time"`
+	Weekdays  []*Weekdays `json:"weekdays"   gorm:"many2many:permissions_weekdays;"`
 }

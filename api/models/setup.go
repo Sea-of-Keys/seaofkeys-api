@@ -18,7 +18,7 @@ func Setup(db *gorm.DB) {
 		&User{},
 		&History{},
 		&Team{},
-		&Weekday{},
+		&Weekdays{},
 		&Permission{},
 	)
 	db.AutoMigrate(
@@ -27,7 +27,7 @@ func Setup(db *gorm.DB) {
 		&User{},
 		&History{},
 		&Team{},
-		&Weekday{},
+		&Weekdays{},
 		&Permission{},
 	)
 
@@ -42,7 +42,7 @@ func Setup(db *gorm.DB) {
 			Name: "A3",
 		},
 	}
-	weekdays := []Weekday{
+	weekday := []Weekdays{
 		{
 			Day: 1,
 		},
@@ -96,22 +96,25 @@ func Setup(db *gorm.DB) {
 			Email:    "mkronborg7@gmail.com",
 			Password: userOnePassword,
 			Code:     userOneCode,
+			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 		{
 			Name:  "Pissic",
 			Email: "IMGAY@gmail.com",
 			// Password: "Test",
 			Code: userTwoCode,
+			// Teams: []Team{{ID: 1}},
 		},
 	}
+
 	teams := []Team{
 		{
 			Name:  "Dev",
-			Users: []User{{ID: 1}, {ID: 2}},
+			Users: []*User{{ID: 1}, {ID: 2}},
 		},
 		{
 			Name:  "HR",
-			Users: []User{{ID: 1}},
+			Users: []*User{{ID: 1}},
 		},
 	}
 	history := []History{
@@ -136,21 +139,21 @@ func Setup(db *gorm.DB) {
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
 			EndTime:   time.Now(),
-			Weekdays:  []*Weekday{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
 			RoomID:    3,
-			TeamID:    1,
+			UserID:    1,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
 			EndTime:   time.Now(),
-			Weekdays:  []*Weekday{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
 		},
 	}
 	// create domy data in the database
 	db.Create(&room)
-	db.Create(&weekdays)
+	db.Create(&weekday)
 	db.Create(&embedded)
 	db.Create(&users)
 	db.Create(&history)
