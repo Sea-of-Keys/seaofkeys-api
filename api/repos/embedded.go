@@ -37,10 +37,11 @@ func (r *EmbeddedRepo) GetSetup(id uint) error {
 func (r *EmbeddedRepo) PostSetup() error {
 	return nil
 }
-func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (*models.Permission, error) {
+func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 	var per models.Permission
+	var user models.User
 	if err := r.db.Debug().Preload("User").Preload("Team.Users").Find(&per, ID, RoomID).Error; err != nil {
-		return nil, err
+		return false, err
 	}
 	if per.Team != nil {
 		// var team models.Team
@@ -48,14 +49,31 @@ func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (*models.Permissio
 			if middleware.CheckPasswordHash(code, v.Code) {
 				fmt.Println(v.Email)
 				fmt.Println("Coden Passer")
-				return nil, errors.New("det virker")
+				return true, errors.New("det virker")
 			}
 		}
+		if err := r.db.Debug().Find(&user, &per.UserID).Error; err != nil {
+			return false, errors.New("LORT PAA LORT")
+		}
+		if middleware.CheckPasswordHash(code, user.Code) {
+			return true, nil
+			// ret
+		}
+
 		// check team frist
 		// if err r.db.Debug.
-		return &per, nil
+		return false, nil
 	}
-	return &per, nil
+	return false, nil
+}
+func (r *EmbeddedRepo) PostCodeV2(code string, RoomID uint) ([]models.Permission, error) {
+	var pem []models.Permission
+	// var user []models.User
+	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&pem).Error; err != nil {
+		return nil, err
+	}
+	return pem, nil
+
 }
 
 func NewEmbeddedRepo(db *gorm.DB) *EmbeddedRepo {

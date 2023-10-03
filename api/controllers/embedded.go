@@ -23,7 +23,7 @@ func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 	if err := c.BodyParser(&login); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	sus, err := con.repo.PostCode(login.Code, login.ID, login.RoomID)
+	sus, err := con.repo.PostCodeV2(login.Code, login.RoomID)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}

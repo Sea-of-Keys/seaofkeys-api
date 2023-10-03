@@ -132,10 +132,30 @@ func Setup(db *gorm.DB) {
 		},
 	}
 	permission := []Permission{
+		// {
+		// 	RoomID: 1,
+		// 	// UserID:    1,
+		// 	TeamID:    1,
+		// 	StartDate: time.Now(),
+		// 	EndDate:   time.Now(),
+		// 	StartTime: time.Now(),
+		// 	EndTime:   time.Now(),
+		// 	// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+		// },
 		{
 			RoomID: 1,
-			// UserID:    1,
-			TeamID:    1,
+			UserID: 1,
+			// TeamID:    1,
+			StartDate: time.Now(),
+			EndDate:   time.Now(),
+			StartTime: time.Now(),
+			EndTime:   time.Now(),
+			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+		},
+		{
+			RoomID: 1,
+			UserID: 2,
+			// TeamID:    1,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
