@@ -1,6 +1,7 @@
 package repos
 
 import (
+	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -47,6 +48,7 @@ func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (*models.Permissio
 			if middleware.CheckPasswordHash(code, v.Code) {
 				fmt.Println(v.Email)
 				fmt.Println("Coden Passer")
+				return nil, errors.New("det virker")
 			}
 		}
 		// check team frist
