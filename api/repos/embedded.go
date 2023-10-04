@@ -66,13 +66,27 @@ func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 	}
 	return false, nil
 }
-func (r *EmbeddedRepo) PostCodeV2(code string, RoomID uint) ([]models.Permission, error) {
+func (r *EmbeddedRepo) PostCodeV2(code string, RoomID uint) (bool, error) {
 	var pem []models.Permission
 	// var user []models.User
 	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&pem).Error; err != nil {
-		return nil, err
+		return false, err
 	}
-	return pem, nil
+	for _, v := range pem {
+		if v.Team != nil {
+
+			for _, g := range v.Team.Users {
+				if middleware.CheckPasswordHash(code, g.Code) {
+					return true, nil
+				}
+			}
+		}
+		if middleware.CheckPasswordHash(code, v.User.Code) {
+			return true, nil
+		}
+
+	}
+	return false, nil
 
 }
 
