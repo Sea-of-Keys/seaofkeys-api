@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
 
@@ -35,6 +36,11 @@ func (con *UserController) GetUsers(c *fiber.Ctx) error {
 	})
 }
 func (con *UserController) PostUser(c *fiber.Ctx) error {
+	var user models.User
+	if err := c.BodyParser(&user); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C13: "+err.Error())
+	}
+	// data, err := con.repo.PostUser(&user)
 	return nil
 }
 func (con *UserController) PutUser(c *fiber.Ctx) error {

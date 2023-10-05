@@ -90,6 +90,10 @@ func Setup(db *gorm.DB) {
 	if err != nil {
 		log.Panic(err)
 	}
+	userTreCode, err := middleware.HashPassword("4444")
+	if err != nil {
+		log.Panic(err)
+	}
 	users := []User{
 		{
 			Name:     "Kronborg",
@@ -104,6 +108,13 @@ func Setup(db *gorm.DB) {
 			// Password: "Test",
 			Code: userTwoCode,
 			// Teams: []Team{{ID: 1}},
+		},
+		{
+			Name:     "Test",
+			Email:    "test@test.com",
+			Password: userOnePassword,
+			Code:     userTreCode,
+			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 	}
 
