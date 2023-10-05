@@ -52,6 +52,21 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	})
 }
 
+// ############# Func to show your password one time ###############
+func (con *AuthController) Code(c *fiber.Ctx) error {
+	return nil
+}
+
+// ########### Change Password ##############
+func (con *AuthController) RestCode(c *fiber.Ctx) error {
+	return nil
+}
+
+// ############ Maby Make it so you get a email to set ure password #############
+func (con *AuthController) SetPassword(c *fiber.Ctx) error {
+	return nil
+}
+
 func NewAuthController(repo *repos.AuthRepo) *AuthController {
 	return &AuthController{repo}
 }

@@ -25,6 +25,24 @@ func (con *UserController) GetUser(c *fiber.Ctx) error {
 		"user": data,
 	})
 }
+func (con *UserController) GetUsers(c *fiber.Ctx) error {
+	data, err := con.repo.GetUsers()
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C12: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"users": data,
+	})
+}
+func (con *UserController) PostUser(c *fiber.Ctx) error {
+	return nil
+}
+func (con *UserController) PutUser(c *fiber.Ctx) error {
+	return nil
+}
+func (con *UserController) DelUser(c *fiber.Ctx) error {
+	return nil
+}
 
 func NewUsercontroller(repo *repos.UserRepo) *UserController {
 	return &UserController{repo}
