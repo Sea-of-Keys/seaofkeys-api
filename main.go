@@ -37,6 +37,8 @@ func main() {
 	api := app.Group("/")
 
 	controllers.RegisterAuthController(db, api)
+	controllers.RegisterUserController(db, api)
+	controllers.RegisterEmbeddedController(db, api)
 
 	log.Fatal(app.Listen(getPort()))
 

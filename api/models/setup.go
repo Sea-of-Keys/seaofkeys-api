@@ -86,7 +86,11 @@ func Setup(db *gorm.DB) {
 	if err != nil {
 		log.Panic(err)
 	}
-	userTwoCode, err := middleware.HashPassword("2589")
+	userTwoCode, err := middleware.HashPassword("1234")
+	if err != nil {
+		log.Panic(err)
+	}
+	userTreCode, err := middleware.HashPassword("4444")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -104,6 +108,13 @@ func Setup(db *gorm.DB) {
 			// Password: "Test",
 			Code: userTwoCode,
 			// Teams: []Team{{ID: 1}},
+		},
+		{
+			Name:     "Test",
+			Email:    "test@test.com",
+			Password: userOnePassword,
+			Code:     userTreCode,
+			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 	}
 
@@ -132,14 +143,35 @@ func Setup(db *gorm.DB) {
 		},
 	}
 	permission := []Permission{
+		// {
+		// 	RoomID: 1,
+		// 	// UserID:    1,
+		// 	TeamID:    1,
+		// 	StartDate: time.Now(),
+		// 	EndDate:   time.Now(),
+		// 	StartTime: time.Now(),
+		// 	EndTime:   time.Now(),
+		// 	// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+		// },
 		{
-			RoomID:    1,
-			UserID:    1,
+			RoomID: 1,
+			UserID: 1,
+			// TeamID:    1,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
 			EndTime:   time.Now(),
-			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+		},
+		{
+			RoomID: 1,
+			UserID: 2,
+			// TeamID:    1,
+			StartDate: time.Now(),
+			EndDate:   time.Now(),
+			StartTime: time.Now(),
+			EndTime:   time.Now(),
+			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
 			RoomID:    3,
@@ -148,7 +180,7 @@ func Setup(db *gorm.DB) {
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
 			EndTime:   time.Now(),
-			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
 		},
 	}
 	// create domy data in the database
