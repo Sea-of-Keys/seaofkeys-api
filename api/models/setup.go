@@ -6,9 +6,8 @@ import (
 	"log"
 	"time"
 
-	"gorm.io/gorm"
-
 	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
+	"gorm.io/gorm"
 )
 
 func Setup(db *gorm.DB) {

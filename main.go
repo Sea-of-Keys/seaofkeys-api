@@ -24,13 +24,14 @@ func getPort() string {
 }
 
 func main() {
-	db, err := databae.Init(os.Getenv("DATABASETYPE"))
+	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
+	db, err := databae.Init("mysql")
+	models.Setup(db)
 	app := fiber.New()
 	// db, err := databae.Init("postgres")
 	if err != nil {
 		log.Panic(err)
 	}
-	models.Setup(db)
 	app.Use(logger.New())
 	app.Use(cors.New())
 
