@@ -116,5 +116,6 @@ func RegisterUserController(db *gorm.DB, router fiber.Router) {
 	UserRouter.Get("/", controller.GetUsers)
 	UserRouter.Post("/", controller.PostUser)
 	UserRouter.Post("/more", controller.PostUsers)
+	UserRouter.Put("/", controller.PutUser)
 	UserRouter.Delete("/:id", controller.DelUser)
 }

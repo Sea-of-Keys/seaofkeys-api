@@ -16,8 +16,8 @@ type AuthRepo struct {
 func (repo *AuthRepo) PostLogin(user models.User) (*models.User, error) {
 	var checkUser models.User
 
-	if err := repo.db.Debug().Where("email = ?", user.Email).Find(&checkUser).Error; err != nil {
-		return nil, nil
+	if err := repo.db.Debug().First(&checkUser, "email = ?", user.Email).Error; err != nil {
+		return nil, errors.New("CAN'T FIND YOU NIGGA")
 	}
 
 	if !middleware.CheckPasswordHash(*user.Password, *checkUser.Password) {
