@@ -78,14 +78,14 @@ func (r *EmbeddedRepo) PostCodeV2(code string, RoomID uint) (bool, error) {
 		if v.Team != nil {
 
 			for _, g := range v.Team.Users {
-				UserCode := *g.Code
-				if middleware.CheckPasswordHash(code, UserCode) {
+				// UserCode := *g.Code
+				if middleware.CheckPasswordHash(code, *g.Code) {
 					return true, nil
 				}
 			}
 		}
-		UserCode := *v.User.Code
-		if middleware.CheckPasswordHash(code, UserCode) {
+		// UserCode := *v.User.Code
+		if middleware.CheckPasswordHash(code, *v.User.Code) {
 			return true, nil
 		}
 
