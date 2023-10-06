@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
@@ -53,12 +55,15 @@ func (con *UserController) PostUser(c *fiber.Ctx) error {
 }
 func (con *UserController) PostUsers(c *fiber.Ctx) error {
 	var user []models.User
+
+	fmt.Println(user)
 	if err := c.BodyParser(&user); err != nil {
 		return c.JSON(&fiber.Map{
 			"user": user,
 			// return fiber.NewError(fiber.StatusInternalServerError, "C15: "+err.Error())
 		})
 	}
+	fmt.Println(user)
 	data, err := con.repo.PostUsers(user)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C16: "+err.Error())

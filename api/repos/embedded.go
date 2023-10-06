@@ -46,7 +46,8 @@ func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 	if per.Team != nil {
 		// var team models.Team
 		for _, v := range per.Team.Users {
-			if middleware.CheckPasswordHash(code, v.Code) {
+			UserCode := *user.Code
+			if middleware.CheckPasswordHash(code, UserCode) {
 				fmt.Println(v.Email)
 				fmt.Println("Coden Passer")
 				return true, errors.New("det virker")
@@ -55,7 +56,8 @@ func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 		if err := r.db.Debug().Find(&user, &per.UserID).Error; err != nil {
 			return false, errors.New("LORT PAA LORT")
 		}
-		if middleware.CheckPasswordHash(code, user.Code) {
+		UserCode := *user.Code
+		if middleware.CheckPasswordHash(code, UserCode) {
 			return true, nil
 			// ret
 		}
@@ -76,12 +78,14 @@ func (r *EmbeddedRepo) PostCodeV2(code string, RoomID uint) (bool, error) {
 		if v.Team != nil {
 
 			for _, g := range v.Team.Users {
-				if middleware.CheckPasswordHash(code, g.Code) {
+				UserCode := *g.Code
+				if middleware.CheckPasswordHash(code, UserCode) {
 					return true, nil
 				}
 			}
 		}
-		if middleware.CheckPasswordHash(code, v.User.Code) {
+		UserCode := *v.User.Code
+		if middleware.CheckPasswordHash(code, UserCode) {
 			return true, nil
 		}
 
