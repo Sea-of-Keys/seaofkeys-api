@@ -43,9 +43,26 @@ func (r *TeamRepo) DelTeam(id uint) (bool, error) {
 	}
 	return true, nil
 }
-func (r *TeamRepo) AddToTeam(TeamID, userID uint) (models.Team, error) {
-	return models.Team{}, nil
+func (r *TeamRepo) AddToTeam(TeamID, userID uint) (*models.Team, error) {
+	var team models.Team
+	var user models.User
+	team.ID = TeamID
+	// team.Users = userID
+	if err := r.db.Debug().Preload("Users").First(&team, TeamID).Error; err != nil {
+		return nil, err
+	}
+	if err := r.db.Debug().First(&user, userID).Error; err != nil {
+		return nil, err
+	}
+	team.Users = append(team.Users, &user)
+	if err := r.db.Debug().Save(&team).Error; err != nil {
+		return nil, err
+	}
+	return &team, nil
 }
 func (r *TeamRepo) RemoveFromTeam(TeamID, userID uint) (models.Team, error) {
 	return models.Team{}, nil
+}
+func NewTeamRepo(db *gorm.DB) *TeamRepo {
+	return &TeamRepo{db}
 }
