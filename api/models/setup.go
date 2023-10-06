@@ -98,22 +98,22 @@ func Setup(db *gorm.DB) {
 		{
 			Name:     "Kronborg",
 			Email:    "mkronborg7@gmail.com",
-			Password: userOnePassword,
-			Code:     userOneCode,
+			Password: &userOnePassword,
+			Code:     &userOneCode,
 			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 		{
 			Name:  "Pissic",
 			Email: "IMGAY@gmail.com",
 			// Password: "Test",
-			Code: userTwoCode,
+			Code: &userTwoCode,
 			// Teams: []Team{{ID: 1}},
 		},
 		{
 			Name:     "Test",
 			Email:    "test@test.com",
-			Password: userOnePassword,
-			Code:     userTreCode,
+			Password: &userOnePassword,
+			Code:     &userTreCode,
 			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 	}
