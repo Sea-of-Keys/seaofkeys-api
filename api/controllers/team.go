@@ -16,6 +16,21 @@ type AddToTeam struct {
 	TeamID uint `json:"team_id"`
 }
 
+func (con *TeamController) DelTeam(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	UID := uint(id)
+	data, err := con.repo.DelTeam(UID)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"sus": data,
+	})
+}
+
 func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
 	var team AddToTeam
 	if err := c.BodyParser(&team); err != nil {
@@ -53,4 +68,5 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 
 	TeamRouter.Post("/add", controller.PostAddToTeam)
 	TeamRouter.Post("/remove", controller.PostRemoveFromTeam)
+	TeamRouter.Delete("/:id", controller.DelTeam)
 }

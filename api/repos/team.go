@@ -40,6 +40,8 @@ func (r *TeamRepo) PutTeam(team models.Team) (*models.Team, error) {
 }
 func (r *TeamRepo) DelTeam(id uint) (bool, error) {
 	var team models.Team
+	team.ID = id
+	r.db.Debug().Model(&team).Association("Users").Clear()
 	if err := r.db.Debug().Delete(&team, id).Error; err != nil {
 		return false, err
 	}
