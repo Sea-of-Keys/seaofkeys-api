@@ -29,6 +29,19 @@ func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
 		"team": data,
 	})
 }
+func (con *TeamController) PostRemoveFromTeam(c *fiber.Ctx) error {
+	var team AddToTeam
+	if err := c.BodyParser(&team); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C22: "+err.Error())
+	}
+	data, err := con.repo.RemoveFromTeam(team.TeamID, team.UserID)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C23: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"team": data,
+	})
+}
 func NewTeamController(repo *repos.TeamRepo) *TeamController {
 	return &TeamController{repo}
 }
@@ -39,4 +52,5 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 	TeamRouter := router.Group("/team")
 
 	TeamRouter.Post("/add", controller.PostAddToTeam)
+	TeamRouter.Post("/remove", controller.PostRemoveFromTeam)
 }

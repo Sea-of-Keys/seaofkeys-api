@@ -1,6 +1,8 @@
 package repos
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
@@ -54,14 +56,30 @@ func (r *TeamRepo) AddToTeam(TeamID, userID uint) (*models.Team, error) {
 	if err := r.db.Debug().First(&user, userID).Error; err != nil {
 		return nil, err
 	}
+	for _, v := range team.Users {
+		if v.ID == userID {
+			return nil, errors.New("R27: User all ready on the team")
+		}
+	}
 	team.Users = append(team.Users, &user)
 	if err := r.db.Debug().Save(&team).Error; err != nil {
 		return nil, err
 	}
 	return &team, nil
 }
-func (r *TeamRepo) RemoveFromTeam(TeamID, userID uint) (models.Team, error) {
-	return models.Team{}, nil
+func (r *TeamRepo) RemoveFromTeam(TeamID, userID uint) (*models.Team, error) {
+	var team models.Team
+	var user models.User
+	// var users []models.User
+
+	if err := r.db.Preload("Users").First(&team, TeamID).Error; err != nil {
+		return nil, err
+	}
+	user.ID = userID
+	if err := r.db.Debug().Model(&team).Association("Users").Delete(&user); err != nil {
+		return nil, err
+	}
+	return &team, nil
 }
 func NewTeamRepo(db *gorm.DB) *TeamRepo {
 	return &TeamRepo{db}
