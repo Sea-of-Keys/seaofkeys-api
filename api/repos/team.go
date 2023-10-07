@@ -49,7 +49,6 @@ func (r *TeamRepo) AddToTeam(TeamID, userID uint) (*models.Team, error) {
 	var team models.Team
 	var user models.User
 	team.ID = TeamID
-	// team.Users = userID
 	if err := r.db.Debug().Preload("Users").First(&team, TeamID).Error; err != nil {
 		return nil, err
 	}
