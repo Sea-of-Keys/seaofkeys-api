@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
 
@@ -14,6 +15,58 @@ type TeamController struct {
 type AddToTeam struct {
 	UserID uint `json:"user_id"`
 	TeamID uint `json:"team_id"`
+}
+
+func (con *TeamController) GetTeam(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	UID := uint(id)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	data, err := con.repo.GetTeam(UID)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"team": data,
+	})
+}
+func (con *TeamController) GetTeams(c *fiber.Ctx) error {
+	data, err := con.repo.GetTeams()
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"team": data,
+	})
+}
+func (con *TeamController) PostTeam(c *fiber.Ctx) error {
+	var team models.Team
+	if err := c.BodyParser(&team); err != nil {
+		return c.JSON(&fiber.Map{
+			"team": team,
+		})
+	}
+	data, err := con.repo.PostTeam(team)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"team": data,
+	})
+}
+func (con *TeamController) PutTeam(c *fiber.Ctx) error {
+	var team models.Team
+	if err := c.BodyParser(&team); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	data, err := con.repo.PutTeam(team)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"team": data,
+	})
 }
 
 func (con *TeamController) DelTeam(c *fiber.Ctx) error {
@@ -69,4 +122,8 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 	TeamRouter.Post("/add", controller.PostAddToTeam)
 	TeamRouter.Post("/remove", controller.PostRemoveFromTeam)
 	TeamRouter.Delete("/:id", controller.DelTeam)
+	TeamRouter.Post("/", controller.PostTeam)
+	TeamRouter.Get("/:id", controller.GetTeam)
+	TeamRouter.Get("/", controller.GetTeams)
+	TeamRouter.Put("/", controller.PutTeam)
 }
