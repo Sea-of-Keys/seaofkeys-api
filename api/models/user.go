@@ -12,3 +12,7 @@ type User struct {
 	RFID     *string `json:"rfid"`
 	Teams    []*Team `                gorm:"many2many:teams_users;"`
 }
+
+type Delete struct {
+	ID uint `json:"id"`
+}
