@@ -36,7 +36,6 @@ func main() {
 	app.Use(cors.New())
 
 	api := app.Group("/")
-
 	controllers.RegisterAuthController(db, api)
 	controllers.RegisterUserController(db, api)
 	controllers.RegisterEmbeddedController(db, api)

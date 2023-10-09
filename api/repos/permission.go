@@ -11,20 +11,42 @@ type PermissionRepo struct {
 }
 
 func (r *PermissionRepo) GetPermission(id uint) (*models.Permission, error) {
+	var permission models.Permission
+	if err := r.db.Debug().First(&permission, id).Error; err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 func (r *PermissionRepo) GetPermissions() ([]models.Permission, error) {
+	var permission models.Permission
+	if err := r.db.Debug().Find(&permission).Error; err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 func (r *PermissionRepo) PostPermission(per models.Permission) (*models.Permission, error) {
-	return nil, nil
+	if err := r.db.Debug().Create(&per).Error; err != nil {
+		return nil, err
+	}
+	return &per, nil
 }
 func (r *PermissionRepo) PutPermission(per models.Permission) (*models.Permission, error) {
+	if err := r.db.Debug().Model(&per).Updates(&per).Error; err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 func (r *PermissionRepo) DelPermission(id uint) (bool, error) {
+	var permission models.Permission
+	if err := r.db.Debug().Delete(&permission, id).Error; err != nil {
+		return false, err
+	}
 	return true, nil
 }
 func (r *PermissionRepo) CleanPermission() error {
 	return nil
+}
+
+func NewPermissionRepo(db *gorm.DB) *PermissionRepo {
+	return &PermissionRepo{db}
 }
