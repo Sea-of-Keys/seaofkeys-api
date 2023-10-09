@@ -94,24 +94,26 @@ func Setup(db *gorm.DB) {
 	if err != nil {
 		log.Panic(err)
 	}
+	emailOne := "mkronborg7@gmail.com"
+	emailTwo := "IMGAY@viki.lover"
 	users := []User{
 		{
 			Name:     "Kronborg",
-			Email:    "mkronborg7@gmail.com",
+			Email:    &emailOne,
 			Password: &userOnePassword,
 			Code:     &userOneCode,
 			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 		{
 			Name:  "Pissic",
-			Email: "IMGAY@gmail.com",
+			Email: &emailTwo,
 			// Password: "Test",
 			Code: &userTwoCode,
 			// Teams: []Team{{ID: 1}},
 		},
 		{
-			Name:     "Test",
-			Email:    "test@test.com",
+			Name: "Test",
+			// Email:    "test@test.com",
 			Password: &userOnePassword,
 			Code:     &userTreCode,
 			// Teams:    []Team{{ID: 1}, {ID: 2}},
