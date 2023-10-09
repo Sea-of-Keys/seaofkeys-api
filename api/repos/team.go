@@ -47,6 +47,18 @@ func (r *TeamRepo) DelTeam(id uint) (bool, error) {
 	}
 	return true, nil
 }
+func (r *TeamRepo) DelTeams(id []models.Delete) (bool, error) {
+	var team models.Team
+
+	for _, v := range id {
+		team.ID = v.ID
+		r.db.Debug().Model(&team).Association("Users").Clear()
+		if err := r.db.Debug().Delete(&team, v.ID).Error; err != nil {
+			return false, err
+		}
+	}
+	return true, nil
+}
 func (r *TeamRepo) AddToTeam(TeamID, userID uint) (*models.Team, error) {
 	var team models.Team
 	var user models.User
