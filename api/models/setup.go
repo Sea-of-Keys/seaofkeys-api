@@ -96,6 +96,7 @@ func Setup(db *gorm.DB) {
 	}
 	emailOne := "mkronborg7@gmail.com"
 	emailTwo := "IMGAY@viki.lover"
+	emailTre := "gg@wp.ez"
 	users := []User{
 		{
 			Name:     "Kronborg",
@@ -112,8 +113,8 @@ func Setup(db *gorm.DB) {
 			// Teams: []Team{{ID: 1}},
 		},
 		{
-			Name: "Test",
-			// Email:    "test@test.com",
+			Name:     "Test",
+			Email:    &emailTre,
 			Password: &userOnePassword,
 			Code:     &userTreCode,
 			// Teams:    []Team{{ID: 1}, {ID: 2}},
