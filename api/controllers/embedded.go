@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -19,6 +18,7 @@ type Login struct {
 	// ID     uint   `json:"id"`
 	Code   string `json:"code"`
 	RoomID uint   `json:"room_id"`
+	UserID uint   `json:"user_id"`
 }
 
 func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
@@ -27,8 +27,7 @@ func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 		gg := errors.New("E22: " + err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, gg.Error())
 	}
-	fmt.Println("ja")
-	sus, err := con.repo.PostCodeV2(login.Code, 1)
+	sus, err := con.repo.PostCodeV2(login.Code, login.RoomID, login.UserID)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}

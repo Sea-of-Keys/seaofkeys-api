@@ -33,9 +33,7 @@ func (con *UserController) GetUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C12: "+err.Error())
 	}
-	return c.JSON(&fiber.Map{
-		"users": data,
-	})
+	return c.JSON(data)
 }
 func (con *UserController) PostUser(c *fiber.Ctx) error {
 	var user models.User
