@@ -68,7 +68,7 @@ func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 	}
 	return false, nil
 }
-func (r *EmbeddedRepo) PostCodeV2(code string, RoomID uint) (bool, error) {
+func (r *EmbeddedRepo) PostCodeV2(code string, RoomID, UserID uint) (bool, error) {
 	var pem []models.Permission
 	// var user []models.User
 	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&pem).Error; err != nil {
@@ -89,6 +89,18 @@ func (r *EmbeddedRepo) PostCodeV2(code string, RoomID uint) (bool, error) {
 			return true, nil
 		}
 
+	}
+	return false, nil
+
+}
+func (r *EmbeddedRepo) PostCodeV3(code string, RoomID, UserID uint) (bool, error) {
+	var user models.User
+	var pem []models.Permission
+	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&pem).Error; err != nil {
+		return false, err
+	}
+	if err := r.db.Debug().First(&user, UserID).Error; err != nil {
+		return false, err
 	}
 	return false, nil
 

@@ -2,6 +2,7 @@ package repos
 
 import (
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 
@@ -49,8 +50,37 @@ func (r *UserRepo) PutUser(user models.User) (*models.User, error) {
 }
 func (r *UserRepo) DelUser(id uint) (bool, error) {
 	var user models.User
+	if err := r.db.Debug().Model(&user).
+		Where("ID = ?", id).
+		Updates(map[string]interface{}{
+			"Email":    nil,
+			"Code":     nil,
+			"Password": nil,
+		}).Error; err != nil {
+		return false, errors.New("ERROR 13: " + err.Error())
+	}
 	if err := r.db.Debug().Delete(&user, id).Error; err != nil {
 		return false, errors.New("ERROR 13: " + err.Error())
+	}
+	return true, nil
+}
+func (r *UserRepo) DelUsers(id []models.Delete) (bool, error) {
+	var user models.User
+	// gg := []uint{2, 3}
+	fmt.Println(id)
+	for _, v := range id {
+		if err := r.db.Debug().Model(&user).
+			Where("ID = ?", v.ID).
+			Updates(map[string]interface{}{
+				"Email":    nil,
+				"Code":     nil,
+				"Password": nil,
+			}).Error; err != nil {
+			return false, errors.New("ERROR 13: " + err.Error())
+		}
+		if err := r.db.Debug().Delete(&user, v.ID).Error; err != nil {
+			return false, errors.New("ERROR 13: " + err.Error())
+		}
 	}
 	return true, nil
 }

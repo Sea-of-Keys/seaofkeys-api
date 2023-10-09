@@ -33,9 +33,7 @@ func (con *UserController) GetUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C12: "+err.Error())
 	}
-	return c.JSON(&fiber.Map{
-		"users": data,
-	})
+	return c.JSON(data)
 }
 func (con *UserController) PostUser(c *fiber.Ctx) error {
 	var user models.User
@@ -101,6 +99,24 @@ func (con *UserController) DelUser(c *fiber.Ctx) error {
 		"sus": data,
 	})
 }
+func (con *UserController) DelUsers(c *fiber.Ctx) error {
+	var users []models.Delete
+	if err := c.BodyParser(&users); err != nil {
+		return c.JSON(users)
+	}
+	data, err := con.repo.DelUsers(users)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(data)
+	// data, err := con.repo.DelUser(uint(id))
+	// if err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	// }
+	// return c.JSON(&fiber.Map{
+	// 	"sus": data,
+	// })
+}
 
 func NewUsercontroller(repo *repos.UserRepo) *UserController {
 	return &UserController{repo}
@@ -117,5 +133,6 @@ func RegisterUserController(db *gorm.DB, router fiber.Router) {
 	UserRouter.Post("/", controller.PostUser)
 	UserRouter.Post("/more", controller.PostUsers)
 	UserRouter.Put("/", controller.PutUser)
-	UserRouter.Delete("/:id", controller.DelUser)
+	UserRouter.Delete("/del/:id", controller.DelUser)
+	UserRouter.Delete("/del", controller.DelUsers)
 }
