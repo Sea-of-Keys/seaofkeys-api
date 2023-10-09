@@ -34,7 +34,7 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	}
 	expirationTime := time.Now().Add(5 * time.Minute)
 	claims := &Claims{
-		Email: data.Email,
+		Email: *data.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
