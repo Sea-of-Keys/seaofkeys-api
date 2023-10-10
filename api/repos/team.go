@@ -14,14 +14,14 @@ type TeamRepo struct {
 
 func (r *TeamRepo) GetTeam(id uint) (*models.Team, error) {
 	var team models.Team
-	if err := r.db.Debug().First(&team, id).Error; err != nil {
+	if err := r.db.Debug().Preload("Users").First(&team, id).Error; err != nil {
 		return nil, err
 	}
 	return &team, nil
 }
 func (r *TeamRepo) GetTeams() ([]models.Team, error) {
 	var team []models.Team
-	if err := r.db.Debug().Find(&team).Error; err != nil {
+	if err := r.db.Debug().Preload("Users").Find(&team).Error; err != nil {
 		return nil, err
 	}
 	return team, nil
@@ -30,7 +30,7 @@ func (r *TeamRepo) PostTeam(team models.Team) (*models.Team, error) {
 	if err := r.db.Debug().Create(&team).Error; err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &team, nil
 }
 func (r *TeamRepo) PutTeam(team models.Team) (*models.Team, error) {
 	if err := r.db.Debug().Updates(&team).Error; err != nil {
