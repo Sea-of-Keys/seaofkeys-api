@@ -49,10 +49,17 @@ func (con *RoomController) PostRoom(c *fiber.Ctx) error {
 	})
 }
 func (con *RoomController) PostRooms(c *fiber.Ctx) error {
-	return nil
-	// return c.JSON(&fiber.Map{
-	// 	"room": data,
-	// })
+	var rooms []models.Room
+	if err := c.BodyParser(&rooms); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C39: "+err.Error())
+	}
+	data, err := con.repo.PostRooms(rooms)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C39: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"room": data,
+	})
 }
 func (con *RoomController) PutRoom(c *fiber.Ctx) error {
 	var room models.Room
