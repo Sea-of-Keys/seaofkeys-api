@@ -83,7 +83,6 @@ func (r *TeamRepo) AddToTeam(TeamID, userID uint) (*models.Team, error) {
 func (r *TeamRepo) RemoveFromTeam(TeamID, userID uint) (*models.Team, error) {
 	var team models.Team
 	var user models.User
-	// var users []models.User
 
 	if err := r.db.Preload("Users").First(&team, TeamID).Error; err != nil {
 		return nil, err

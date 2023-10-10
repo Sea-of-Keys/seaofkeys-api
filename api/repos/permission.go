@@ -15,14 +15,14 @@ func (r *PermissionRepo) GetPermission(id uint) (*models.Permission, error) {
 	if err := r.db.Debug().First(&permission, id).Error; err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &permission, nil
 }
 func (r *PermissionRepo) GetPermissions() ([]models.Permission, error) {
-	var permission models.Permission
+	var permission []models.Permission
 	if err := r.db.Debug().Find(&permission).Error; err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return permission, nil
 }
 func (r *PermissionRepo) PostPermission(per models.Permission) (*models.Permission, error) {
 	if err := r.db.Debug().Create(&per).Error; err != nil {
@@ -34,7 +34,7 @@ func (r *PermissionRepo) PutPermission(per models.Permission) (*models.Permissio
 	if err := r.db.Debug().Model(&per).Updates(&per).Error; err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &per, nil
 }
 func (r *PermissionRepo) DelPermission(id uint) (bool, error) {
 	var permission models.Permission
