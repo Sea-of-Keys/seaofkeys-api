@@ -23,7 +23,7 @@ func (r *RoomRepo) GetRooms() ([]models.Room, error) {
 	if err := r.db.Debug().Find(&rooms).Error; err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return rooms, nil
 }
 func (r *RoomRepo) PostRoom(room models.Room) (*models.Room, error) {
 	if err := r.db.Debug().Create(&room).Error; err != nil {

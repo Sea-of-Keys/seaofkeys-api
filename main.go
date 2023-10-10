@@ -41,6 +41,7 @@ func main() {
 	controllers.RegisterEmbeddedController(db, api)
 	controllers.RegisterTeamController(db, api)
 	controllers.RegisterHistoryController(db, api)
+	controllers.RegisterRoomController(db, api)
 
 	log.Fatal(app.Listen(getPort()))
 
