@@ -62,7 +62,58 @@ func (r *TeamRepo) DelTeams(id []models.Delete) (bool, error) {
 	}
 	return true, nil
 }
-func (r *TeamRepo) AddToTeam(TeamID, userID uint) (*models.Team, error) {
+func (r *TeamRepo) AddToTeam(UT models.RemoveUsersFromTeam) (*models.Team, error) {
+	var team models.Team
+	var user []models.User
+	// if err := r.db.Debug().Preload("Users").First(&team, UT.TeamID).Error; err != nil {
+	if err := r.db.Debug().First(&team, UT.TeamID).Error; err != nil {
+		return nil, err
+	}
+	// if err := r.db.Debug().Find(&user, UT.UserID).Error; err != nil {
+	if err := r.db.Find(&user, UT.UserID).Error; err != nil {
+		return nil, err
+	}
+	// for _, v := range team.Users {
+	// 	if v.ID == userID {
+	// 		return nil, errors.New("R27: User all ready on the team")
+	// 	}
+	// }
+	for _, v := range user {
+		var yes bool
+		for _, u := range v.Teams {
+			if u.ID == UT.TeamID {
+				fmt.Println("me")
+				yes = true
+				break
+			}
+		}
+		if !yes {
+			fmt.Println(v.Name)
+			newUser := v // Copy the user
+			// team.Users = append(team.Users, &newUser)
+			team.Users = append(team.Users, &newUser)
+		}
+	}
+	// fmt.Println(*team.Users)
+	for _, v := range team.Users {
+		fmt.Printf("User: %v\n", v.Name)
+	}
+	// for _, v := range team.Users {
+	//     for _, u := range v.Teams {
+	//         if u.ID != UT.TeamID {
+
+	//         }
+	//     }
+	// }
+	// team.Users = append(team.Users, user...)
+	if err := r.db.Save(&team).Error; err != nil {
+		// if err := r.db.Debug().Save(&team).Error; err != nil {
+
+		return nil, err
+	}
+	return &team, nil
+}
+func (r *TeamRepo) AddUsersToTeam(TeamID, userID uint) (*models.Team, error) {
 	var team models.Team
 	var user models.User
 	team.ID = TeamID

@@ -93,11 +93,11 @@ func (con *TeamController) DelTeams(c *fiber.Ctx) error {
 }
 
 func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
-	var team models.AddToTeam
+	var team models.RemoveUsersFromTeam
 	if err := c.BodyParser(&team); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
 	}
-	data, err := con.repo.AddToTeam(team.TeamID, team.UserID)
+	data, err := con.repo.AddToTeam(team)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C21: "+err.Error())
 	}
