@@ -18,8 +18,6 @@ func (r *UserRepo) GetUser(id uint) (*models.User, error) {
 	if err := r.db.Debug().First(&user, id).Error; err != nil {
 		return nil, errors.New("ERROR 10: " + err.Error())
 	}
-	user.Code = nil
-	user.Password = nil
 	return &user, nil
 }
 func (r *UserRepo) GetUsers() ([]models.User, error) {
