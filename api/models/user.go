@@ -10,5 +10,5 @@ type User struct {
 	Password *string `json:"password"`
 	Code     *string `json:"code"     gorm:"uniqueIndex;size:100"` // not null; MABY NOT NULL
 	RFID     *string `json:"rfid"`
-	Teams    []*Team `                gorm:"many2many:teams_users;"`
+	Teams    []*Team `json:"teams"    gorm:"many2many:teams_users;"`
 }
