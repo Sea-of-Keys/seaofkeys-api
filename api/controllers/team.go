@@ -12,11 +12,6 @@ type TeamController struct {
 	repo *repos.TeamRepo
 }
 
-type AddToTeam struct {
-	UserID uint `json:"user_id"`
-	TeamID uint `json:"team_id"`
-}
-
 func (con *TeamController) GetTeam(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	UID := uint(id)
@@ -98,7 +93,7 @@ func (con *TeamController) DelTeams(c *fiber.Ctx) error {
 }
 
 func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
-	var team AddToTeam
+	var team models.AddToTeam
 	if err := c.BodyParser(&team); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
 	}
@@ -111,7 +106,7 @@ func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
 	})
 }
 func (con *TeamController) PostRemoveFromTeam(c *fiber.Ctx) error {
-	var team AddToTeam
+	var team models.AddToTeam
 	if err := c.BodyParser(&team); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C22: "+err.Error())
 	}
@@ -123,6 +118,22 @@ func (con *TeamController) PostRemoveFromTeam(c *fiber.Ctx) error {
 		"team": data,
 	})
 }
+
+func (con *TeamController) PostRemoveUsersFromTeam(c *fiber.Ctx) error {
+	var team models.RemoveUsersFromTeam
+	if err := c.BodyParser(&team); err != nil {
+		return c.JSON(team)
+		// return fiber.NewError(fiber.StatusInternalServerError, "C22: "+err.Error())
+	}
+	data, err := con.repo.RemoveUsersFromTeam(team)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C23: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"team": data,
+	})
+}
+
 func NewTeamController(repo *repos.TeamRepo) *TeamController {
 	return &TeamController{repo}
 }
@@ -140,4 +151,5 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 	TeamRouter.Get("/:id", controller.GetTeam)
 	TeamRouter.Get("/", controller.GetTeams)
 	TeamRouter.Put("/", controller.PutTeam)
+	TeamRouter.Delete("/remove/more", controller.PostRemoveUsersFromTeam)
 }

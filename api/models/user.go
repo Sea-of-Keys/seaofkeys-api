@@ -12,3 +12,12 @@ type User struct {
 	RFID     *string `json:"-"`
 	Teams    []*Team `json:"teams" gorm:"many2many:teams_users;"`
 }
+
+// #### Maby cange standan id ####
+type UserPC struct {
+	ID       uint  `json:"id"      gorm:"primaryKey"`
+	Password *bool `json:"-"`
+	Code     *bool `json:"-"`
+	UserID   uint  `json:"user_id"`
+	User     User
+}

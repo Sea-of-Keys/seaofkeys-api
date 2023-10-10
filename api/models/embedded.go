@@ -6,3 +6,10 @@ type Embedded struct {
 	RoomID uint   `json:"room_id"`
 	Room   Room
 }
+
+type EmbeddedCheck struct {
+	ID         uint   `json:"id"          gorm:"primaryKey"`
+	EmbeddedID uint   `json:"embedded_id"`
+	Scret      string `json:"-"`
+	Embedded   Embedded
+}

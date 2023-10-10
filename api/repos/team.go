@@ -2,6 +2,7 @@ package repos
 
 import (
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 
@@ -26,14 +27,16 @@ func (r *TeamRepo) GetTeams() ([]models.Team, error) {
 	}
 	return team, nil
 }
+
+// ##### Maby make a find after create
 func (r *TeamRepo) PostTeam(team models.Team) (*models.Team, error) {
-	if err := r.db.Debug().Create(&team).Error; err != nil {
+	if err := r.db.Debug().Preload("User").Create(&team).Error; err != nil {
 		return nil, err
 	}
 	return &team, nil
 }
 func (r *TeamRepo) PutTeam(team models.Team) (*models.Team, error) {
-	if err := r.db.Debug().Updates(&team).Error; err != nil {
+	if err := r.db.Debug().Preload("Users").Updates(&team).Error; err != nil {
 		return nil, err
 	}
 	return &team, nil
@@ -90,6 +93,23 @@ func (r *TeamRepo) RemoveFromTeam(TeamID, userID uint) (*models.Team, error) {
 	user.ID = userID
 	if err := r.db.Debug().Model(&team).Association("Users").Delete(&user); err != nil {
 		return nil, err
+	}
+	return &team, nil
+}
+func (r *TeamRepo) RemoveUsersFromTeam(UT models.RemoveUsersFromTeam) (*models.Team, error) {
+	var team models.Team
+	var user models.User
+
+	if err := r.db.Preload("Users").First(&team, UT.TeamID).Error; err != nil {
+		return nil, err
+	}
+	fmt.Println(UT)
+	for _, v := range UT.UserID {
+		fmt.Println(v)
+		user.ID = v
+		if err := r.db.Debug().Model(&team).Association("Users").Delete(&user); err != nil {
+			return nil, err
+		}
 	}
 	return &team, nil
 }
