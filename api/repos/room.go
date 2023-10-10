@@ -13,7 +13,7 @@ type RoomRepo struct {
 // Don't no if it needs to be *models.Room or models.Room
 func (r *RoomRepo) GetRoom(id uint) (*models.Room, error) {
 	var room models.Room
-	if err := r.db.Debug().First(&room).Error; err != nil {
+	if err := r.db.Debug().First(&room, id).Error; err != nil {
 		return nil, err
 	}
 	return &room, nil
