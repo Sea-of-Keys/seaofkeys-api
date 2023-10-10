@@ -13,14 +13,14 @@ type AuthRepo struct {
 	db *gorm.DB
 }
 
-func (repo *AuthRepo) PostLogin(user models.User) (*models.User, error) {
+func (repo *AuthRepo) PostLogin(user models.Login) (*models.User, error) {
 	var checkUser models.User
 
 	if err := repo.db.Debug().First(&checkUser, "email = ?", user.Email).Error; err != nil {
 		return nil, errors.New("CAN'T FIND YOU NIGGA")
 	}
 
-	if !middleware.CheckPasswordHash(*user.Password, *checkUser.Password) {
+	if !middleware.CheckPasswordHash(user.Password, *checkUser.Password) {
 		return nil, errors.New("PLZ BE THIS")
 	}
 	checkUser.Password = nil

@@ -17,6 +17,10 @@ func (r *TeamRepo) GetTeam(id uint) (*models.Team, error) {
 	if err := r.db.Debug().Preload("Users").First(&team, id).Error; err != nil {
 		return nil, err
 	}
+	// for _, v := range team.Users {
+	// 	v.Code = nil
+	// 	v.Password = nil
+	// }
 	return &team, nil
 }
 func (r *TeamRepo) GetTeams() ([]models.Team, error) {
@@ -24,6 +28,12 @@ func (r *TeamRepo) GetTeams() ([]models.Team, error) {
 	if err := r.db.Debug().Preload("Users").Find(&team).Error; err != nil {
 		return nil, err
 	}
+	// for _, v := range team {
+	// 	for _, u := range v.Users {
+	// 		u.Password = nil
+	// 		u.Code = nil
+	// 	}
+	// }
 	return team, nil
 }
 func (r *TeamRepo) PostTeam(team models.Team) (*models.Team, error) {

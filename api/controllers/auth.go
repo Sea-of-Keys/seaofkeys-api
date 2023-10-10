@@ -23,7 +23,7 @@ type Claims struct {
 var jwtKey = []byte("my_secret_key")
 
 func (con *AuthController) Login(c *fiber.Ctx) error {
-	var user models.User
+	var user models.Login
 	// var err error
 	if err := c.BodyParser(&user); err != nil {
 		return fiber.NewError(fiber.StatusNoContent, err.Error())
