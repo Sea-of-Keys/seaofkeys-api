@@ -15,7 +15,7 @@ type UserRepo struct {
 
 func (r *UserRepo) GetUser(id uint) (*models.User, error) {
 	var user models.User
-	if err := r.db.Debug().First(&user, id).Error; err != nil {
+	if err := r.db.Debug().Preload("Teams").First(&user, id).Error; err != nil {
 		return nil, errors.New("ERROR 10: " + err.Error())
 	}
 	return &user, nil

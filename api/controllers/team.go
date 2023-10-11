@@ -158,7 +158,7 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 	TeamRouter := router.Group("/team")
 
 	TeamRouter.Post("/add", controller.PostAddToTeam)
-	TeamRouter.Post("/remove", controller.DeleteUsersRemoveFromTeam)
+	TeamRouter.Delete("/remove", controller.DeleteUsersRemoveFromTeam)
 	TeamRouter.Delete("/del/:id", controller.DelTeam)
 	TeamRouter.Delete("/del", controller.DelTeams)
 	TeamRouter.Post("/", controller.PostTeam)
