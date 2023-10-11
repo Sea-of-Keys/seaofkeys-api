@@ -20,7 +20,7 @@ type TeamUsers struct {
 }
 type UserTeams struct {
 	UserID uint   `json:"user_id"`
-	TeamID []uint `json:"teamss"`
+	TeamID []uint `json:"teams"`
 }
 
 type AddToTeam struct {

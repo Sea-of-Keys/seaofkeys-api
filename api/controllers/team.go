@@ -180,6 +180,6 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 	TeamRouter.Get("/", controller.GetTeams)
 	TeamRouter.Put("/", controller.PutTeam)
 	TeamRouter.Get("/users/:id", controller.GetAllUserNotOnTheTeam)
-	TeamRouter.Delete("/users/:id", controller.RemoveTeamsFromUser)
+	TeamRouter.Delete("/petter", controller.RemoveTeamsFromUser)
 	// TeamRouter.Delete("/remove/more", controller.PostRemoveUsersFromTeam)
 }
