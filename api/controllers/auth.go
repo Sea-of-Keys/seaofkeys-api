@@ -54,7 +54,8 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 
 // ############# Func to show your password one time ###############
 func (con *AuthController) Code(c *fiber.Ctx) error {
-	return nil
+	data := fiber.Map{}
+	return c.Render("auth/index", data)
 }
 
 // ########### Change Password ##############
@@ -64,7 +65,8 @@ func (con *AuthController) RestCode(c *fiber.Ctx) error {
 
 // ############ Maby Make it so you get a email to set ure password #############
 func (con *AuthController) SetPassword(c *fiber.Ctx) error {
-	return nil
+	data := fiber.Map{}
+	return c.Render("home/index", data)
 }
 
 func NewAuthController(repo *repos.AuthRepo) *AuthController {
@@ -75,6 +77,8 @@ func RegisterAuthController(db *gorm.DB, router fiber.Router) {
 	controller := NewAuthController(repo)
 
 	AuthRouter := router.Group("/auth")
-
+	// AuthRouter.Static("/static", "./static")
 	AuthRouter.Post("/login", controller.Login)
+	AuthRouter.Get("/test", controller.Code)
+	AuthRouter.Get("/", controller.SetPassword)
 }

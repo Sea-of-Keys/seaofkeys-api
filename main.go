@@ -3,12 +3,15 @@ package main
 // ######TODO######
 
 import (
+	"fmt"
+	"html/template"
 	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/django/v3"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/controllers"
@@ -22,6 +25,20 @@ func getPort() string {
 		port = "8000"
 	}
 	return "0.0.0.0:" + port
+}
+func initApp() (*fiber.App, error) {
+	engine := django.New("./web/views", ".html")
+	engine.Reload(true)
+	engine.AddFunc("css", func(name string) (res template.HTML) {
+		link := "static/" + name
+		res = template.HTML("<link rel=\"stylesheet\" href=\"/" + link + "\">")
+		return
+	})
+	app := fiber.New(fiber.Config{
+		PassLocalsToViews: true,
+		Views:             engine,
+	})
+	return app, nil
 }
 
 func Endpoints(db *gorm.DB, api fiber.Router) {
@@ -38,16 +55,19 @@ func Endpoints(db *gorm.DB, api fiber.Router) {
 func main() {
 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
 	db, err := databae.Init("mysql")
-	// fmt.Printf("The type of myVar is: %T\n", db)
 	models.Setup(db)
-	app := fiber.New()
+
+	// engine := CreateEngine()
+	// app := fiber.New()
 	// db, err := databae.Init("postgres")
+	fmt.Println("im gona be runed")
+	app, err := initApp()
 	if err != nil {
 		log.Panic(err)
 	}
 	app.Use(logger.New())
 	app.Use(cors.New())
-
+	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	Endpoints(db, api)
 
