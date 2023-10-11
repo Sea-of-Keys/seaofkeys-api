@@ -1,5 +1,15 @@
 {% extends "partials/base.html" %} {% block content %}
 <div class="container mx-auto mt-20">
-  <h1 class="text-7xl text-center">Kronborg's Auth page</h1>
+  <h1 class="text-7xl text-center">{{user}} page</h1>
+        <button id="myButton">Click Me</button>
+    <script>
+        document.getElementById("myButton").addEventListener("click", function() {
+            // When the button is clicked, send an HTTP request to your Go server
+            fetch('/auth/hello')
+                .then(response => response.text())
+                .then(data => console.log(data));
+        });
+    </script>
+</body>
 </div>
 {% endblock %}

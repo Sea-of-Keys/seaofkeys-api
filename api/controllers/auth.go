@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -54,7 +55,9 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 
 // ############# Func to show your password one time ###############
 func (con *AuthController) Code(c *fiber.Ctx) error {
-	data := fiber.Map{}
+	data := fiber.Map{
+		"user": "Joe",
+	}
 	return c.Render("auth/index", data)
 }
 
@@ -67,6 +70,10 @@ func (con *AuthController) RestCode(c *fiber.Ctx) error {
 func (con *AuthController) SetPassword(c *fiber.Ctx) error {
 	data := fiber.Map{}
 	return c.Render("home/index", data)
+}
+func (con *AuthController) Hello(c *fiber.Ctx) error {
+	fmt.Println("Kronborg er gud")
+	return nil
 }
 
 func NewAuthController(repo *repos.AuthRepo) *AuthController {
@@ -81,4 +88,5 @@ func RegisterAuthController(db *gorm.DB, router fiber.Router) {
 	AuthRouter.Post("/login", controller.Login)
 	AuthRouter.Get("/test", controller.Code)
 	AuthRouter.Get("/", controller.SetPassword)
+	AuthRouter.Get("/hello", controller.Hello)
 }
