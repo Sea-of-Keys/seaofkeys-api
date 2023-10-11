@@ -159,13 +159,15 @@ func (r *TeamRepo) RemoveTeamsFromUser(UT models.UserTeams) (*models.User, error
 	var user models.User
 
 	user.ID = UT.UserID
+	// fmt.Println("df")
+	// fmt.Printf("UT InderHolder: %v\n", UT)
 	for _, v := range UT.TeamID {
 		team.ID = v
 		if err := r.db.Debug().Model(&team).Association("Users").Delete(&user); err != nil {
 			return nil, err
 		}
 	}
-	if err := r.db.Debug().First(&user, UT.TeamID).Error; err != nil {
+	if err := r.db.Debug().Preload("Teams").First(&user, UT.TeamID).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
