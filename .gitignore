@@ -1,2 +1,4 @@
 bin/*
 makefile
+./web/misc/node_modules/*
+./web/misc/*/*
