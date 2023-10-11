@@ -50,6 +50,17 @@ func (r *RoomRepo) DelRoom(id uint) (bool, error) {
 	}
 	return true, nil
 }
+func (r *RoomRepo) DelRooms(id []models.Delete) (bool, error) {
+	var room models.Room
+
+	for _, v := range id {
+		if err := r.db.Debug().Debug().Delete(&room, v.ID).Error; err != nil {
+			return false, err
+		}
+
+	}
+	return true, nil
+}
 
 func NewRoomRepo(db *gorm.DB) *RoomRepo {
 	return &RoomRepo{db}
