@@ -65,16 +65,19 @@ func Setup(db *gorm.DB) {
 			Day: 7,
 		},
 	}
+	var RoomOne uint
+	RoomOne = 1
+
 	embedded := []Embedded{
 		{
 			Name: "KeypadOne",
 			// Room:  Room{Name: "A1"},
-			RoomID: 1,
+			RoomID: &RoomOne,
 		},
 		{
 			Name: "RFIDOne",
 			// Room: Room{Name: "dfg"},
-			RoomID: 1,
+			RoomID: &RoomOne,
 		},
 	}
 	userOneCode, err := middleware.HashPassword("2589")
@@ -157,7 +160,7 @@ func Setup(db *gorm.DB) {
 		// 	// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		// },
 		{
-			RoomID: 1,
+			RoomID: &RoomOne,
 			UserID: 1,
 			// TeamID:    1,
 			StartDate: time.Now(),
@@ -167,7 +170,7 @@ func Setup(db *gorm.DB) {
 			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
-			RoomID: 1,
+			RoomID: &RoomOne,
 			UserID: 2,
 			// TeamID:    1,
 			StartDate: time.Now(),
@@ -177,7 +180,7 @@ func Setup(db *gorm.DB) {
 			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
-			RoomID:    3,
+			RoomID:    &RoomOne,
 			UserID:    1,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),

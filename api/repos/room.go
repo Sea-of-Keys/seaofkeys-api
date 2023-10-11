@@ -52,8 +52,21 @@ func (r *RoomRepo) DelRoom(id uint) (bool, error) {
 }
 func (r *RoomRepo) DelRooms(id []models.Delete) (bool, error) {
 	var room models.Room
+	var embedded models.Embedded
+	var permission models.Permission
 
 	for _, v := range id {
+		room.ID = v.ID
+		if err := r.db.Debug().Model(&permission).Where("room_id = ?", room.ID).Updates(map[string]interface{}{
+			"RoomID": nil,
+		}).Error; err != nil {
+			return false, err
+		}
+		if err := r.db.Debug().Model(&embedded).Where("room_id = ?", room.ID).Updates(map[string]interface{}{
+			"RoomID": nil,
+		}).Error; err != nil {
+			return false, err
+		}
 		if err := r.db.Debug().Debug().Delete(&room, v.ID).Error; err != nil {
 			return false, err
 		}
