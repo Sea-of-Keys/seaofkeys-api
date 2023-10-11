@@ -117,7 +117,19 @@ func (con *UserController) DelUsers(c *fiber.Ctx) error {
 	// 	"sus": data,
 	// })
 }
-
+func (con *UserController) GetTeamsUserIsNotOn(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	data, err := con.repo.GetAllTeamsUserIsNotOn(uint(id))
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"teams": data,
+	})
+}
 func NewUsercontroller(repo *repos.UserRepo) *UserController {
 	return &UserController{repo}
 }
@@ -135,4 +147,5 @@ func RegisterUserController(db *gorm.DB, router fiber.Router) {
 	UserRouter.Put("/", controller.PutUser)
 	UserRouter.Delete("/del/:id", controller.DelUser)
 	UserRouter.Delete("/del", controller.DelUsers)
+	UserRouter.Get("/teams/:id", controller.GetTeamsUserIsNotOn)
 }
