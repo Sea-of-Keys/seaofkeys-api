@@ -92,6 +92,7 @@ func (con *RoomController) DelRoom(c *fiber.Ctx) error {
 func (con *RoomController) DelRooms(c *fiber.Ctx) error {
 	var ids []models.Delete
 	if err := c.BodyParser(&ids); err != nil {
+		return c.JSON(ids)
 		return fiber.NewError(fiber.StatusInternalServerError, "C30: "+err.Error())
 	}
 	data, err := con.repo.DelRooms(ids)
@@ -119,6 +120,6 @@ func RegisterRoomController(db *gorm.DB, router fiber.Router) {
 	RoomRuter.Post("/many", controller.PostRooms)
 	RoomRuter.Put("/", controller.PutRoom)
 	RoomRuter.Delete("/:id", controller.DelRoom)
-	RoomRuter.Delete("/many", controller.DelRooms)
+	RoomRuter.Delete("/del/many", controller.DelRooms)
 	// RoomRuter.Delete("/", controller.DelRoom)
 }

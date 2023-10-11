@@ -4,8 +4,8 @@ import "time"
 
 type Permission struct {
 	// gorm.Model
-	ID        uint `json:"id"`
-	RoomID    uint `json:"room_id"`
+	ID        uint  `json:"id"`
+	RoomID    *uint `json:"room_id"`
 	Room      Room
 	TeamID    uint `json:"team_id"    gorm:"default:null"`
 	UserID    uint `json:"user_id"    gorm:"default:null"`
