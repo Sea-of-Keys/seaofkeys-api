@@ -6,6 +6,7 @@ package models
 // Day 1=Monday, 2=Tuesday, 3=Wensday 4=Thursday 5=Friday 6=Saturday 7=Sunday
 
 type Weekdays struct {
-	ID  uint `json:"id"  gorm:"primaryKey"`
-	Day int  `json:"day"`
+	ID   uint   `json:"id"   gorm:"primaryKey"`
+	Day  int    `json:"day"`
+	Name string `json:"name"`
 }

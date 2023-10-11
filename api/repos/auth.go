@@ -32,6 +32,8 @@ func (repo *AuthRepo) PostLogout() (bool, error) {
 	return true, nil
 }
 
+// func (repo *AuthRepo)
+
 // Change Embedde Password ### CHANGE CODE TO int ?????
 func (repo *AuthRepo) PutPassword(id uint, code string) (*models.User, error) {
 	return nil, nil
