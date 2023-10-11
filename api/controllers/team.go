@@ -91,6 +91,19 @@ func (con *TeamController) DelTeams(c *fiber.Ctx) error {
 		"sus": data,
 	})
 }
+func (con *TeamController) GetAllUserNotOnTheTeam(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	data, err := con.repo.GetAllUserNotOnTheTeam(uint(id))
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"users": data,
+	})
+}
 
 func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
 	var team models.RemoveUsersFromTeam
@@ -152,5 +165,6 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 	TeamRouter.Get("/:id", controller.GetTeam)
 	TeamRouter.Get("/", controller.GetTeams)
 	TeamRouter.Put("/", controller.PutTeam)
+	TeamRouter.Get("/users/:id", controller.GetAllUserNotOnTheTeam)
 	// TeamRouter.Delete("/remove/more", controller.PostRemoveUsersFromTeam)
 }

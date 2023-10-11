@@ -3,7 +3,6 @@ package main
 // ######TODO######
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -39,7 +38,7 @@ func Endpoints(db *gorm.DB, api fiber.Router) {
 func main() {
 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
 	db, err := databae.Init("mysql")
-	fmt.Printf("The type of myVar is: %T\n", db)
+	// fmt.Printf("The type of myVar is: %T\n", db)
 	models.Setup(db)
 	app := fiber.New()
 	// db, err := databae.Init("postgres")
