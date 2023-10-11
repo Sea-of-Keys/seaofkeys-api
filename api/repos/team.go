@@ -62,6 +62,17 @@ func (r *TeamRepo) DelTeams(id []models.Delete) (bool, error) {
 	}
 	return true, nil
 }
+func (r *TeamRepo) GetAllUserNotOnTheTeam(TeamID uint) ([]models.User, error) {
+	var users []models.User
+	var team models.Team
+	if err := r.db.Debug().First(&team, TeamID).Error; err != nil {
+		return nil, err
+	}
+	if err := r.db.Debug().Where("id NOT IN (SELECT user_id FROM teams_users WHERE team_id = ?)", TeamID).Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
 func (r *TeamRepo) AddToTeam(UT models.RemoveUsersFromTeam) (*models.Team, error) {
 	var team models.Team
 	var user []models.User
