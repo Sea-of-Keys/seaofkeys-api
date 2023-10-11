@@ -14,9 +14,13 @@ type EmbeddedLogin struct {
 	Code   string `json:"code"`
 }
 
-type RemoveUsersFromTeam struct {
+type TeamUsers struct {
 	TeamID uint   `json:"team_id"`
 	UserID []uint `json:"users"`
+}
+type UserTeams struct {
+	UserID uint   `json:"user_id"`
+	TeamID []uint `json:"teamss"`
 }
 
 type AddToTeam struct {

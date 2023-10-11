@@ -44,25 +44,32 @@ func Setup(db *gorm.DB) {
 	}
 	weekday := []Weekdays{
 		{
-			Day: 1,
+			Day:  1,
+			Name: "Monday",
 		},
 		{
-			Day: 2,
+			Day:  2,
+			Name: "Tuesday",
 		},
 		{
-			Day: 3,
+			Day:  3,
+			Name: "Wensday",
 		},
 		{
-			Day: 4,
+			Day:  4,
+			Name: "Thursday",
 		},
 		{
-			Day: 5,
+			Day:  5,
+			Name: "Friday",
 		},
 		{
-			Day: 6,
+			Day:  6,
+			Name: "Saturday",
 		},
 		{
-			Day: 7,
+			Day:  7,
+			Name: "Sunday",
 		},
 	}
 	var RoomOne uint
@@ -160,7 +167,7 @@ func Setup(db *gorm.DB) {
 		// 	// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		// },
 		{
-			RoomID: &RoomOne,
+			RoomID: 1,
 			UserID: 1,
 			// TeamID:    1,
 			StartDate: time.Now(),
@@ -170,7 +177,7 @@ func Setup(db *gorm.DB) {
 			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
-			RoomID: &RoomOne,
+			RoomID: 1,
 			UserID: 2,
 			// TeamID:    1,
 			StartDate: time.Now(),
@@ -180,7 +187,7 @@ func Setup(db *gorm.DB) {
 			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
-			RoomID:    &RoomOne,
+			// RoomID:    &RoomOne,
 			UserID:    1,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),

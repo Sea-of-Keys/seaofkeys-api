@@ -106,8 +106,9 @@ func (con *TeamController) GetAllUserNotOnTheTeam(c *fiber.Ctx) error {
 }
 
 func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
-	var team models.RemoveUsersFromTeam
+	var team models.TeamUsers
 	if err := c.BodyParser(&team); err != nil {
+		return c.JSON(team)
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
 	}
 	data, err := con.repo.AddToTeam(team)
@@ -134,7 +135,7 @@ func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
 // }
 
 func (con *TeamController) DeleteUsersRemoveFromTeam(c *fiber.Ctx) error {
-	var team models.RemoveUsersFromTeam
+	var team models.TeamUsers
 	if err := c.BodyParser(&team); err != nil {
 		return c.JSON(team)
 		// return fiber.NewError(fiber.StatusInternalServerError, "C22: "+err.Error())
@@ -145,6 +146,19 @@ func (con *TeamController) DeleteUsersRemoveFromTeam(c *fiber.Ctx) error {
 	}
 	return c.JSON(&fiber.Map{
 		"team": data,
+	})
+}
+func (con *TeamController) RemoveTeamsFromUser(c *fiber.Ctx) error {
+	var TSU models.UserTeams
+	if err := c.BodyParser(&TSU); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C23: "+err.Error())
+	}
+	data, err := con.repo.RemoveTeamsFromUser(TSU)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C23: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"User": data,
 	})
 }
 
@@ -166,5 +180,6 @@ func RegisterTeamController(db *gorm.DB, router fiber.Router) {
 	TeamRouter.Get("/", controller.GetTeams)
 	TeamRouter.Put("/", controller.PutTeam)
 	TeamRouter.Get("/users/:id", controller.GetAllUserNotOnTheTeam)
+	TeamRouter.Delete("/users/:id", controller.RemoveTeamsFromUser)
 	// TeamRouter.Delete("/remove/more", controller.PostRemoveUsersFromTeam)
 }

@@ -109,13 +109,6 @@ func (con *UserController) DelUsers(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
 	}
 	return c.JSON(data)
-	// data, err := con.repo.DelUser(uint(id))
-	// if err != nil {
-	// 	return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
-	// }
-	// return c.JSON(&fiber.Map{
-	// 	"sus": data,
-	// })
 }
 func (con *UserController) GetTeamsUserIsNotOn(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")

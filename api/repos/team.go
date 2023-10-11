@@ -73,7 +73,7 @@ func (r *TeamRepo) GetAllUserNotOnTheTeam(TeamID uint) ([]models.User, error) {
 	}
 	return users, nil
 }
-func (r *TeamRepo) AddToTeam(UT models.RemoveUsersFromTeam) (*models.Team, error) {
+func (r *TeamRepo) AddToTeam(UT models.TeamUsers) (*models.Team, error) {
 	var team models.Team
 	var user []models.User
 	if err := r.db.Debug().Preload("Users").First(&team, UT.TeamID).Error; err != nil {
@@ -137,7 +137,7 @@ func (r *TeamRepo) RemoveFromTeam(TeamID, userID uint) (*models.Team, error) {
 	}
 	return &team, nil
 }
-func (r *TeamRepo) RemoveUsersFromTeam(UT models.RemoveUsersFromTeam) (*models.Team, error) {
+func (r *TeamRepo) RemoveUsersFromTeam(UT models.TeamUsers) (*models.Team, error) {
 	var team models.Team
 	var user models.User
 
@@ -153,6 +153,22 @@ func (r *TeamRepo) RemoveUsersFromTeam(UT models.RemoveUsersFromTeam) (*models.T
 		}
 	}
 	return &team, nil
+}
+func (r *TeamRepo) RemoveTeamsFromUser(UT models.UserTeams) (*models.User, error) {
+	var team models.Team
+	var user models.User
+
+	user.ID = UT.UserID
+	for _, v := range UT.TeamID {
+		team.ID = v
+		if err := r.db.Debug().Model(&team).Association("Users").Delete(&user); err != nil {
+			return nil, err
+		}
+	}
+	if err := r.db.Debug().First(&user, UT.TeamID).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 func NewTeamRepo(db *gorm.DB) *TeamRepo {
 	return &TeamRepo{db}
