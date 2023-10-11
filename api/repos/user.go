@@ -82,6 +82,18 @@ func (r *UserRepo) DelUsers(id []models.Delete) (bool, error) {
 	}
 	return true, nil
 }
+func (r *UserRepo) GetAllTeamsUserIsNotOn(UserID uint) ([]models.Team, error) {
+	var teams []models.Team
+	var user models.User
+	if err := r.db.Debug().First(&user, UserID).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.db.Debug().Where("id NOT IN (SELECT team_id FROM teams_users WHERE user_id = ?)", UserID).Find(&teams).Error; err != nil {
+		return nil, err
+	}
+	return teams, nil
+}
 
 func NewUserRepo(db *gorm.DB) *UserRepo {
 	return &UserRepo{db}
