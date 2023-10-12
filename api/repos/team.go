@@ -124,6 +124,44 @@ func (r *TeamRepo) AddUsersToTeam(TeamID, userID uint) (*models.Team, error) {
 	}
 	return &team, nil
 }
+func (r *TeamRepo) AddTeamsToUser(UT models.UserTeams) (*models.User, error) {
+	var user models.User
+	for _, v := range UT.TeamID {
+		var team models.Team
+		var yes bool
+		teamID := v
+		if err := r.db.Preload("Teams").First(&user, UT.UserID).Error; err != nil {
+			// if err := r.db.Debug().Preload("Teams").First(&user, UT.UserID).Error; err != nil {
+			return nil, err
+		}
+		fmt.Printf("TeamID: %v\n", teamID)
+		if err := r.db.Preload("Users").First(&team, teamID).Error; err != nil {
+			// if err := r.db.Debug().Preload("Users").First(&team, teamID).Error; err != nil {
+			return nil, err
+		}
+		for _, v := range team.Users {
+			if v.ID == UT.UserID {
+				yes = true
+				break
+			}
+
+			if !yes {
+				// TempUser := user
+				fmt.Println(user)
+				team.Users = append(team.Users, &user)
+				if err := r.db.Save(&team).Error; err != nil {
+					// if err := r.db.Debug().Save(&team).Error; err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	if err := r.db.Preload("Teams").First(&user, UT.UserID).Error; err != nil {
+		// if err := r.db.Debug().Preload("Teams").First(&user, UT.UserID).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
 func (r *TeamRepo) RemoveFromTeam(TeamID, userID uint) (*models.Team, error) {
 	var team models.Team
 	var user models.User
