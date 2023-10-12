@@ -44,8 +44,11 @@ func (con *PermissionController) GetPermissions(c *fiber.Ctx) error {
 	})
 }
 func (con *PermissionController) PostPermission(c *fiber.Ctx) error {
-	permission, err := PostBody(c)
-	data, err := con.repo.PostPermission(*permission)
+	var permission models.Permission
+	if err := c.BodyParser(&permission); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
+	}
+	data, err := con.repo.PostPermission(permission)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
 	}
@@ -54,8 +57,11 @@ func (con *PermissionController) PostPermission(c *fiber.Ctx) error {
 	})
 }
 func (con *PermissionController) PutPermission(c *fiber.Ctx) error {
-	permission, err := PostBody(c)
-	data, err := con.repo.PostPermission(*permission)
+	var permission models.Permission
+	if err := c.BodyParser(&permission); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
+	}
+	data, err := con.repo.PutPermission(permission)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
 	}
