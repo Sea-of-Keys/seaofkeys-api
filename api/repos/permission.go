@@ -43,6 +43,20 @@ func (r *PermissionRepo) DelPermission(id uint) (bool, error) {
 	}
 	return true, nil
 }
+func (r *PermissionRepo) GetUsersPermissions(UserID uint) ([]models.Permission, error) {
+	var permissions []models.Permission
+	if err := r.db.Debug().Preload("Room").Preload("Weekdays").Where("user_id = ? AND deleted_at IS NULL", UserID).Find(&permissions).Error; err != nil {
+		return nil, err
+	}
+	return permissions, nil
+}
+func (r *PermissionRepo) GetTeamsPermissions(TeamID uint) ([]models.Permission, error) {
+	var permissions []models.Permission
+	if err := r.db.Debug().Preload("Room").Preload("Weekdays").Where("team_id = ? AND deleted_at IS NULL", TeamID).Find(&permissions).Error; err != nil {
+		return nil, err
+	}
+	return permissions, nil
+}
 func (r *PermissionRepo) CleanPermission() error {
 	return nil
 }

@@ -50,6 +50,7 @@ func Endpoints(db *gorm.DB, api fiber.Router) {
 	controllers.RegisterRoomController(db, api)
 	controllers.RegisterStatsController(db, api)
 	controllers.RegisterPermissionController(db, api)
+	controllers.RegisterWebController(db, api)
 
 }
 

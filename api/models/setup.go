@@ -20,6 +20,7 @@ func Setup(db *gorm.DB) {
 		&Team{},
 		&Weekdays{},
 		&Permission{},
+		&UserPC{},
 	)
 	db.AutoMigrate(
 		&Room{},
@@ -29,6 +30,7 @@ func Setup(db *gorm.DB) {
 		&Team{},
 		&Weekdays{},
 		&Permission{},
+		&UserPC{},
 	)
 
 	room := []Room{
@@ -188,7 +190,18 @@ func Setup(db *gorm.DB) {
 		},
 		{
 			// RoomID:    &RoomOne,
+			RoomID:    2,
 			UserID:    1,
+			StartDate: time.Now(),
+			EndDate:   time.Now(),
+			StartTime: time.Now(),
+			EndTime:   time.Now(),
+			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}},
+		},
+		{
+			RoomID: 3,
+			// UserID:    1,
+			TeamID:    1,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),
 			StartTime: time.Now(),
