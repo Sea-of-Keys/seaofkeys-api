@@ -1,0 +1,65 @@
+{% extends "partials/base.html" %} {% block content %}
+<div class="grid h-screen place-items-center">
+  <div class="bg-gray-800 p-32 rounded">
+    {% if password %}
+    <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
+    <h1 class="text-7xl text-gray-100 text-center">Password</h1>
+    {% else %}
+    <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
+    {% endif %}
+    <form action="">
+      <div class="flex flex-wrap -mx-4">
+        <div class="w-1/2 px-4">
+          <p class="text-gray-100">Keypad Code</p>
+          <input
+            class="border text-gray-100 border-black w-full"
+            type="password"
+            name="passwordOne"
+            value=""
+          />
+        </div>
+        <div class="w-1/2 px-4">
+          <p class="text-gray-100">Gentag Keypad Code</p>
+          <input
+            class="border text-gray-100 border-black w-full"
+            type="password"
+            name="passwordTwo"
+            value=""
+          />
+        </div>
+      </div>
+      {% if password %}
+      <div class="flex flex-wrap -mx-4">
+        <div class="w-1/2 px-4">
+          <p class="text-gray-100">Password</p>
+          <input
+            class="border text-gray-100 border-black w-full"
+            type="password"
+            name="CodeOne"
+            value=""
+          />
+        </div>
+        <div class="w-1/2 px-4">
+          <p class="text-gray-100">Gentag Passwordk</p>
+          <input
+            class="border text-gray-100 border-black w-full"
+            type="password"
+            name="CodeTwo"
+            value=""
+          />
+        </div>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+<!-- <button id="myButton">Click Me</button> -->
+<!-- <script> -->
+<!-- document.getElementById("myButton").addEventListener("click", function() { -->
+<!--     // When the button is clicked, send an HTTP request to your Go server -->
+<!--     fetch('/auth/hello') -->
+<!--         .then(response => response.text()) -->
+<!--         .then(data => console.log(data)); -->
+<!-- }); -->
+<!-- </script> -->
