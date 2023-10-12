@@ -49,6 +49,7 @@ func Endpoints(db *gorm.DB, api fiber.Router) {
 	controllers.RegisterHistoryController(db, api)
 	controllers.RegisterRoomController(db, api)
 	controllers.RegisterStatsController(db, api)
+	controllers.RegisterPermissionController(db, api)
 
 }
 

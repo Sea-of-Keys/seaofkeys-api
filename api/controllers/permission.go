@@ -87,8 +87,8 @@ func RegisterPermissionController(db *gorm.DB, router fiber.Router) {
 
 	PermissionRouter := router.Group("/permission")
 
-	PermissionRouter.Get("/:id", controller.GetPermissions)
-	PermissionRouter.Get("/", controller.GetPermission)
+	PermissionRouter.Get("/:id", controller.GetPermission)
+	PermissionRouter.Get("/", controller.GetPermissions)
 	PermissionRouter.Post("/", controller.PostPermission)
 	PermissionRouter.Put("/", controller.PutPermission)
 	PermissionRouter.Delete("/", controller.DelPermission)
