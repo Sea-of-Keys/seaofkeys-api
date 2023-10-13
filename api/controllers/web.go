@@ -26,9 +26,11 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 	// Check Token HERE
 	// if token is legiget set token in session
 	sess.Set("token", token)
+	sess.Save()
 
 	//this is just to test if i get a token
 	// Read and output the session variable
+	sess, _ = con.store.Get(c)
 	name := sess.Get("token")
 	fmt.Printf("Name from session: %v\n", name)
 
