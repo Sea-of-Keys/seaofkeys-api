@@ -13,20 +13,25 @@ import (
 )
 
 type WebController struct {
-	repo *repos.WebRepo
+	repo  *repos.WebRepo
+	store *session.Store
 }
 
 func (con *WebController) GetPage(c *fiber.Ctx) error {
 	// session, err := c.Locals("session").(*session.Session)
-	store := session.New(session.Config{
-		KeyLookup:  "cookie:sessionid",
-		Expiration: time.Hour * 24, // Session expiration time
-	})
-	sess, err := store.Get(c)
+	token := c.Params("+")
+	sess, err := con.store.Get(c)
 	if err != nil {
 		panic(err)
 	}
-	sess.Set("name", "john")
+	// Check Token HERE
+	// if token is legiget set token in session
+	sess.Set("token", token)
+
+	//this is just to test if i get a token
+	// Read and output the session variable
+	name := sess.Get("token")
+	fmt.Printf("Name from session: %v\n", name)
 
 	data := fiber.Map{
 		"password": true,
@@ -51,21 +56,20 @@ func (con *WebController) PostPasswordAndCode(c *fiber.Ctx) error {
 	return c.Redirect("https://api.seaofkeys.com")
 }
 
-func NewWebController(repo *repos.WebRepo) *WebController {
-	return &WebController{repo}
+func NewWebController(repo *repos.WebRepo, store *session.Store) *WebController {
+	return &WebController{repo, store}
 }
 
 func RegisterWebController(db *gorm.DB, router fiber.Router) {
+	store := session.New(session.Config{
+		KeyLookup:  "cookie:sessionid",
+		Expiration: time.Hour * 24, // Session expiration time
+	})
 	repo := repos.NewWebRepo(db)
-	controller := NewWebController(repo)
+	controller := NewWebController(repo, store)
 
-	// store := session.New()
 	WebRouter := router.Group("/web")
-	// WebRouter.Use(session.New(session.Config{
-	// 	KeyLookup:  "cookie:sessionid",
-	// 	Expiration: time.Hour * 24, // Session expiration time
-	// }))
 
-	WebRouter.Get("/", controller.GetPage)
+	WebRouter.Get("/+", controller.GetPage)
 	WebRouter.Post("/set", controller.PostPasswordAndCode)
 }
