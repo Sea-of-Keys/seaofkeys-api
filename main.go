@@ -7,7 +7,6 @@ import (
 	"html/template"
 	"log"
 	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -60,10 +59,11 @@ func main() {
 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
 	db, err := databae.Init("mysql")
 	models.Setup(db)
+	storage, err := databae.InitRedis()
+	if err != nil {
+		panic(err)
+	}
 
-	// engine := CreateEngine()
-	// app := fiber.New()
-	// db, err := databae.Init("postgres")
 	fmt.Println("im gona be runed")
 	app, err := initApp()
 	if err != nil {
@@ -72,17 +72,44 @@ func main() {
 	app.Use(logger.New())
 	app.Use(cors.New())
 	store := session.New(session.Config{
-		KeyLookup:  "cookie:sessionid",
-		Expiration: time.Hour * 24, // Session expiration time
+		Storage: storage,
 	})
-	// app.Use(store)
+
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	Endpoints(db, api, store)
 
 	log.Fatal(app.Listen(getPort()))
-	log.Fatal(app.Listen(os.Getenv("PORT")))
-	log.Fatal(app.Listen(":8001"))
-	log.Fatal(app.Listen(getPort()))
 
 }
+
+// func main() {
+// 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
+// 	db, err := databae.Init("mysql")
+// 	models.Setup(db)
+
+// 	// engine := CreateEngine()
+// 	// app := fiber.New()
+// 	// db, err := databae.Init("postgres")
+// 	fmt.Println("im gona be runed")
+// 	app, err := initApp()
+// 	if err != nil {
+// 		log.Panic(err)
+// 	}
+// 	app.Use(logger.New())
+// 	app.Use(cors.New())
+// 	store := session.New(session.Config{
+// 		KeyLookup:  "cookie:sessionid",
+// 		Expiration: time.Hour * 24, // Session expiration time
+// 	})
+// 	// app.Use(store)
+// 	app.Static("/static", "./web/static")
+// 	api := app.Group("/")
+// 	Endpoints(db, api, store)
+
+// 	log.Fatal(app.Listen(getPort()))
+// 	log.Fatal(app.Listen(os.Getenv("PORT")))
+// 	log.Fatal(app.Listen(":8001"))
+// 	log.Fatal(app.Listen(getPort()))
+
+// }
