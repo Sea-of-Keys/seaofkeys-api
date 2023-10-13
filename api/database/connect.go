@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
+	"strconv"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/gofiber/storage/redis/v3"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,13 +20,22 @@ import (
 type Db struct {
 }
 
-func Redis() (*redis.Client, error) {
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // Redis server address
-		Password: "",               // No password
-		DB:       0,                // Default DB
+func InitRedis() (*redis.Storage, error) {
+	port, err := strconv.Atoi(os.Getenv("REDISPORT"))
+	if err != nil {
+		port = 6379
+	}
+	storage := redis.New(redis.Config{
+		Host:      os.Getenv("REDISHOST"),
+		Port:      port,
+		Username:  os.Getenv("REDISUSER"),
+		Password:  os.Getenv("REDISPASSWORD"),
+		Database:  0,
+		Reset:     false,
+		TLSConfig: nil,
+		PoolSize:  10 * runtime.GOMAXPROCS(0),
 	})
-	return redisClient, nil
+	return storage, nil
 }
 
 func Init(database string) (*gorm.DB, error) {

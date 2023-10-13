@@ -11,6 +11,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/gofiber/fiber/v2 v2.49.2 // indirect
 	github.com/gofiber/session/v2 v2.0.2 // indirect
+	github.com/gofiber/storage/redis/v3 v3.0.0 // indirect
 	github.com/gofiber/template v1.8.2 // indirect
 	github.com/gofiber/template/django/v3 v3.1.6 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect

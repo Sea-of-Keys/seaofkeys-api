@@ -26,6 +26,8 @@ github.com/gofiber/fiber/v2 v2.49.2 h1:ONEN3/Vc+dUCxxDgZZwpqvhISgHqb+bu+isBiEyKE
 github.com/gofiber/fiber/v2 v2.49.2/go.mod h1:gNsKnyrmfEWFpJxQAV0qvW6l70K1dZGno12oLtukcts=
 github.com/gofiber/session/v2 v2.0.2 h1:VuLOb+QpMHaXZ6JXZnp3xCRv8TPRc1VLB9ddaA0MMGU=
 github.com/gofiber/session/v2 v2.0.2/go.mod h1:H+M+PENuiMTQJf9cTx+DJ7Jw8IqBAJ3QSbS6PbmvA78=
+github.com/gofiber/storage/redis/v3 v3.0.0 h1:4SAeOb5t55aeKo/8n/zMWThl5UncBy/bjGnH82kr2GE=
+github.com/gofiber/storage/redis/v3 v3.0.0/go.mod h1:5kQasG0y6ZPYpDcqMa6+0D1oNTO3yHc8tMNha8Lbd7g=
 github.com/gofiber/template v1.8.2 h1:PIv9s/7Uq6m+Fm2MDNd20pAFFKt5wWs7ZBd8iV9pWwk=
 github.com/gofiber/template v1.8.2/go.mod h1:bs/2n0pSNPOkRa5VJ8zTIvedcI/lEYxzV3+YPXdBvq8=
 github.com/gofiber/template/django/v3 v3.1.6 h1:nwzeMdFSjs7cgdBOIXvEwDitA9LEVJ3/EQqywgD+OJI=
