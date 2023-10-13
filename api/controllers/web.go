@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
@@ -16,6 +18,16 @@ type WebController struct {
 
 func (con *WebController) GetPage(c *fiber.Ctx) error {
 	// session, err := c.Locals("session").(*session.Session)
+	store := session.New(session.Config{
+		KeyLookup:  "cookie:sessionid",
+		Expiration: time.Hour * 24, // Session expiration time
+	})
+	sess, err := store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	sess.Set("name", "john")
+
 	data := fiber.Map{
 		"password": true,
 	}
@@ -50,7 +62,8 @@ func RegisterWebController(db *gorm.DB, router fiber.Router) {
 	// store := session.New()
 	WebRouter := router.Group("/web")
 	// WebRouter.Use(session.New(session.Config{
-	// 	KeyLookup: "header:Authorization",
+	// 	KeyLookup:  "cookie:sessionid",
+	// 	Expiration: time.Hour * 24, // Session expiration time
 	// }))
 
 	WebRouter.Get("/", controller.GetPage)
