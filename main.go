@@ -75,11 +75,14 @@ func main() {
 		KeyLookup:  "cookie:sessionid",
 		Expiration: time.Hour * 24, // Session expiration time
 	})
-
+	// app.Use(store)
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	Endpoints(db, api, store)
 
+	log.Fatal(app.Listen(getPort()))
+	log.Fatal(app.Listen(os.Getenv("PORT")))
+	log.Fatal(app.Listen(":8001"))
 	log.Fatal(app.Listen(getPort()))
 
 }

@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"gorm.io/gorm"
@@ -77,6 +79,24 @@ func (con *HistoryController) DelHistory(c *fiber.Ctx) error {
 		"history": data,
 	})
 }
+func (con *HistoryController) TestOne(c *fiber.Ctx) error {
+
+	sess, err := con.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	// Check Token HERE
+	// if token is legiget set token in session
+
+	//this is just to test if i get a token
+	// Read and output the session variable
+	name := sess.Get("token")
+	fmt.Printf("Name from session: %v\n", name)
+
+	return c.JSON(&fiber.Map{
+		"name": name,
+	})
+}
 
 func NewHistoryController(repo *repos.HistoryRepo, store *session.Store) *HistoryController {
 	return &HistoryController{repo, store}
@@ -89,6 +109,7 @@ func RegisterHistoryController(db *gorm.DB, router fiber.Router, store *session.
 	HistoryRouter := router.Group("/history")
 
 	HistoryRouter.Get("/", controller.GetHistorys)
+	HistoryRouter.Get("/test", controller.TestOne)
 	HistoryRouter.Get("/:id", controller.GetHistory)
 	HistoryRouter.Post("/", controller.PostHistory)
 	HistoryRouter.Put("/", controller.PutHistory)

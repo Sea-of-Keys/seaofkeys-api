@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
@@ -95,6 +96,7 @@ func RegisterWebController(db *gorm.DB, router fiber.Router, store *session.Stor
 
 	WebRouter := router.Group("/web")
 	WebRouter.Get("/set/+", controller.GetPage)
+	WebRouter.Use(middleware.TokenMiddleware(store))
 	WebRouter.Post("/set", controller.PostPasswordAndCode)
 	WebRouter.Get("/test/One", controller.TestOne)
 	WebRouter.Get("/test/Two", controller.TestTwo)

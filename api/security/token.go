@@ -1,12 +1,9 @@
-package middleware
+package security
 
 import (
-	"fmt"
 	"os"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -51,14 +48,7 @@ func NewToken(id uint, email string) (string, error) {
 	}
 	return tokenString, nil
 }
-func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		sess, err := store.Get(c)
-		if err != nil {
-			panic(err)
-		}
-		name := sess.Get("token")
-		fmt.Printf("Token: %v\n", name)
-		return c.Next()
-	}
+func CheckToken(token string) (bool, error) {
+	// userClaims :=
+	return false, nil
 }

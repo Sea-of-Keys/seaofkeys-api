@@ -47,6 +47,7 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
+	c.Set("Authorization", "Bearer "+tokenString)
 	return c.JSON(&fiber.Map{
 		"token": tokenString,
 		"user":  data,
