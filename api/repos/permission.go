@@ -1,6 +1,9 @@
 package repos
 
 import (
+	"time"
+
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
@@ -25,12 +28,22 @@ func (r *PermissionRepo) GetPermissions() ([]models.Permission, error) {
 	return permission, nil
 }
 func (r *PermissionRepo) PostPermission(per models.Permission) (*models.Permission, error) {
+	format := "2006-01-02"
+	GoTimeType, _ := time.Parse(format, per.StartDateST)
+	per.StartDate = datatypes.Date(GoTimeType)
+	GoTimeType, _ = time.Parse(format, per.EndDateST)
+	per.EndDate = datatypes.Date(GoTimeType)
+
 	if err := r.db.Debug().Preload("User").Preload("Team").Preload("Room").Preload("Weekdays").Create(&per).Error; err != nil {
 		return nil, err
 	}
 	return &per, nil
 }
 func (r *PermissionRepo) PutPermission(per models.Permission) (*models.Permission, error) {
+	// format := "2006-01-02"
+	// per.StartDate, _ = time.Parse(format, per.StartDateST)
+	// per.EndDate, _ = time.Parse(format, per.EndDateST)
+
 	if err := r.db.Debug().Model(&per).Preload("User").Preload("Team").Preload("Room").Preload("Weekdays").Updates(&per).Error; err != nil {
 		return nil, err
 	}
@@ -42,6 +55,16 @@ func (r *PermissionRepo) DelPermission(id uint) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+func (r *PermissionRepo) DelPermissions(ids []models.Delete) (bool, error) {
+	var permissions models.Permission
+	for _, v := range ids {
+		if err := r.db.Debug().Delete(&permissions, v.ID).Error; err != nil {
+			return false, err
+		}
+	}
+	return true, nil
+	// if err := r.db.Debug().de
 }
 func (r *PermissionRepo) GetUsersPermissions(UserID uint) ([]models.Permission, error) {
 	var permissions []models.Permission
