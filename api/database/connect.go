@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,6 +16,15 @@ import (
 // Fix Postgres db
 
 type Db struct {
+}
+
+func Redis() (*redis.Client, error) {
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379", // Redis server address
+		Password: "",               // No password
+		DB:       0,                // Default DB
+	})
+	return redisClient, nil
 }
 
 func Init(database string) (*gorm.DB, error) {
