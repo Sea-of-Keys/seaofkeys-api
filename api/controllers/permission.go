@@ -82,6 +82,19 @@ func (con *PermissionController) DelPermission(c *fiber.Ctx) error {
 		"permission": data,
 	})
 }
+func (con *PermissionController) DelPermissions(c *fiber.Ctx) error {
+	var ids []models.Delete
+	if err := c.BodyParser(&ids); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
+	}
+	data, err := con.repo.DelPermissions(ids)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"sus": data,
+	})
+}
 func (con *PermissionController) GetFindUsersPermissions(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -123,7 +136,8 @@ func RegisterPermissionController(db *gorm.DB, router fiber.Router) {
 	PermissionRouter.Get("/", controller.GetPermissions)
 	PermissionRouter.Post("/", controller.PostPermission)
 	PermissionRouter.Put("/", controller.PutPermission)
-	PermissionRouter.Delete("/", controller.DelPermission)
+	PermissionRouter.Delete("/del/:id", controller.DelPermission)
+	PermissionRouter.Delete("/del", controller.DelPermissions)
 	PermissionRouter.Get("/user/:id", controller.GetFindUsersPermissions)
 	PermissionRouter.Get("/team/:id", controller.GetFindTeamsPermissions)
 }

@@ -69,6 +69,12 @@ func main() {
 	}
 	app.Use(logger.New())
 	app.Use(cors.New())
+
+	// app.Use(session.New(session.Config{
+	// 	KeyLookup:  "cookie:sessionid",
+	// 	Expiration: time.Hour * 24, // Session expiration time
+	// }))
+
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	Endpoints(db, api)
