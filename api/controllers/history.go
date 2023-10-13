@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
@@ -9,7 +10,8 @@ import (
 )
 
 type HistoryController struct {
-	repo *repos.HistoryRepo
+	repo  *repos.HistoryRepo
+	store *session.Store
 }
 
 func (con *HistoryController) GetHistory(c *fiber.Ctx) error {
@@ -76,13 +78,13 @@ func (con *HistoryController) DelHistory(c *fiber.Ctx) error {
 	})
 }
 
-func NewHistoryController(repo *repos.HistoryRepo) *HistoryController {
-	return &HistoryController{repo}
+func NewHistoryController(repo *repos.HistoryRepo, store *session.Store) *HistoryController {
+	return &HistoryController{repo, store}
 }
 
-func RegisterHistoryController(db *gorm.DB, router fiber.Router) {
+func RegisterHistoryController(db *gorm.DB, router fiber.Router, store *session.Store) {
 	repo := repos.NewHistoryRepo(db)
-	controller := NewHistoryController(repo)
+	controller := NewHistoryController(repo, store)
 
 	HistoryRouter := router.Group("/history")
 

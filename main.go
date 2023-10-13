@@ -7,10 +7,12 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/template/django/v3"
 	"gorm.io/gorm"
 
@@ -41,16 +43,16 @@ func initApp() (*fiber.App, error) {
 	return app, nil
 }
 
-func Endpoints(db *gorm.DB, api fiber.Router) {
+func Endpoints(db *gorm.DB, api fiber.Router, store *session.Store) {
 	controllers.RegisterAuthController(db, api)
 	controllers.RegisterUserController(db, api)
 	controllers.RegisterEmbeddedController(db, api)
 	controllers.RegisterTeamController(db, api)
-	controllers.RegisterHistoryController(db, api)
+	controllers.RegisterHistoryController(db, api, store)
 	controllers.RegisterRoomController(db, api)
 	controllers.RegisterStatsController(db, api)
 	controllers.RegisterPermissionController(db, api)
-	controllers.RegisterWebController(db, api)
+	controllers.RegisterWebController(db, api, store)
 
 }
 
@@ -69,15 +71,14 @@ func main() {
 	}
 	app.Use(logger.New())
 	app.Use(cors.New())
-
-	// app.Use(session.New(session.Config{
-	// 	KeyLookup:  "cookie:sessionid",
-	// 	Expiration: time.Hour * 24, // Session expiration time
-	// }))
+	store := session.New(session.Config{
+		KeyLookup:  "cookie:sessionid",
+		Expiration: time.Hour * 24, // Session expiration time
+	})
 
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
-	Endpoints(db, api)
+	Endpoints(db, api, store)
 
 	log.Fatal(app.Listen(getPort()))
 
