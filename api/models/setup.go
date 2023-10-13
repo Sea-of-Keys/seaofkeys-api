@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
@@ -173,40 +174,40 @@ func Setup(db *gorm.DB) {
 			RoomID: 1,
 			UserID: 1,
 			// TeamID:    1,
-			StartDate: time.Now(),
-			EndDate:   time.Now(),
-			StartTime: time.Now(),
-			EndTime:   time.Now(),
+			StartDate: datatypes.Date(time.Now()),
+			EndDate:   datatypes.Date(time.Now()),
+			StartTime: datatypes.NewTime(8, 2, 3, 0),
+			EndTime:   datatypes.NewTime(16, 2, 3, 0),
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
 			RoomID: 1,
 			UserID: 2,
 			// TeamID:    1,
-			StartDate: time.Now(),
-			EndDate:   time.Now(),
-			StartTime: time.Now(),
-			EndTime:   time.Now(),
+			StartDate: datatypes.Date(time.Now()),
+			EndDate:   datatypes.Date(time.Now()),
+			StartTime: datatypes.NewTime(10, 2, 3, 0),
+			EndTime:   datatypes.NewTime(12, 2, 3, 0),
 			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
 			// RoomID:    &RoomOne,
 			RoomID:    2,
 			UserID:    1,
-			StartDate: time.Now(),
-			EndDate:   time.Now(),
-			StartTime: time.Now(),
-			EndTime:   time.Now(),
+			StartDate: datatypes.Date(time.Now()),
+			EndDate:   datatypes.Date(time.Now()),
+			StartTime: datatypes.NewTime(0, 0, 0, 0),
+			EndTime:   datatypes.NewTime(24, 0, 0, 0),
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}},
 		},
 		{
 			RoomID: 3,
 			// UserID:    1,
 			TeamID:    1,
-			StartDate: time.Now(),
-			EndDate:   time.Now(),
-			StartTime: time.Now(),
-			EndTime:   time.Now(),
+			StartDate: datatypes.Date(time.Now()),
+			EndDate:   datatypes.Date(time.Now()),
+			StartTime: datatypes.NewTime(6, 2, 3, 0),
+			EndTime:   datatypes.NewTime(8, 2, 3, 0),
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}},
 		},
 	}
