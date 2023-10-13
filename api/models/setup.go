@@ -57,7 +57,7 @@ func Setup(db *gorm.DB) {
 		},
 		{
 			Day:  3,
-			Name: "Wensday",
+			Name: "Wednesday",
 		},
 		{
 			Day:  4,

@@ -40,9 +40,16 @@ func (r *PermissionRepo) PostPermission(per models.Permission) (*models.Permissi
 	return &per, nil
 }
 func (r *PermissionRepo) PutPermission(per models.Permission) (*models.Permission, error) {
-	// format := "2006-01-02"
-	// per.StartDate, _ = time.Parse(format, per.StartDateST)
-	// per.EndDate, _ = time.Parse(format, per.EndDateST)
+	var ModelPermission models.Permission
+	format := "2006-01-02"
+	GoTimeType, _ := time.Parse(format, per.StartDateST)
+	per.StartDate = datatypes.Date(GoTimeType)
+	GoTimeType, _ = time.Parse(format, per.EndDateST)
+	per.EndDate = datatypes.Date(GoTimeType)
+	ModelPermission.ID = per.ID
+	if err := r.db.Debug().Model(&ModelPermission).Where("permission_id = ?", per.ID).Association("Weekdays").Clear(); err != nil {
+		return nil, err
+	}
 
 	if err := r.db.Debug().Model(&per).Preload("User").Preload("Team").Preload("Room").Preload("Weekdays").Updates(&per).Error; err != nil {
 		return nil, err

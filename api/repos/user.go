@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 )
 
@@ -28,9 +29,21 @@ func (r *UserRepo) GetUsers() ([]models.User, error) {
 	return users, nil
 }
 func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
+	var UserPC models.UserPC
 	if err := r.db.Debug().Create(&user).Error; err != nil {
 		return nil, errors.New("ERROR 12: " + err.Error())
 	}
+	UserPC.UserID = user.ID
+	// if err :=
+	token, err := middleware.NewToken(user.ID, *user.Email)
+	if err != nil {
+		return nil, err
+	}
+	UserPC.Token = token
+	if err := r.db.Debug().Create(&UserPC).Error; err != nil {
+		return nil, err
+	}
+	fmt.Println(UserPC)
 	return &user, nil
 }
 func (r *UserRepo) PostUsers(users []models.User) ([]models.User, error) {
