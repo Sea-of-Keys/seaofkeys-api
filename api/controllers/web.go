@@ -15,6 +15,7 @@ type WebController struct {
 }
 
 func (con *WebController) GetPage(c *fiber.Ctx) error {
+	// session, err := c.Locals("session").(*session.Session)
 	data := fiber.Map{
 		"password": true,
 	}
@@ -46,7 +47,11 @@ func RegisterWebController(db *gorm.DB, router fiber.Router) {
 	repo := repos.NewWebRepo(db)
 	controller := NewWebController(repo)
 
+	// store := session.New()
 	WebRouter := router.Group("/web")
+	// WebRouter.Use(session.New(session.Config{
+	// 	KeyLookup: "header:Authorization",
+	// }))
 
 	WebRouter.Get("/", controller.GetPage)
 	WebRouter.Post("/set", controller.PostPasswordAndCode)

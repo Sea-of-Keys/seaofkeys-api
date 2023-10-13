@@ -1,8 +1,7 @@
 package models
 
 import (
-	"time"
-
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -15,9 +14,9 @@ type Permission struct {
 	UserID    uint `json:"user_id"    gorm:"default:null"`
 	Team      *Team
 	User      *User
-	StartDate time.Time   `json:"start_date"`
-	EndDate   time.Time   `json:"end_date"`
-	StartTime time.Time   `json:"start_time"`
-	EndTime   time.Time   `json:"end_time"`
-	Weekdays  []*Weekdays `json:"weekdays"   gorm:"many2many:permissions_weekdays;"`
+	StartDate datatypes.Date `json:"start_date"`
+	EndDate   datatypes.Date `json:"end_date"`
+	StartTime datatypes.Time `json:"start_time"`
+	EndTime   datatypes.Time `json:"end_time"`
+	Weekdays  []*Weekdays    `json:"weekdays"   gorm:"many2many:permissions_weekdays;"`
 }
