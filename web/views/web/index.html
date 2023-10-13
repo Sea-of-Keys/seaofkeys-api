@@ -7,23 +7,24 @@
     {% else %}
     <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
     {% endif %}
-    <form action="">
+    <form action="/web/set" method="post">
+            <!-- <form action="/web/set" method="post"> -->
       <div class="flex flex-wrap -mx-4">
         <div class="w-1/2 px-4">
           <p class="text-gray-100">Keypad Code</p>
           <input
-            class="border text-gray-100 border-black w-full"
+            class="border text-red-800 border-black w-full"
             type="password"
-            name="passwordOne"
+            name="PasswordOne"
             value=""
           />
         </div>
         <div class="w-1/2 px-4">
           <p class="text-gray-100">Gentag Keypad Code</p>
           <input
-            class="border text-gray-100 border-black w-full"
+            class="border text-red-800 border-black w-full"
             type="password"
-            name="passwordTwo"
+            name="PasswordTwo"
             value=""
           />
         </div>
@@ -33,7 +34,7 @@
         <div class="w-1/2 px-4">
           <p class="text-gray-100">Password</p>
           <input
-            class="border text-gray-100 border-black w-full"
+            class="border text-red-800 border-black w-full"
             type="password"
             name="CodeOne"
             value=""
@@ -42,7 +43,7 @@
         <div class="w-1/2 px-4">
           <p class="text-gray-100">Gentag Passwordk</p>
           <input
-            class="border text-gray-100 border-black w-full"
+            class="border text-red-800 border-black w-full"
             type="password"
             name="CodeTwo"
             value=""
@@ -50,6 +51,7 @@
         </div>
       </div>
       {% endif %}
+            <button class="border border-white" type="submit">Submit</button>
     </form>
   </div>
 </div>

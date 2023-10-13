@@ -27,3 +27,10 @@ type AddToTeam struct {
 	UserID uint `json:"user_id"`
 	TeamID uint `json:"team_id"`
 }
+
+type SetPasswordAndCode struct {
+	PasswordOne string `json:"password_one"`
+	PasswordTwo string `json:"password_two"`
+	CodeOne     string `json:"code_one"`
+	CodeTwo     string `json:"code_two"`
+}
