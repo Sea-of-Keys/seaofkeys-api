@@ -18,6 +18,7 @@ import (
 	"github.com/Sea-of-Keys/seaofkeys-api/api/controllers"
 	databae "github.com/Sea-of-Keys/seaofkeys-api/api/database"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 func getPort() string {
@@ -51,20 +52,23 @@ func InitRoutes(reg models.RegisterController, stores []*session.Store) {
 	// 	Expiration: 1 * time.Minute,
 	// 	Storage:    storage,
 	// })
-	controllers.RegisterAuthController(reg, stores[1])
+	controllers.RegisterAuthController(reg, stores[0])
 	controllers.RegisterUserController(reg)
-	controllers.RegisterEmbeddedController(reg)
+	controllers.RegisterEmbeddedController(reg, stores[0])
 	controllers.RegisterTeamController(reg)
-	controllers.RegisterHistoryController(reg, stores[1])
+	controllers.RegisterHistoryController(reg, stores[0])
 	controllers.RegisterRoomController(reg)
 	controllers.RegisterStatsController(reg)
 	controllers.RegisterPermissionController(reg)
-	controllers.RegisterWebController(reg.Db, reg.Router, stores[1])
+	controllers.RegisterWebController(reg.Db, reg.Router, stores[0])
 
 }
 
 func main() {
 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
+	token, _ := security.NewEmbeddedToken()
+	fmt.Println(token)
+
 	db, err := databae.Init("mysql")
 	models.Setup(db)
 	storage, err := databae.InitRedis()
@@ -77,8 +81,9 @@ func main() {
 			Storage:    storage,
 		}),
 		session.New(session.Config{
-			Expiration: 24 * time.Hour,
-			Storage:    storage,
+			Expiration: 30 * time.Second,
+			// Expiration: 24 * time.Hour,
+			Storage: storage,
 		}),
 	}
 	fmt.Println("im gona be runed")
@@ -94,7 +99,7 @@ func main() {
 	reg := &models.RegisterController{
 		Db:     db,
 		Router: api,
-		Store:  stores[0],
+		Store:  stores[1],
 	}
 	InitRoutes(*reg, stores)
 	// InitRoutes(db, api, stores)
