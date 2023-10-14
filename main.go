@@ -13,7 +13,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/gofiber/storage/redis/v3"
 	"github.com/gofiber/template/django/v3"
 	"gorm.io/gorm"
 
@@ -44,24 +43,24 @@ func initApp() (*fiber.App, error) {
 	return app, nil
 }
 
-func InitRoutes(db *gorm.DB, api fiber.Router, storage *redis.Storage) {
-	store := session.New(session.Config{
-		Expiration: 1 * time.Minute,
-		Storage:    storage,
-	})
-	store24Hours := session.New(session.Config{
-		Expiration: 1 * time.Minute,
-		Storage:    storage,
-	})
-	controllers.RegisterAuthController(db, api, store)
+func InitRoutes(db *gorm.DB, api fiber.Router, stores []*session.Store) {
+	// store := session.New(session.Config{
+	// 	Expiration: 1 * time.Minute,
+	// 	Storage:    storage,
+	// })
+	// store24Hours := session.New(session.Config{
+	// 	Expiration: 1 * time.Minute,
+	// 	Storage:    storage,
+	// })
+	controllers.RegisterAuthController(db, api, stores[1])
 	controllers.RegisterUserController(db, api)
 	controllers.RegisterEmbeddedController(db, api)
 	controllers.RegisterTeamController(db, api)
-	controllers.RegisterHistoryController(db, api, store)
+	controllers.RegisterHistoryController(db, api, stores[1])
 	controllers.RegisterRoomController(db, api)
 	controllers.RegisterStatsController(db, api)
 	controllers.RegisterPermissionController(db, api)
-	controllers.RegisterWebController(db, api, store24Hours)
+	controllers.RegisterWebController(db, api, stores[0])
 
 }
 
@@ -72,6 +71,17 @@ func main() {
 	storage, err := databae.InitRedis()
 	if err != nil {
 		panic(err)
+	}
+	stores := []*session.Store{
+		session.New(session.Config{
+			Expiration: 1 * time.Minute,
+			Storage:    storage,
+		}),
+		session.New(session.Config{
+			Expiration: 24 * time.Hour,
+			Storage:    storage,
+		}),
+		// Add more session.Store instances as needed
 	}
 
 	fmt.Println("im gona be runed")
@@ -84,7 +94,7 @@ func main() {
 
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
-	InitRoutes(db, api, storage)
+	InitRoutes(db, api, stores)
 
 	log.Fatal(app.Listen(getPort()))
 
