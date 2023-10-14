@@ -94,12 +94,16 @@ func (con *AuthController) Logout(c *fiber.Ctx) error {
 	if err != nil {
 		panic(err)
 	}
-	sess.Set("ActiveToken", nil)
+	// sess.Set("ActiveToken", nil)
+	sess.Delete("ActiveToken")
 	sess.Save()
 
 	return c.JSON(&fiber.Map{
 		"logout": true,
 	})
+}
+func (con *AuthController) RefreshToken(c *fiber.Ctx) error {
+	return nil
 }
 
 // ############# Func to show your password one time ###############
@@ -112,7 +116,7 @@ func (con *AuthController) Code(c *fiber.Ctx) error {
 
 // ########### Change Password ##############
 func (con *AuthController) RestCode(c *fiber.Ctx) error {
-	return nil
+	return c.SendStatus(200)
 }
 
 // ############ Maby Make it so you get a email to set ure password #############
@@ -136,8 +140,9 @@ func RegisterAuthController(reg models.RegisterController, store ...*session.Sto
 	// AuthRouter.Static("/static", "./static")
 	AuthRouter.Post("/login", controller.Login)
 	AuthRouter.Get("/test", controller.Code)
-	AuthRouter.Get("/", controller.SetPassword)
+	// AuthRouter.Get("/", controller.SetPassword)
 	AuthRouter.Get("/hello", controller.Hello)
 	AuthRouter.Use(middleware.TokenMiddleware(reg.Store))
 	AuthRouter.Get("/logut", controller.Logout)
+	AuthRouter.Get("/", controller.RefreshToken)
 }

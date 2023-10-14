@@ -61,3 +61,15 @@ func CheckToken(tokenString, secretKey string) (bool, error) {
 	}
 	return false, fmt.Errorf("Invalid Token")
 }
+func RefreshToken(tokenString, secretKey string) (string, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return "", err
+	}
+	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return "token", nil
+	}
+	return "", fmt.Errorf("Invalid Token")
+}
