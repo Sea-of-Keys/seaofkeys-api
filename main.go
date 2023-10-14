@@ -81,9 +81,7 @@ func main() {
 			Expiration: 24 * time.Hour,
 			Storage:    storage,
 		}),
-		// Add more session.Store instances as needed
 	}
-
 	fmt.Println("im gona be runed")
 	app, err := initApp()
 	if err != nil {
