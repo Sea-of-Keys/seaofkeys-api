@@ -6,15 +6,18 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type AuthController struct {
-	repo *repos.AuthRepo
+	repo  *repos.AuthRepo
+	store *session.Store
 }
 type Claims struct {
 	Email string `json:"email"`
@@ -25,9 +28,39 @@ var jwtKey = []byte("my_secret_key")
 
 func (con *AuthController) Login(c *fiber.Ctx) error {
 	var user models.Login
+	if err := c.BodyParser(&user); err != nil {
+		return fiber.NewError(fiber.StatusNoContent, err.Error())
+	}
+	sess, err := con.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	data, err := con.repo.PostLogin(user)
+	if err != nil {
+		return fiber.NewError(fiber.StatusNoContent, err.Error())
+	}
+	tokenString, err := security.NewToken(data.ID, *data.Email)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "C003: "+err.Error())
+	}
+	sess.Set("ActiveToken", tokenString)
+	sess.Save()
+	c.Set("Authorization", "Bearer "+tokenString)
+
+	return c.JSON(&fiber.Map{
+		"token": tokenString,
+		"user":  data,
+	})
+}
+func (con *AuthController) LoginOrginal(c *fiber.Ctx) error {
+	var user models.Login
 	// var err error
 	if err := c.BodyParser(&user); err != nil {
 		return fiber.NewError(fiber.StatusNoContent, err.Error())
+	}
+	sess, err := con.store.Get(c)
+	if err != nil {
+		panic(err)
 	}
 	data, err := con.repo.PostLogin(user)
 	if err != nil {
@@ -47,7 +80,10 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
+	sess.Set("ActiveToken", tokenString)
+	sess.Save()
 	c.Set("Authorization", "Bearer "+tokenString)
+
 	return c.JSON(&fiber.Map{
 		"token": tokenString,
 		"user":  data,
@@ -77,12 +113,12 @@ func (con *AuthController) Hello(c *fiber.Ctx) error {
 	return nil
 }
 
-func NewAuthController(repo *repos.AuthRepo) *AuthController {
-	return &AuthController{repo}
+func NewAuthController(repo *repos.AuthRepo, store *session.Store) *AuthController {
+	return &AuthController{repo, store}
 }
-func RegisterAuthController(db *gorm.DB, router fiber.Router) {
+func RegisterAuthController(db *gorm.DB, router fiber.Router, store *session.Store) {
 	repo := repos.NewAuthRepo(db)
-	controller := NewAuthController(repo)
+	controller := NewAuthController(repo, store)
 
 	AuthRouter := router.Group("/auth")
 	// AuthRouter.Static("/static", "./static")

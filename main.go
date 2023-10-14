@@ -7,11 +7,13 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/gofiber/storage/redis/v3"
 	"github.com/gofiber/template/django/v3"
 	"gorm.io/gorm"
 
@@ -42,8 +44,16 @@ func initApp() (*fiber.App, error) {
 	return app, nil
 }
 
-func Endpoints(db *gorm.DB, api fiber.Router, store *session.Store) {
-	controllers.RegisterAuthController(db, api)
+func InitRoutes(db *gorm.DB, api fiber.Router, storage *redis.Storage) {
+	store := session.New(session.Config{
+		Expiration: 1 * time.Minute,
+		Storage:    storage,
+	})
+	store24Hours := session.New(session.Config{
+		Expiration: 1 * time.Minute,
+		Storage:    storage,
+	})
+	controllers.RegisterAuthController(db, api, store)
 	controllers.RegisterUserController(db, api)
 	controllers.RegisterEmbeddedController(db, api)
 	controllers.RegisterTeamController(db, api)
@@ -51,7 +61,7 @@ func Endpoints(db *gorm.DB, api fiber.Router, store *session.Store) {
 	controllers.RegisterRoomController(db, api)
 	controllers.RegisterStatsController(db, api)
 	controllers.RegisterPermissionController(db, api)
-	controllers.RegisterWebController(db, api, store)
+	controllers.RegisterWebController(db, api, store24Hours)
 
 }
 
@@ -71,13 +81,10 @@ func main() {
 	}
 	app.Use(logger.New())
 	app.Use(cors.New())
-	store := session.New(session.Config{
-		Storage: storage,
-	})
 
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
-	Endpoints(db, api, store)
+	InitRoutes(db, api, storage)
 
 	log.Fatal(app.Listen(getPort()))
 
