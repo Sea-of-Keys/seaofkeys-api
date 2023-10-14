@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
 
@@ -46,11 +46,11 @@ func NewEmbeddedController(repo *repos.EmbeddedRepo) *EmbeddedController {
 	return &EmbeddedController{repo}
 }
 
-func RegisterEmbeddedController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewEmbeddedRepo(db)
+func RegisterEmbeddedController(reg models.RegisterController) {
+	repo := repos.NewEmbeddedRepo(reg.Db)
 	controller := NewEmbeddedController(repo)
 
-	EmbeddedRouter := router.Group("/em")
+	EmbeddedRouter := reg.Router.Group("/em")
 
 	EmbeddedRouter.Post("/login", controller.EmbeededLogin)
 }

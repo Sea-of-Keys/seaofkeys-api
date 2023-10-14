@@ -6,8 +6,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type UserRepo struct {
@@ -35,7 +35,7 @@ func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
 	}
 	UserPC.UserID = user.ID
 	// if err :=
-	token, err := middleware.NewToken(user.ID, *user.Email)
+	token, err := security.NewToken(user.ID, *user.Email)
 	if err != nil {
 		return nil, err
 	}

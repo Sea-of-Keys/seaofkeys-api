@@ -14,7 +14,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/template/django/v3"
-	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/controllers"
 	databae "github.com/Sea-of-Keys/seaofkeys-api/api/database"
@@ -43,7 +42,7 @@ func initApp() (*fiber.App, error) {
 	return app, nil
 }
 
-func InitRoutes(db *gorm.DB, api fiber.Router, stores []*session.Store) {
+func InitRoutes(reg models.RegisterController, stores []*session.Store) {
 	// store := session.New(session.Config{
 	// 	Expiration: 1 * time.Minute,
 	// 	Storage:    storage,
@@ -52,15 +51,15 @@ func InitRoutes(db *gorm.DB, api fiber.Router, stores []*session.Store) {
 	// 	Expiration: 1 * time.Minute,
 	// 	Storage:    storage,
 	// })
-	controllers.RegisterAuthController(db, api, stores[1])
-	controllers.RegisterUserController(db, api)
-	controllers.RegisterEmbeddedController(db, api)
-	controllers.RegisterTeamController(db, api)
-	controllers.RegisterHistoryController(db, api, stores[1])
-	controllers.RegisterRoomController(db, api)
-	controllers.RegisterStatsController(db, api)
-	controllers.RegisterPermissionController(db, api)
-	controllers.RegisterWebController(db, api, stores[0])
+	controllers.RegisterAuthController(reg, stores[1])
+	controllers.RegisterUserController(reg)
+	controllers.RegisterEmbeddedController(reg)
+	controllers.RegisterTeamController(reg)
+	controllers.RegisterHistoryController(reg, stores[1])
+	controllers.RegisterRoomController(reg)
+	controllers.RegisterStatsController(reg)
+	controllers.RegisterPermissionController(reg)
+	controllers.RegisterWebController(reg.Db, reg.Router, stores[1])
 
 }
 
@@ -74,7 +73,7 @@ func main() {
 	}
 	stores := []*session.Store{
 		session.New(session.Config{
-			Expiration: 1 * time.Minute,
+			Expiration: 60 * time.Minute,
 			Storage:    storage,
 		}),
 		session.New(session.Config{
@@ -92,7 +91,13 @@ func main() {
 
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
-	InitRoutes(db, api, stores)
+	reg := &models.RegisterController{
+		Db:     db,
+		Router: api,
+		Store:  stores[0],
+	}
+	InitRoutes(*reg, stores)
+	// InitRoutes(db, api, stores)
 
 	log.Fatal(app.Listen(getPort()))
 

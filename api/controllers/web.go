@@ -18,22 +18,32 @@ type WebController struct {
 }
 
 func (con *WebController) GetPage(c *fiber.Ctx) error {
-	// session, err := c.Locals("session").(*session.Session)
+	// var data = models.UserPC
 	token := c.Params("+")
 	sess, err := con.store.Get(c)
 	if err != nil {
 		panic(err)
 	}
+	// fmt.Printf("sess: %v\n", sess)
 	// Check Token HERE
+
+	getToken := sess.Get("ActiveToken")
+	if getToken == nil {
+		// data, err := con.repo.CheckNewUser(token)
+		// if err != nil {
+		// return fiber.NewError(fiber.somfig, "C23: user have password")
+		// }
+	}
+
 	// if token is legiget set token in session
-	sess.Set("token", token)
+	sess.Set("ActiveToken", token)
 	sess.Save()
 
 	//this is just to test if i get a token
 	// Read and output the session variable
-	sess, _ = con.store.Get(c)
-	name := sess.Get("token")
-	fmt.Printf("Name from session: %v\n", name)
+	// sess, _ = con.store.Get(c)
+	// name := sess.Get("ActiveToken")
+	// fmt.Printf("Name from session: %v\n", name)
 
 	data := fiber.Map{
 		"password": true,
@@ -63,12 +73,13 @@ func (con *WebController) TestOne(c *fiber.Ctx) error {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("sess: %v\n", sess)
 	// Check Token HERE
 	// if token is legiget set token in session
 
 	//this is just to test if i get a token
 	// Read and output the session variable
-	name := sess.Get("token")
+	name := sess.Get("ActiveToken")
 	fmt.Printf("Name from session: %v\n", name)
 
 	return c.JSON(&fiber.Map{

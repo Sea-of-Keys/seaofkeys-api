@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
@@ -102,12 +102,13 @@ func NewHistoryController(repo *repos.HistoryRepo, store *session.Store) *Histor
 	return &HistoryController{repo, store}
 }
 
-func RegisterHistoryController(db *gorm.DB, router fiber.Router, store *session.Store) {
-	repo := repos.NewHistoryRepo(db)
-	controller := NewHistoryController(repo, store)
+func RegisterHistoryController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewHistoryRepo(reg.Db)
+	controller := NewHistoryController(repo, reg.Store)
 
-	HistoryRouter := router.Group("/history")
+	HistoryRouter := reg.Router.Group("/history")
 
+	HistoryRouter.Use(middleware.TokenMiddleware(reg.Store))
 	HistoryRouter.Get("/", controller.GetHistorys)
 	HistoryRouter.Get("/test", controller.TestOne)
 	HistoryRouter.Get("/:id", controller.GetHistory)

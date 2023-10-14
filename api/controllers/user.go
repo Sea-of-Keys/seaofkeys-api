@@ -4,14 +4,16 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
 
 type UserController struct {
-	repo *repos.UserRepo
+	repo  *repos.UserRepo
+	store *session.Store
 }
 
 func (con *UserController) GetUser(c *fiber.Ctx) error {
@@ -123,16 +125,17 @@ func (con *UserController) GetTeamsUserIsNotOn(c *fiber.Ctx) error {
 		"teams": data,
 	})
 }
-func NewUsercontroller(repo *repos.UserRepo) *UserController {
-	return &UserController{repo}
+func NewUsercontroller(repo *repos.UserRepo, store *session.Store) *UserController {
+	return &UserController{repo, store}
 }
 
-func RegisterUserController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewUserRepo(db)
-	controller := NewUsercontroller(repo)
+func RegisterUserController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewUserRepo(reg.Db)
+	controller := NewUsercontroller(repo, reg.Store)
 
-	UserRouter := router.Group("/user")
+	UserRouter := reg.Router.Group("/user")
 
+	UserRouter.Use(middleware.TokenMiddleware(reg.Store))
 	UserRouter.Get("/:id", controller.GetUser)
 	UserRouter.Get("/", controller.GetUsers)
 	UserRouter.Post("/", controller.PostUser)

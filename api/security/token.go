@@ -1,6 +1,7 @@
 package security
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -48,7 +49,15 @@ func NewToken(id uint, email string) (string, error) {
 	}
 	return tokenString, nil
 }
-func CheckToken(token string) (bool, error) {
-	// userClaims :=
-	return false, nil
+func CheckToken(tokenString, secretKey string) (bool, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return false, err
+	}
+	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return true, nil
+	}
+	return false, fmt.Errorf("Invalid Token")
 }

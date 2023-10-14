@@ -3,62 +3,36 @@ package middleware
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 // ##### make a type struck?? ######
 
-type Claims struct {
-	ID    uint
-	Email string
-	jwt.RegisteredClaims
-}
-
 // ##### Nedds to return a token (maby a string) ######
-func NewPasswordToken(id uint, email string) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &Claims{
-		ID:    id,
-		Email: email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(os.Getenv("PSCRERT")))
-	if err != nil {
-		return "", err
-	}
-	return tokenString, nil
-}
-func NewToken(id uint, email string) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &Claims{
-		ID:    id,
-		Email: email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(os.Getenv("PSCRERT")))
-	if err != nil {
-		return "", err
-	}
-	return tokenString, nil
-}
 func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		sess, err := store.Get(c)
 		if err != nil {
-			panic(err)
+			// return fiber.newError(fiber.StatusInternalServerError, err.Error())
+			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
-		name := sess.Get("token")
-		fmt.Printf("Token: %v\n", name)
+		tokenInter := sess.Get("ActiveToken")
+		fmt.Printf("Token1: %v\n", tokenInter)
+		tokenString, ok := tokenInter.(string)
+		fmt.Printf("Token2: %v\n", tokenString)
+		if !ok || tokenString == "" {
+			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
+		}
+		if ok, err := security.CheckToken(tokenString, os.Getenv("PSCRERT")); !ok || err != nil {
+			return c.Status(401).JSON(fiber.Map{
+				"message": "Unauthorized",
+			})
+		}
 		return c.Next()
+		// fmt.Printf("Token: %v\n", name)
 	}
 }

@@ -1,5 +1,11 @@
 package models
 
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
+	"gorm.io/gorm"
+)
+
 type Delete struct {
 	ID uint `json:"id"`
 }
@@ -33,4 +39,10 @@ type SetPasswordAndCode struct {
 	PasswordTwo string `json:"password_two"`
 	CodeOne     string `json:"code_one"`
 	CodeTwo     string `json:"code_two"`
+}
+
+type RegisterController struct {
+	Db     *gorm.DB
+	Router fiber.Router
+	Store  *session.Store
 }

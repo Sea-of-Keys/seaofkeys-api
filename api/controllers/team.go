@@ -2,14 +2,16 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
 
 type TeamController struct {
-	repo *repos.TeamRepo
+	repo  *repos.TeamRepo
+	store *session.Store
 }
 
 func (con *TeamController) GetTeam(c *fiber.Ctx) error {
@@ -175,15 +177,17 @@ func (con *TeamController) AddTeamsToUser(c *fiber.Ctx) error {
 	})
 }
 
-func NewTeamController(repo *repos.TeamRepo) *TeamController {
-	return &TeamController{repo}
+func NewTeamController(repo *repos.TeamRepo, store *session.Store) *TeamController {
+	return &TeamController{repo, store}
 }
 
-func RegisterTeamController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewTeamRepo(db)
-	controller := NewTeamController(repo)
-	TeamRouter := router.Group("/team")
+func RegisterTeamController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewTeamRepo(reg.Db)
+	controller := NewTeamController(repo, reg.Store)
 
+	TeamRouter := reg.Router.Group("/team")
+
+	TeamRouter.Use(middleware.TokenMiddleware(reg.Store))
 	TeamRouter.Post("/add", controller.PostAddToTeam)
 	TeamRouter.Delete("/remove", controller.DeleteUsersRemoveFromTeam)
 	TeamRouter.Delete("/del/:id", controller.DelTeam)

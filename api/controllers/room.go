@@ -2,14 +2,16 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
 
 type RoomController struct {
-	repo *repos.RoomRepo
+	repo  *repos.RoomRepo
+	store *session.Store
 }
 
 func (con *RoomController) GetRoom(c *fiber.Ctx) error {
@@ -104,16 +106,17 @@ func (con *RoomController) DelRooms(c *fiber.Ctx) error {
 	})
 }
 
-func NewRommController(repo *repos.RoomRepo) *RoomController {
-	return &RoomController{repo}
+func NewRommController(repo *repos.RoomRepo, store *session.Store) *RoomController {
+	return &RoomController{repo, store}
 }
 
-func RegisterRoomController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewRoomRepo(db)
-	controller := NewRommController(repo)
+func RegisterRoomController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewRoomRepo(reg.Db)
+	controller := NewRommController(repo, reg.Store)
 
-	RoomRuter := router.Group("/room")
+	RoomRuter := reg.Router.Group("/room")
 
+	RoomRuter.Use(middleware.TokenMiddleware(reg.Store))
 	RoomRuter.Get("/:id", controller.GetRoom)
 	RoomRuter.Get("/", controller.GetRooms)
 	RoomRuter.Post("/", controller.PostRoom)

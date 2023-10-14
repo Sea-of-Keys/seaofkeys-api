@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
@@ -89,6 +89,18 @@ func (con *AuthController) LoginOrginal(c *fiber.Ctx) error {
 		"user":  data,
 	})
 }
+func (con *AuthController) Logout(c *fiber.Ctx) error {
+	sess, err := con.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	sess.Set("ActiveToken", nil)
+	sess.Save()
+
+	return c.JSON(&fiber.Map{
+		"logout": true,
+	})
+}
 
 // ############# Func to show your password one time ###############
 func (con *AuthController) Code(c *fiber.Ctx) error {
@@ -116,14 +128,16 @@ func (con *AuthController) Hello(c *fiber.Ctx) error {
 func NewAuthController(repo *repos.AuthRepo, store *session.Store) *AuthController {
 	return &AuthController{repo, store}
 }
-func RegisterAuthController(db *gorm.DB, router fiber.Router, store *session.Store) {
-	repo := repos.NewAuthRepo(db)
-	controller := NewAuthController(repo, store)
+func RegisterAuthController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewAuthRepo(reg.Db)
+	controller := NewAuthController(repo, reg.Store)
 
-	AuthRouter := router.Group("/auth")
+	AuthRouter := reg.Router.Group("/auth")
 	// AuthRouter.Static("/static", "./static")
 	AuthRouter.Post("/login", controller.Login)
 	AuthRouter.Get("/test", controller.Code)
 	AuthRouter.Get("/", controller.SetPassword)
 	AuthRouter.Get("/hello", controller.Hello)
+	AuthRouter.Use(middleware.TokenMiddleware(reg.Store))
+	AuthRouter.Get("/logut", controller.Logout)
 }
