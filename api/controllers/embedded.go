@@ -4,13 +4,15 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 )
 
 type EmbeddedController struct {
-	repo *repos.EmbeddedRepo
+	repo  *repos.EmbeddedRepo
+	store *session.Store
 }
 
 // Just for testing
@@ -21,6 +23,9 @@ type Login struct {
 	UserID uint   `json:"user_id"`
 }
 
+func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
+	return nil
+}
 func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 	var login Login
 	if err := c.BodyParser(&login); err != nil {
@@ -42,15 +47,16 @@ func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 	})
 }
 
-func NewEmbeddedController(repo *repos.EmbeddedRepo) *EmbeddedController {
-	return &EmbeddedController{repo}
+func NewEmbeddedController(repo *repos.EmbeddedRepo, store *session.Store) *EmbeddedController {
+	return &EmbeddedController{repo, store}
 }
 
-func RegisterEmbeddedController(reg models.RegisterController) {
+func RegisterEmbeddedController(reg models.RegisterController, store ...*session.Store) {
 	repo := repos.NewEmbeddedRepo(reg.Db)
-	controller := NewEmbeddedController(repo)
+	controller := NewEmbeddedController(repo, store[0])
 
 	EmbeddedRouter := reg.Router.Group("/em")
 
 	EmbeddedRouter.Post("/login", controller.EmbeededLogin)
+	// EmbeddedRouter.Use(security.EmbeddedMiddleware(store[0]))
 }

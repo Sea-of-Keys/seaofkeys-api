@@ -40,11 +40,11 @@ func (repo *AuthRepo) PutPassword(id uint, code string) (*models.User, error) {
 	return nil, nil
 }
 func (repo *AuthRepo) CheckTokenData(id uint, email string) (string, error) {
-	var user models.Token
+	var user models.User
 	if err := repo.db.Debug().First(&user, id).Error; err != nil {
 		return "", err
 	}
-	if user.ID != id || user.Email != email {
+	if user.ID != id || *user.Email != email {
 		return "", errors.New("User id or email does not match")
 	}
 	// tokenData.ID = user.ID

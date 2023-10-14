@@ -92,9 +92,9 @@ func RefreshToken(tokenString, secretKey string) (uint, string, error) {
 	if !ok && !token.Valid {
 		return 0, "", fmt.Errorf("Invalid Token")
 	}
-	id := claims["ID"].(uint)
+	id := claims["ID"].(float64)
 	email := claims["Email"].(string)
-	ID := id
+	ID := uint(id)
 	Email := email
 	// newToken, err := NewToken(id, email)
 	if err != nil {
