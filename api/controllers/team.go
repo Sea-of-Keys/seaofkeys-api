@@ -4,9 +4,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type TeamController struct {
@@ -187,7 +187,7 @@ func RegisterTeamController(reg models.RegisterController, store ...*session.Sto
 
 	TeamRouter := reg.Router.Group("/team")
 
-	TeamRouter.Use(middleware.TokenMiddleware(reg.Store))
+	TeamRouter.Use(security.TokenMiddleware(reg.Store))
 	TeamRouter.Post("/add", controller.PostAddToTeam)
 	TeamRouter.Delete("/remove", controller.DeleteUsersRemoveFromTeam)
 	TeamRouter.Delete("/del/:id", controller.DelTeam)

@@ -1,11 +1,16 @@
 package security
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 )
 
 // ##### make a type struck?? ######
@@ -61,15 +66,87 @@ func CheckToken(tokenString, secretKey string) (bool, error) {
 	}
 	return false, fmt.Errorf("Invalid Token")
 }
-func RefreshToken(tokenString, secretKey string) (string, error) {
+func DecodeToken(tokenString, secretKey string, test models.Token) (map[string]interface{}, error) {
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
 	})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return "token", nil
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
 	}
-	return "", fmt.Errorf("Invalid Token")
+	return nil, fmt.Errorf("Invalid Token")
 }
+func RefreshToken(tokenString, secretKey string) (uint, string, error) {
+	var mToken models.Token
+	fmt.Print(mToken)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return 0, "", err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return 0, "", fmt.Errorf("Invalid Token")
+	}
+	id := claims["ID"].(uint)
+	email := claims["Email"].(string)
+	ID := id
+	Email := email
+	// newToken, err := NewToken(id, email)
+	if err != nil {
+		return 0, "", errors.New("Failed to make a new token")
+	}
+	return ID, Email, nil
+}
+
+func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		sess, err := store.Get(c)
+		if err != nil {
+			// return fiber.newError(fiber.StatusInternalServerError, err.Error())
+			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		}
+		tokenInter := sess.Get("ActiveToken")
+		fmt.Printf("Token1: %v\n", tokenInter)
+		tokenString, ok := tokenInter.(string)
+		fmt.Printf("Token2: %v\n", tokenString)
+		if !ok || tokenString == "" {
+			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
+		}
+		if ok, err := CheckToken(tokenString, os.Getenv("PSCRERT")); !ok || err != nil {
+			return c.Status(401).JSON(fiber.Map{
+				"message": "Unauthorized",
+			})
+		}
+		return c.Next()
+		// fmt.Printf("Token: %v\n", name)
+	}
+}
+
+// func RefreshTokenV2(tokenString, secretKey string) (*models.Token, error) {
+// 	var mToken models.Token
+// 	fmt.Print(mToken)
+// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+// 		return []byte(secretKey), nil
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	claims, ok := token.Claims.(jwt.MapClaims)
+// 	if !ok && !token.Valid {
+// 		return nil, fmt.Errorf("Invalid Token")
+// 	}
+// 	id := claims["ID"].(uint)
+// 	email := claims["Email"].(string)
+// 	mToken.ID = id
+// 	mToken.Email = email
+// 	// newToken, err := NewToken(id, email)
+// 	if err != nil {
+// 		return nil, errors.New("Failed to make a new token")
+// 	}
+// 	return &mToken, nil
+// }

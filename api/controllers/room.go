@@ -4,9 +4,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type RoomController struct {
@@ -116,7 +116,7 @@ func RegisterRoomController(reg models.RegisterController, store ...*session.Sto
 
 	RoomRuter := reg.Router.Group("/room")
 
-	RoomRuter.Use(middleware.TokenMiddleware(reg.Store))
+	RoomRuter.Use(security.TokenMiddleware(reg.Store))
 	RoomRuter.Get("/:id", controller.GetRoom)
 	RoomRuter.Get("/", controller.GetRooms)
 	RoomRuter.Post("/", controller.PostRoom)

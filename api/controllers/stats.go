@@ -4,9 +4,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type StatsController struct {
@@ -60,7 +60,7 @@ func RegisterStatsController(reg models.RegisterController, store ...*session.St
 
 	StatsRouter := reg.Router.Group("/stats")
 
-	StatsRouter.Use(middleware.TokenMiddleware(reg.Store))
+	StatsRouter.Use(security.TokenMiddleware(reg.Store))
 	StatsRouter.Get("/users", controller.GetUsersCount)
 	StatsRouter.Get("/teams", controller.GetTeamsCount)
 	StatsRouter.Get("/rooms", controller.GetRoomsCount)

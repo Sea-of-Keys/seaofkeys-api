@@ -6,9 +6,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type UserController struct {
@@ -135,7 +135,7 @@ func RegisterUserController(reg models.RegisterController, store ...*session.Sto
 
 	UserRouter := reg.Router.Group("/user")
 
-	UserRouter.Use(middleware.TokenMiddleware(reg.Store))
+	UserRouter.Use(security.TokenMiddleware(reg.Store))
 	UserRouter.Get("/:id", controller.GetUser)
 	UserRouter.Get("/", controller.GetUsers)
 	UserRouter.Post("/", controller.PostUser)

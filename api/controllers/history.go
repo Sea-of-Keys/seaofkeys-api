@@ -6,9 +6,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type HistoryController struct {
@@ -108,7 +108,7 @@ func RegisterHistoryController(reg models.RegisterController, store ...*session.
 
 	HistoryRouter := reg.Router.Group("/history")
 
-	HistoryRouter.Use(middleware.TokenMiddleware(reg.Store))
+	HistoryRouter.Use(security.TokenMiddleware(reg.Store))
 	HistoryRouter.Get("/", controller.GetHistorys)
 	HistoryRouter.Get("/test", controller.TestOne)
 	HistoryRouter.Get("/:id", controller.GetHistory)

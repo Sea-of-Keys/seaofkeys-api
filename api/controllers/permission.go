@@ -8,6 +8,7 @@ import (
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type PermissionController struct {
@@ -135,6 +136,7 @@ func RegisterPermissionController(reg models.RegisterController) {
 	controller := NewPermissionController(repo, reg.Store)
 
 	PermissionRouter := reg.Router.Group("/permission")
+	PermissionRouter.Use(security.TokenMiddleware(reg.Store))
 	PermissionRouter.Get("/:id", controller.GetPermission)
 	PermissionRouter.Get("/", controller.GetPermissions)
 	PermissionRouter.Post("/", controller.PostPermission)

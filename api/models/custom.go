@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 )
 
@@ -45,4 +46,14 @@ type RegisterController struct {
 	Db     *gorm.DB
 	Router fiber.Router
 	Store  *session.Store
+}
+
+type Token struct {
+	ID    uint
+	Email string
+	Token string
+}
+type Claims struct {
+	Email string `json:"email"`
+	jwt.RegisteredClaims
 }

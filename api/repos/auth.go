@@ -7,6 +7,7 @@ import (
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type AuthRepo struct {
@@ -37,6 +38,19 @@ func (repo *AuthRepo) PostLogout() (bool, error) {
 // Change Embedde Password ### CHANGE CODE TO int ?????
 func (repo *AuthRepo) PutPassword(id uint, code string) (*models.User, error) {
 	return nil, nil
+}
+func (repo *AuthRepo) CheckTokenData(id uint, email string) (string, error) {
+	var user models.Token
+	if err := repo.db.Debug().First(&user, id).Error; err != nil {
+		return "", err
+	}
+	if user.ID != id || user.Email != email {
+		return "", errors.New("User id or email does not match")
+	}
+	// tokenData.ID = user.ID
+	// tokenData.Token = user.Email
+	token, _ := security.NewToken(id, email)
+	return token, nil
 }
 
 func NewAuthRepo(db *gorm.DB) *AuthRepo {

@@ -3,13 +3,10 @@ package controllers
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
@@ -19,14 +16,11 @@ type AuthController struct {
 	repo  *repos.AuthRepo
 	store *session.Store
 }
-type Claims struct {
-	Email string `json:"email"`
-	jwt.RegisteredClaims
-}
 
 var jwtKey = []byte("my_secret_key")
 
 func (con *AuthController) Login(c *fiber.Ctx) error {
+	// var token models.Token
 	var user models.Login
 	if err := c.BodyParser(&user); err != nil {
 		return fiber.NewError(fiber.StatusNoContent, err.Error())
@@ -52,43 +46,44 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 		"user":  data,
 	})
 }
-func (con *AuthController) LoginOrginal(c *fiber.Ctx) error {
-	var user models.Login
-	// var err error
-	if err := c.BodyParser(&user); err != nil {
-		return fiber.NewError(fiber.StatusNoContent, err.Error())
-	}
-	sess, err := con.store.Get(c)
-	if err != nil {
-		panic(err)
-	}
-	data, err := con.repo.PostLogin(user)
-	if err != nil {
-		return fiber.NewError(fiber.StatusNoContent, err.Error())
-	}
-	expirationTime := time.Now().Add(5 * time.Minute)
-	claims := &Claims{
-		Email: *data.Email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			// In JWT, the expiry time is expressed as unix milliseconds
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(os.Getenv("SCRERT")))
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
-	sess.Set("ActiveToken", tokenString)
-	sess.Save()
-	c.Set("Authorization", "Bearer "+tokenString)
+// func (con *AuthController) LoginOrginal(c *fiber.Ctx) error {
+// 	var user models.Login
+// 	// var err error
+// 	if err := c.BodyParser(&user); err != nil {
+// 		return fiber.NewError(fiber.StatusNoContent, err.Error())
+// 	}
+// 	sess, err := con.store.Get(c)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	data, err := con.repo.PostLogin(user)
+// 	if err != nil {
+// 		return fiber.NewError(fiber.StatusNoContent, err.Error())
+// 	}
+// 	expirationTime := time.Now().Add(5 * time.Minute)
+// 	claims := &Claims{
+// 		Email: *data.Email,
+// 		RegisteredClaims: jwt.RegisteredClaims{
+// 			// In JWT, the expiry time is expressed as unix milliseconds
+// 			ExpiresAt: jwt.NewNumericDate(expirationTime),
+// 		},
+// 	}
 
-	return c.JSON(&fiber.Map{
-		"token": tokenString,
-		"user":  data,
-	})
-}
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+// 	tokenString, err := token.SignedString([]byte(os.Getenv("SCRERT")))
+// 	if err != nil {
+// 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+// 	}
+// 	sess.Set("ActiveToken", tokenString)
+// 	sess.Save()
+// 	c.Set("Authorization", "Bearer "+tokenString)
+
+//		return c.JSON(&fiber.Map{
+//			"token": tokenString,
+//			"user":  data,
+//		})
+//	}
 func (con *AuthController) Logout(c *fiber.Ctx) error {
 	sess, err := con.store.Get(c)
 	if err != nil {
@@ -103,7 +98,30 @@ func (con *AuthController) Logout(c *fiber.Ctx) error {
 	})
 }
 func (con *AuthController) RefreshToken(c *fiber.Ctx) error {
-	return nil
+	// var token models.Token
+	// var err
+	sess, err := con.store.Get(c)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	sToken := sess.Get("ActiveToken")
+	tokenStr := sToken.(string)
+	// secretKey := os.Getenv("PSCRERT")
+	id, email, err := security.RefreshToken(tokenStr, os.Getenv("PSCRERT"))
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	newToken, err := con.repo.CheckTokenData(id, email)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	// NewToken, err := securhty.NewToken(newTokenData.ID, newTokenData.Email)
+	// if err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	// }
+	sess.Set("ActiveToken", newToken)
+	sess.Save()
+	return c.SendStatus(200)
 }
 
 // ############# Func to show your password one time ###############
@@ -142,7 +160,7 @@ func RegisterAuthController(reg models.RegisterController, store ...*session.Sto
 	AuthRouter.Get("/test", controller.Code)
 	// AuthRouter.Get("/", controller.SetPassword)
 	AuthRouter.Get("/hello", controller.Hello)
-	AuthRouter.Use(middleware.TokenMiddleware(reg.Store))
+	AuthRouter.Use(security.TokenMiddleware(reg.Store))
 	AuthRouter.Get("/logut", controller.Logout)
 	AuthRouter.Get("/", controller.RefreshToken)
 }
