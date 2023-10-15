@@ -2,12 +2,15 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
+	"github.com/Sea-of-Keys/seaofkeys-api/pkg"
 )
 
 type EmbeddedController struct {
@@ -24,6 +27,20 @@ type Login struct {
 }
 
 func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
+	// ####### TODO #######
+	// make a randowm token
+	// make a session with that token
+	// send the token back to the client
+	// client/embedded use that token to encrypt the code
+	_, err := con.store.Get(c)
+	if err != nil {
+		return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
+	}
+	g, err := security.NewEmbeddedToken()
+	fmt.Println(g)
+	if err != nil {
+		return &pkg.CustomError{Code: "S001", Message: "Failed to token"}
+	}
 	return nil
 }
 func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
