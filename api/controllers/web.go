@@ -21,7 +21,7 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 	// var data = models.UserPC
 	// var userPC models.UserPC
 	// var err error
-	token := c.Params("+")
+	token := c.Params("token")
 	sess, err := con.store.Get(c)
 	if err != nil {
 		panic(err)
@@ -50,7 +50,7 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 			"sessin token does not match provide token",
 		)
 	}
-
+	fmt.Println(sess.Get("SetToken"))
 	data := fiber.Map{
 		"User": userPC,
 	}
@@ -60,8 +60,24 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 func (con *WebController) PostPasswordAndCode(c *fiber.Ctx) error {
 	var FormData models.SetPasswordAndCode
 
+	sess, err := con.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	if sess.Get("SetToken") == nil {
+		fmt.Println("1")
+		return fiber.NewError(fiber.StatusNetworkAuthenticationRequired, "C105: no session started")
+	}
 	if err := c.BodyParser(&FormData); err != nil {
+		fmt.Println("2")
 		return fiber.NewError(fiber.StatusInternalServerError, "C10: "+err.Error())
+	}
+	if FormData.PasswordOne != FormData.PasswordTwo || FormData.CodeOne != FormData.CodeTwo {
+		fmt.Println("3")
+
+		getToken := sess.Get("SetToken")
+		CToken := getToken.(string)
+		return c.Redirect(fmt.Sprintf("/web/token/%v", CToken))
 	}
 
 	fmt.Printf(
@@ -113,9 +129,9 @@ func RegisterWebController(db *gorm.DB, router fiber.Router, store *session.Stor
 	controller := NewWebController(repo, store)
 
 	WebRouter := router.Group("/web")
-	WebRouter.Get("/set/+", controller.GetPage)
-	WebRouter.Use(security.TokenMiddleware(store))
+	WebRouter.Get("/token/:token?", controller.GetPage)
 	WebRouter.Post("/set", controller.PostPasswordAndCode)
+	WebRouter.Use(security.TokenMiddleware(store))
 	WebRouter.Get("/test/One", controller.TestOne)
 	WebRouter.Get("/test/Two", controller.TestTwo)
 }
