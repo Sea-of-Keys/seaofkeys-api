@@ -13,7 +13,6 @@ type CustomError struct {
 }
 
 func (c *CustomError) Error() string {
-	// log here
 	file, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return c.Error()
