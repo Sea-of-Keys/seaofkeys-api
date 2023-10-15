@@ -3,6 +3,7 @@ package repos
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"gorm.io/gorm"
 
@@ -40,7 +41,7 @@ func (r *EmbeddedRepo) PostSetup() error {
 func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 	var per models.Permission
 	var user models.User
-	if err := r.db.Debug().Preload("User").Preload("Team.Users").Find(&per, ID, RoomID).Error; err != nil {
+	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&per, ID).Error; err != nil {
 		return false, err
 	}
 	if per.Team != nil {
@@ -68,7 +69,7 @@ func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 	}
 	return false, nil
 }
-func (r *EmbeddedRepo) PostCodeV2(code string, RoomID, UserID uint) (bool, error) {
+func (r *EmbeddedRepo) PostCodeV2(code, UserID string, RoomID uint) (bool, error) {
 	var pem []models.Permission
 	// var user []models.User
 	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&pem).Error; err != nil {
@@ -93,16 +94,25 @@ func (r *EmbeddedRepo) PostCodeV2(code string, RoomID, UserID uint) (bool, error
 	return false, nil
 
 }
-func (r *EmbeddedRepo) PostCodeV3(code string, RoomID, UserID uint) (bool, error) {
-	var user models.User
-	var pem []models.Permission
-	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&pem).Error; err != nil {
-		return false, err
-	}
-	if err := r.db.Debug().First(&user, UserID).Error; err != nil {
-		return false, err
-	}
-	return false, nil
+func (r *EmbeddedRepo) PostCodeV3(code, UserID string, RoomID uint) (models.Permission, error) {
+	// var user models.User
+	// var Userpem models.Permission
+	var pem models.Permission
+	userIdInt, _ := strconv.Atoi(UserID)
+
+	// SQL SELECT * FROM permissions AS p WHERE p.user_id = 1 AND p.room_id = 3 OR p.room_id = 3 AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = 1);
+
+	// if err := r.db.Debug().
+	// 	Joins("LEFT JOIN permissions AS p ON ? = p.user_id AND ? = p.room_id", userIdInt, RoomID).
+	// 	Joins("LEFT JOIN permissions AS q ON q.room_id = ? AND q.team_id IN (SELECT user_id FROM teams_users WHERE team_id = ?) ", RoomID, userIdInt).
+	// 	Preload("Team.Users").
+	// 	Preload("User").
+	// 	// Where("p.start_time < ? AND p.start_time > ?", time.Now(), time.Now()).
+	// 	Find(&pem).Error; err != nil {
+	// 	return models.Permission{}, nil
+	// }
+	// fmt.Println()
+	return pem, nil
 
 }
 
