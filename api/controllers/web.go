@@ -19,35 +19,42 @@ type WebController struct {
 
 func (con *WebController) GetPage(c *fiber.Ctx) error {
 	// var data = models.UserPC
+	// var userPC models.UserPC
+	// var err error
 	token := c.Params("+")
 	sess, err := con.store.Get(c)
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Printf("sess: %v\n", sess)
-	// Check Token HERE
-
-	getToken := sess.Get("ActiveToken")
-	if getToken == nil {
-		// data, err := con.repo.CheckNewUser(token)
-		// if err != nil {
-		// return fiber.NewError(fiber.somfig, "C23: user have password")
-		// }
+	userPC, err := con.repo.GetCheckToken(token)
+	if err != nil {
+		return fiber.NewError(
+			fiber.StatusInternalServerError,
+			"user is not set to get a password or code",
+		)
 	}
-
-	// if token is legiget set token in session
-	sess.Set("ActiveToken", token)
-	sess.Save()
-
-	//this is just to test if i get a token
-	// Read and output the session variable
-	// sess, _ = con.store.Get(c)
-	// name := sess.Get("ActiveToken")
-	// fmt.Printf("Name from session: %v\n", name)
+	getToken := sess.Get("SetToken")
+	if getToken == nil {
+		sess.Set("SetToken", userPC.Token)
+		sess.Save()
+		sess, err = con.store.Get(c)
+		if err != nil {
+			panic(err)
+		}
+		getToken = sess.Get("SetToken")
+	}
+	CToken := getToken.(string)
+	if CToken != userPC.Token {
+		return fiber.NewError(
+			fiber.StatusInternalServerError,
+			"sessin token does not match provide token",
+		)
+	}
 
 	data := fiber.Map{
-		"password": true,
+		"User": userPC,
 	}
+	fmt.Printf("data: %v\n", data)
 	return c.Render("web/index", data)
 }
 func (con *WebController) PostPasswordAndCode(c *fiber.Ctx) error {

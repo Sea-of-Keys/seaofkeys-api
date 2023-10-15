@@ -27,10 +27,11 @@ type Userv2 struct {
 
 // #### Maby cange standan id ####
 type UserPC struct {
-	ID       uint   `json:"id"      gorm:"primaryKey"`
-	Password bool   `json:"-"       gorm:"default:false"`
-	Code     bool   `json:"-"       gorm:"default:true"`
-	UserID   uint   `json:"user_id"`
-	Token    string `json:"-"`
-	User     User
+	ID        uint   `json:"id"      gorm:"primaryKey"`
+	Password  bool   `json:"-"       gorm:"default:false"`
+	Code      bool   `json:"-"       gorm:"default:true"`
+	UserID    uint   `json:"user_id"`
+	Token     string `json:"-"`
+	EmailSend bool
+	User      User
 }

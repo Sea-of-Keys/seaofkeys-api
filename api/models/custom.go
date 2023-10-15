@@ -41,7 +41,8 @@ type SetPasswordAndCode struct {
 	CodeOne     string `json:"code_one"`
 	CodeTwo     string `json:"code_two"`
 }
-
+type Te interface {
+}
 type RegisterController struct {
 	Db     *gorm.DB
 	Router fiber.Router

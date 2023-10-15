@@ -3,7 +3,6 @@ package main
 // ######TODO######
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -18,7 +17,6 @@ import (
 	"github.com/Sea-of-Keys/seaofkeys-api/api/controllers"
 	databae "github.com/Sea-of-Keys/seaofkeys-api/api/database"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
-	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 func getPort() string {
@@ -66,8 +64,9 @@ func InitRoutes(reg models.RegisterController, stores []*session.Store) {
 
 func main() {
 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
-	token, _ := security.NewEmbeddedToken()
-	fmt.Println(token)
+	// pkg.SendEmail("mkronborg7@gmail.com", "Kronborg", "KronborgErGud!@#")
+	// token, _ := security.NewEmbeddedToken()
+	// fmt.Println(token)
 
 	db, err := databae.Init("mysql")
 	models.Setup(db)
@@ -77,16 +76,16 @@ func main() {
 	}
 	stores := []*session.Store{
 		session.New(session.Config{
-			Expiration: 60 * time.Minute,
+			Expiration: 32 * time.Hour,
 			Storage:    storage,
 		}),
 		session.New(session.Config{
-			Expiration: 30 * time.Second,
+			Expiration: 60 * time.Minute,
 			// Expiration: 24 * time.Hour,
 			Storage: storage,
 		}),
 	}
-	fmt.Println("im gona be runed")
+	// fmt.Println("im gona be runed")
 	app, err := initApp()
 	if err != nil {
 		log.Panic(err)

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
+	"github.com/Sea-of-Keys/seaofkeys-api/pkg"
 )
 
 type UserRepo struct {
@@ -41,6 +42,17 @@ func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
 	}
 	UserPC.Token = token
 	if err := r.db.Debug().Create(&UserPC).Error; err != nil {
+		return nil, err
+	}
+	if err := pkg.SendEmail(*user.Email, user.Name, token); err != nil {
+		UserPC.EmailSend = false
+		if err := r.db.Model(&UserPC).Updates(&UserPC).Error; err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+	UserPC.EmailSend = true
+	if err := r.db.Model(&UserPC).Updates(&UserPC).Error; err != nil {
 		return nil, err
 	}
 	fmt.Println(UserPC)
