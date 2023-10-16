@@ -80,7 +80,7 @@ func main() {
 			Storage:    storage,
 		}),
 		session.New(session.Config{
-			Expiration: 60 * time.Minute,
+			Expiration: 15 * time.Minute,
 			// Expiration: 24 * time.Hour,
 			Storage: storage,
 		}),

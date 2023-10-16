@@ -39,7 +39,9 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	}
 	sess.Set("ActiveToken", tokenString)
 	sess.Save()
-	c.Set("Authorization", "Bearer "+tokenString)
+	// fmt.Println(tokenString)
+	// fmt.Printf("sess: %v\n token: %v\n", sess, tokenString)
+	// c.Set("Authorization", "Bearer "+tokenString)
 
 	return c.JSON(&fiber.Map{
 		"token": tokenString,
