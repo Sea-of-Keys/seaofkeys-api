@@ -44,10 +44,10 @@ func Init(database string) (*gorm.DB, error) {
 		dsn := fmt.Sprintf(
 			"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
 			os.Getenv("USER"),
-			os.Getenv("PASSWORD"),
-			os.Getenv("HOST"),
-			os.Getenv("DBPORT"),
-			os.Getenv("DATABASE"),
+			os.Getenv("MYSQLPASSWORD"),
+			os.Getenv("MYSQLHOST"),
+			os.Getenv("MYSQLPORT"),
+			os.Getenv("MYSQLDATABASE"),
 		)
 		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 

@@ -210,7 +210,7 @@ func Setup(db *gorm.DB) {
 			// StartDate: time.Now(),
 			// EndDate:   time.Now(),
 			StartTime: datatypes.NewTime(0, 0, 0, 0),
-			EndTime:   datatypes.NewTime(24, 0, 0, 0),
+			EndTime:   datatypes.NewTime(23, 59, 0, 0),
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}},
 		},
 		{
