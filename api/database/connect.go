@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/storage/redis/v3"
 	"gorm.io/driver/mysql"
@@ -20,11 +20,33 @@ import (
 type Db struct {
 }
 
+//	func InitMysql() (*mssql.Storage, error) {
+//		store := mssql.New(mssql.Config{
+//			ConnectionURI: fmt.Sprintf(
+//				"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
+//				os.Getenv("MYSQLUSER"),
+//				os.Getenv("MYSQLPASSWORD"),
+//				os.Getenv("MYSQLHOST"),
+//				os.Getenv("MYSQLPORT"),
+//				os.Getenv("MYSQLDATABASE"),
+//			),
+//			// Port:       1433,
+//			// Database:   "fiber",
+//			// Table:      "fiber_storage",
+//			// Reset:      false,
+//
+// //			// GCInterval: 10 * time.Second,
+//
+//			// SslMode:    "disable",
+//		})
+//		return store, nil
+//	}
 func InitRedis() (*redis.Storage, error) {
 	port, err := strconv.Atoi(os.Getenv("REDISPORT"))
 	if err != nil {
 		port = 6379
 	}
+	time.Sleep(3 * time.Second)
 	storage := redis.New(redis.Config{
 		Host:      os.Getenv("REDISHOST"),
 		Port:      port,
@@ -33,7 +55,7 @@ func InitRedis() (*redis.Storage, error) {
 		Database:  0,
 		Reset:     false,
 		TLSConfig: nil,
-		PoolSize:  10 * runtime.GOMAXPROCS(0),
+		PoolSize:  80,
 	})
 	return storage, nil
 }

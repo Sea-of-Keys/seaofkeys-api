@@ -29,6 +29,9 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("LoginSess: %v\n", sess)
+	fmt.Printf("LoginSess: %v\n", sess)
+	fmt.Printf("LoginSess: %v\n", sess)
 	data, err := con.repo.PostLogin(user)
 	if err != nil {
 		return fiber.NewError(fiber.StatusNoContent, err.Error())
@@ -41,6 +44,7 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	sess.Save()
 	// fmt.Println(tokenString)
 	// fmt.Printf("sess: %v\n token: %v\n", sess, tokenString)
+	c.Set("Authorization", "Bearer "+tokenString)
 	// c.Set("Authorization", "Bearer "+tokenString)
 
 	return c.JSON(&fiber.Map{

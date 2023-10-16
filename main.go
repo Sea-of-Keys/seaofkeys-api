@@ -67,6 +67,7 @@ func main() {
 	// pkg.SendEmail("mkronborg7@gmail.com", "Kronborg", "KronborgErGud!@#")
 	// token, _ := security.NewEmbeddedToken()
 	// fmt.Println(token)
+	// storageMysql, err := databae.InitMysql()
 
 	db, err := databae.Init("mysql")
 	models.Setup(db)
@@ -74,13 +75,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	// storage.Get()
 	stores := []*session.Store{
 		session.New(session.Config{
 			Expiration: 32 * time.Hour,
 			Storage:    storage,
 		}),
 		session.New(session.Config{
-			Expiration: 15 * time.Minute,
+			KeyLookup:  "cookie:kronborg_id",
+			Expiration: 15 * time.Hour,
 			// Expiration: 24 * time.Hour,
 			Storage: storage,
 		}),
