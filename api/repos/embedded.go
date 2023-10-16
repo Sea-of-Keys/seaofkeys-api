@@ -94,24 +94,25 @@ func (r *EmbeddedRepo) PostCodeV2(code, UserID string, RoomID uint) (bool, error
 	return false, nil
 
 }
-func (r *EmbeddedRepo) PostCodeV3(code, UserID string, RoomID uint) (models.Permission, error) {
+func (r *EmbeddedRepo) PostCodeV3(code, userID string, roomID uint) (models.Permission, error) {
 	// var user models.User
 	// var Userpem models.Permission
 	var pem models.Permission
-	userIdInt, _ := strconv.Atoi(UserID)
+	userIdInt, _ := strconv.Atoi(userID)
 
 	// SQL SELECT * FROM permissions AS p WHERE p.user_id = 1 AND p.room_id = 3 OR p.room_id = 3 AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = 1);
-
-	// if err := r.db.Debug().
-	// 	Joins("LEFT JOIN permissions AS p ON ? = p.user_id AND ? = p.room_id", userIdInt, RoomID).
-	// 	Joins("LEFT JOIN permissions AS q ON q.room_id = ? AND q.team_id IN (SELECT user_id FROM teams_users WHERE team_id = ?) ", RoomID, userIdInt).
-	// 	Preload("Team.Users").
-	// 	Preload("User").
-	// 	// Where("p.start_time < ? AND p.start_time > ?", time.Now(), time.Now()).
-	// 	Find(&pem).Error; err != nil {
-	// 	return models.Permission{}, nil
+	// if err := r.db.Debug().Raw("SELECT * FROM permissions AS p WHERE p.user_id = ? AND p.room_id = ? OR p.room_id = ? AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = ?)", userIdInt, roomID, roomID, userIdInt).Scan(&pem).Error; err != nil {
+	// 	return models.Permission{}, err
 	// }
-	// fmt.Println()
+
+	if err := r.db.Debug().Table("permissions"). // Use the table name if necessary
+							Preload("Team.Users").
+							Preload("User").
+							Where("user_id = ? AND room_id = ? OR room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", userIdInt, roomID, roomID, userIdInt).
+							Find(&pem).Error; err != nil {
+		return models.Permission{}, err
+	}
+
 	return pem, nil
 
 }
