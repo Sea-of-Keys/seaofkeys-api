@@ -94,7 +94,11 @@ func main() {
 		log.Panic(err)
 	}
 	app.Use(logger.New())
-	app.Use(cors.New())
+	coresCi := cors.Config{
+		AllowOrigins:     "http://127.0.0.1:8000, localhost, 127.0.0.1",
+		AllowCredentials: true,
+	}
+	app.Use(cors.New(coresCi))
 
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
