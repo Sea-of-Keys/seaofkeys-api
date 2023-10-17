@@ -132,15 +132,15 @@ func (r *EmbeddedRepo) PostCodeV3(code, userID string, roomID uint) (models.Perm
 		Find(&pem).Error; err != nil {
 		return models.Permission{}, err
 	}
-	if pem.StartTime < newtime && pem.EndTime > newtime {
-		if !middleware.CheckPasswordHash(code, *user.Code) {
-			return models.Permission{}, nil
-		}
-		fmt.Println("kronborg")
-		return pem, nil
-	}
+	// if pem.StartTime < newtime && pem.EndTime > newtime {
+	// 	if !middleware.CheckPasswordHash(code, *user.Code) {
+	// 		return models.Permission{}, nil
+	// 	}
+	// 	fmt.Println("kronborg")
+	// 	return pem, nil
+	// }
 
-	return models.Permission{}, nil
+	return pem, nil
 
 }
 
