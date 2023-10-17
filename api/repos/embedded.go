@@ -4,10 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
