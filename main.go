@@ -58,7 +58,7 @@ func InitRoutes(reg models.RegisterController, stores []*session.Store) {
 	controllers.RegisterRoomController(reg)
 	controllers.RegisterStatsController(reg)
 	controllers.RegisterPermissionController(reg)
-	controllers.RegisterWebController(reg.Db, reg.Router, stores[0])
+	controllers.RegisterWebController(reg, stores[0])
 
 }
 
@@ -78,6 +78,7 @@ func main() {
 	// storage.Get()
 	stores := []*session.Store{
 		session.New(session.Config{
+			KeyLookup:  "cookie:kronborg_id",
 			Expiration: 32 * time.Hour,
 			Storage:    storage,
 		}),
@@ -94,10 +95,11 @@ func main() {
 		log.Panic(err)
 	}
 	app.Use(logger.New())
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com",
-		AllowCredentials: true,
-	}))
+	// app.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com, https://www.seaofkeys.com",
+	// 	AllowCredentials: true,
+	// }))
+	app.Use(cors.New())
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	reg := &models.RegisterController{

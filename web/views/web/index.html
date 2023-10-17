@@ -2,13 +2,19 @@
 <div class="grid h-screen place-items-center">
   <div class="bg-gray-800 p-32 rounded">
         <!-- <p class="text-pink-800">{{ User.Token }}</p> -->
+        {% if Cfailed %}
+        <h1 class="text-pink-800">KKKKKROOOONNNNBBBBORRRRG</h1>
+        {% endif %}
+        {% if Cfailed %}
+        <h1 class="text-pink-800">KKKKKROOOONNNNBBBBORRRRG</h1>
+        {% endif %}
         {% if User.Password %}
     <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
     <h1 class="text-7xl text-gray-100 text-center">Password</h1>
     {% else %}
     <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
     {% endif %}
-    <form action="/user/web/set" method="post">
+    <form action="/web/set" method="post">
             <!-- <form action="/web/set" method="post"> -->
       <div class="flex flex-wrap -mx-4">
         <div class="w-1/2 px-4">
