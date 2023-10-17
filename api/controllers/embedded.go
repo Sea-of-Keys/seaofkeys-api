@@ -100,6 +100,22 @@ func (con *EmbeddedController) EmbeddedLogin3(c *fiber.Ctx) error {
 		"data":    sus,
 	})
 }
+func (con *EmbeddedController) EmbeddedLoginLive(c *fiber.Ctx) error {
+	var login models.EmbeddedLogin
+	if err := c.BodyParser(&login); err != nil {
+		// gg := errors.New("E22: " + err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
+	}
+	result := strings.Split(login.Code, "#")
+	sus, err := con.repo.PostCodeLive(result[0], result[1], login.RoomID)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"message": "IT IS A LIVE",
+		"data":    sus,
+	})
+}
 func NewEmbeddedController(repo *repos.EmbeddedRepo, store *session.Store) *EmbeddedController {
 	return &EmbeddedController{repo, store}
 }
@@ -110,7 +126,8 @@ func RegisterEmbeddedController(reg models.RegisterController, store ...*session
 
 	EmbeddedRouter := reg.Router.Group("/em")
 
-	EmbeddedRouter.Post("/login", controller.EmbeddedLogin2)
-	EmbeddedRouter.Post("/log", controller.EmbeddedLogin3)
+	EmbeddedRouter.Post("/login", controller.EmbeddedLoginLive)
+	EmbeddedRouter.Post("/log1", controller.EmbeddedLogin2)
+	EmbeddedRouter.Post("/log2", controller.EmbeddedLogin3)
 	// EmbeddedRouter.Use(security.EmbeddedMiddleware(store[0]))
 }
