@@ -123,6 +123,9 @@ func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
+		fmt.Printf("SessionID: %v\n", sess)
+		fmt.Printf("SessionID: %v\n", sess)
+		fmt.Printf("SessionID: %v\n", sess)
 		sessID := sess.ID()
 		if sessionID != "" {
 

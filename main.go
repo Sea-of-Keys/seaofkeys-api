@@ -94,8 +94,10 @@ func main() {
 		log.Panic(err)
 	}
 	app.Use(logger.New())
-	app.Use(cors.New())
-
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com",
+		AllowCredentials: true,
+	}))
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	reg := &models.RegisterController{
