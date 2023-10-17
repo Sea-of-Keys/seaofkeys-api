@@ -108,15 +108,15 @@ func (r *EmbeddedRepo) PostCodeV3(code, userID string, roomID uint) (models.Perm
 	// Format the time as a string
 	formattedTime := currentTime.Format("15:04:05")
 	fmt.Println(formattedTime)
-	splittime := strings.Split(formattedTime, ":")
+	// splittime := strings.Split(formattedTime, ":")
 	// var one int
 	// var two int
 	// var tre int
 	// var newtime datatypes.Time
-	one, _ := strconv.Atoi(splittime[0])
-	two, _ := strconv.Atoi(splittime[1])
-	tre, _ := strconv.Atoi(splittime[2])
-	newtime := datatypes.NewTime(one, two, tre, 0)
+	// one, _ := strconv.Atoi(splittime[0])
+	// two, _ := strconv.Atoi(splittime[1])
+	// tre, _ := strconv.Atoi(splittime[2])
+	// newtime := datatypes.NewTime(one, two, tre, 0)
 	// SQL SELECT * FROM permissions AS p WHERE p.user_id = 1 AND p.room_id = 3 OR p.room_id = 3 AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = 1);
 	// if err := r.db.Debug().Raw("SELECT * FROM permissions AS p WHERE p.user_id = ? AND p.room_id = ? OR p.room_id = ? AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = ?)", userIdInt, roomID, roomID, userIdInt).Scan(&pem).Error; err != nil {
 	// 	return models.Permission{}, err
@@ -139,6 +139,10 @@ func (r *EmbeddedRepo) PostCodeV3(code, userID string, roomID uint) (models.Perm
 	// 	fmt.Println("kronborg")
 	// 	return pem, nil
 	// }
+	fmt.Printf("permissionsID: %v\n", pem.ID)
+	fmt.Printf("permissionsID: %v\n", pem.ID)
+	fmt.Printf("permissionsID: %v\n", pem.ID)
+	fmt.Printf("permissionsID: %v\n", pem.ID)
 
 	return pem, nil
 
