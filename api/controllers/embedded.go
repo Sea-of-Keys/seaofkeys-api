@@ -2,15 +2,21 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
+	"github.com/Sea-of-Keys/seaofkeys-api/pkg"
 )
 
 type EmbeddedController struct {
-	repo *repos.EmbeddedRepo
+	repo  *repos.EmbeddedRepo
+	store *session.Store
 }
 
 // Just for testing
@@ -21,13 +27,33 @@ type Login struct {
 	UserID uint   `json:"user_id"`
 }
 
+func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
+	// ####### TODO #######
+	// make a table in database to check somfig
+	// make a randowm token
+	// make a session with that token
+	// send the token back to the client
+	// client/embedded use that token to encrypt the code
+	sess, err := con.store.Get(c)
+	if err != nil {
+		return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
+	}
+	g, err := security.NewEmbeddedToken()
+	sess.Set("EmbeddedSession", g)
+	sess.Save()
+	fmt.Println(g)
+	if err != nil {
+		return &pkg.CustomError{Code: "S001", Message: "Failed to token"}
+	}
+	return nil
+}
 func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 	var login Login
 	if err := c.BodyParser(&login); err != nil {
 		gg := errors.New("E22: " + err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, gg.Error())
 	}
-	sus, err := con.repo.PostCodeV2(login.Code, login.RoomID, login.UserID)
+	sus, err := con.repo.PostCodeV2(login.Code, "g", login.RoomID)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
@@ -42,15 +68,66 @@ func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 	})
 }
 
-func NewEmbeddedController(repo *repos.EmbeddedRepo) *EmbeddedController {
-	return &EmbeddedController{repo}
+func (con *EmbeddedController) EmbeddedLogin2(c *fiber.Ctx) error {
+	var login models.EmbeddedLogin
+	if err := c.BodyParser(&login); err != nil {
+		// gg := errors.New("E22: " + err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
+	}
+	result := strings.Split(login.Code, "#")
+	sus, err := con.repo.PostCodeV3(result[0], result[1], login.RoomID)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"message": "IT IS A LIVE",
+		"data":    sus,
+	})
+}
+func (con *EmbeddedController) EmbeddedLogin3(c *fiber.Ctx) error {
+	var login models.EmbeddedLogin
+	if err := c.BodyParser(&login); err != nil {
+		// gg := errors.New("E22: " + err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
+	}
+	result := strings.Split(login.Code, "#")
+	sus, err := con.repo.PostCodeV4(result[0], result[1], login.RoomID)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"message": "IT IS A LIVE",
+		"data":    sus,
+	})
+}
+func (con *EmbeddedController) EmbeddedLoginLive(c *fiber.Ctx) error {
+	var login models.EmbeddedLogin
+	if err := c.BodyParser(&login); err != nil {
+		// gg := errors.New("E22: " + err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
+	}
+	result := strings.Split(login.Code, "#")
+	sus, err := con.repo.PostCodeLive(result[0], result[1], login.RoomID)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(&fiber.Map{
+		"message": "IT IS A LIVE",
+		"data":    sus,
+	})
+}
+func NewEmbeddedController(repo *repos.EmbeddedRepo, store *session.Store) *EmbeddedController {
+	return &EmbeddedController{repo, store}
 }
 
-func RegisterEmbeddedController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewEmbeddedRepo(db)
-	controller := NewEmbeddedController(repo)
+func RegisterEmbeddedController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewEmbeddedRepo(reg.Db)
+	controller := NewEmbeddedController(repo, store[0])
 
-	EmbeddedRouter := router.Group("/em")
+	EmbeddedRouter := reg.Router.Group("/em")
 
-	EmbeddedRouter.Post("/login", controller.EmbeededLogin)
+	EmbeddedRouter.Post("/login", controller.EmbeddedLoginLive)
+	EmbeddedRouter.Post("/log1", controller.EmbeddedLogin2)
+	EmbeddedRouter.Post("/log2", controller.EmbeddedLogin3)
+	// EmbeddedRouter.Use(security.EmbeddedMiddleware(store[0]))
 }

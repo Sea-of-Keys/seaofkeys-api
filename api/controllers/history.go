@@ -1,15 +1,19 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type HistoryController struct {
-	repo *repos.HistoryRepo
+	repo  *repos.HistoryRepo
+	store *session.Store
 }
 
 func (con *HistoryController) GetHistory(c *fiber.Ctx) error {
@@ -75,18 +79,38 @@ func (con *HistoryController) DelHistory(c *fiber.Ctx) error {
 		"history": data,
 	})
 }
+func (con *HistoryController) TestOne(c *fiber.Ctx) error {
 
-func NewHistoryController(repo *repos.HistoryRepo) *HistoryController {
-	return &HistoryController{repo}
+	sess, err := con.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	// Check Token HERE
+	// if token is legiget set token in session
+
+	//this is just to test if i get a token
+	// Read and output the session variable
+	name := sess.Get("token")
+	fmt.Printf("Name from session: %v\n", name)
+
+	return c.JSON(&fiber.Map{
+		"name": name,
+	})
 }
 
-func RegisterHistoryController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewHistoryRepo(db)
-	controller := NewHistoryController(repo)
+func NewHistoryController(repo *repos.HistoryRepo, store *session.Store) *HistoryController {
+	return &HistoryController{repo, store}
+}
 
-	HistoryRouter := router.Group("/history")
+func RegisterHistoryController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewHistoryRepo(reg.Db)
+	controller := NewHistoryController(repo, reg.Store)
 
+	HistoryRouter := reg.Router.Group("/history")
+
+	HistoryRouter.Use(security.TokenMiddleware(reg.Store))
 	HistoryRouter.Get("/", controller.GetHistorys)
+	HistoryRouter.Get("/test", controller.TestOne)
 	HistoryRouter.Get("/:id", controller.GetHistory)
 	HistoryRouter.Post("/", controller.PostHistory)
 	HistoryRouter.Put("/", controller.PutHistory)

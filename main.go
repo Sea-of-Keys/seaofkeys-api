@@ -3,16 +3,16 @@ package main
 // ######TODO######
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/template/django/v3"
-	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/controllers"
 	databae "github.com/Sea-of-Keys/seaofkeys-api/api/database"
@@ -41,28 +41,54 @@ func initApp() (*fiber.App, error) {
 	return app, nil
 }
 
-func Endpoints(db *gorm.DB, api fiber.Router) {
-	controllers.RegisterAuthController(db, api)
-	controllers.RegisterUserController(db, api)
-	controllers.RegisterEmbeddedController(db, api)
-	controllers.RegisterTeamController(db, api)
-	controllers.RegisterHistoryController(db, api)
-	controllers.RegisterRoomController(db, api)
-	controllers.RegisterStatsController(db, api)
-	controllers.RegisterPermissionController(db, api)
-	controllers.RegisterWebController(db, api)
+func InitRoutes(reg models.RegisterController, stores []*session.Store) {
+	// store := session.New(session.Config{
+	// 	Expiration: 1 * time.Minute,
+	// 	Storage:    storage,
+	// })
+	// store24Hours := session.New(session.Config{
+	// 	Expiration: 1 * time.Minute,
+	// 	Storage:    storage,
+	// })
+	controllers.RegisterAuthController(reg, stores[0])
+	controllers.RegisterUserController(reg)
+	controllers.RegisterEmbeddedController(reg, stores[0])
+	controllers.RegisterTeamController(reg)
+	controllers.RegisterHistoryController(reg, stores[0])
+	controllers.RegisterRoomController(reg)
+	controllers.RegisterStatsController(reg)
+	controllers.RegisterPermissionController(reg)
+	controllers.RegisterWebController(reg.Db, reg.Router, stores[0])
 
 }
 
 func main() {
 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
+	// pkg.SendEmail("mkronborg7@gmail.com", "Kronborg", "KronborgErGud!@#")
+	// token, _ := security.NewEmbeddedToken()
+	// fmt.Println(token)
+	// storageMysql, err := databae.InitMysql()
+
 	db, err := databae.Init("mysql")
 	models.Setup(db)
-
-	// engine := CreateEngine()
-	// app := fiber.New()
-	// db, err := databae.Init("postgres")
-	fmt.Println("im gona be runed")
+	storage, err := databae.InitRedis()
+	if err != nil {
+		panic(err)
+	}
+	// storage.Get()
+	stores := []*session.Store{
+		session.New(session.Config{
+			Expiration: 32 * time.Hour,
+			Storage:    storage,
+		}),
+		session.New(session.Config{
+			KeyLookup:  "cookie:kronborg_id",
+			Expiration: 15 * time.Hour,
+			// Expiration: 24 * time.Hour,
+			Storage: storage,
+		}),
+	}
+	// fmt.Println("im gona be runed")
 	app, err := initApp()
 	if err != nil {
 		log.Panic(err)
@@ -70,15 +96,47 @@ func main() {
 	app.Use(logger.New())
 	app.Use(cors.New())
 
-	// app.Use(session.New(session.Config{
-	// 	KeyLookup:  "cookie:sessionid",
-	// 	Expiration: time.Hour * 24, // Session expiration time
-	// }))
-
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
-	Endpoints(db, api)
+	reg := &models.RegisterController{
+		Db:     db,
+		Router: api,
+		Store:  stores[1],
+	}
+	InitRoutes(*reg, stores)
+	// InitRoutes(db, api, stores)
 
 	log.Fatal(app.Listen(getPort()))
 
 }
+
+// func main() {
+// 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
+// 	db, err := databae.Init("mysql")
+// 	models.Setup(db)
+
+// 	// engine := CreateEngine()
+// 	// app := fiber.New()
+// 	// db, err := databae.Init("postgres")
+// 	fmt.Println("im gona be runed")
+// 	app, err := initApp()
+// 	if err != nil {
+// 		log.Panic(err)
+// 	}
+// 	app.Use(logger.New())
+// 	app.Use(cors.New())
+// 	store := session.New(session.Config{
+// 		KeyLookup:  "cookie:sessionid",
+// 		Expiration: time.Hour * 24, // Session expiration time
+// 	})
+// 	// app.Use(store)
+// 	app.Static("/static", "./web/static")
+// 	api := app.Group("/")
+// 	Endpoints(db, api, store)
+
+// 	log.Fatal(app.Listen(getPort()))
+// 	log.Fatal(app.Listen(os.Getenv("PORT")))
+// 	log.Fatal(app.Listen(":8001"))
+// 	log.Fatal(app.Listen(getPort()))
+
+// }

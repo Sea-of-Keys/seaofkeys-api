@@ -1,13 +1,14 @@
 {% extends "partials/base.html" %} {% block content %}
 <div class="grid h-screen place-items-center">
   <div class="bg-gray-800 p-32 rounded">
-    {% if password %}
+        <!-- <p class="text-pink-800">{{ User.Token }}</p> -->
+        {% if User.Password %}
     <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
     <h1 class="text-7xl text-gray-100 text-center">Password</h1>
     {% else %}
     <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
     {% endif %}
-    <form action="/web/set" method="post">
+    <form action="/user/web/set" method="post">
             <!-- <form action="/web/set" method="post"> -->
       <div class="flex flex-wrap -mx-4">
         <div class="w-1/2 px-4">
@@ -29,7 +30,7 @@
           />
         </div>
       </div>
-      {% if password %}
+      {% if User.Password %}
       <div class="flex flex-wrap -mx-4">
         <div class="w-1/2 px-4">
           <p class="text-gray-100">Password</p>
@@ -51,7 +52,9 @@
         </div>
       </div>
       {% endif %}
-            <button class="border border-white" type="submit">Submit</button>
+            <div class="text-center place-items-center pt-16">
+            <button class="bg-gray-300 border border-white p-5 px-10" type="submit">Submit</button>
+            </div>
     </form>
   </div>
 </div>
