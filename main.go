@@ -99,7 +99,7 @@ func main() {
 		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com, https://www.seaofkeys.com",
 		AllowCredentials: true,
 	}))
-	app.Use(cors.New())
+	// app.Use(cors.New())
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	reg := &models.RegisterController{
