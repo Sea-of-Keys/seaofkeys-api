@@ -167,6 +167,6 @@ func RegisterAuthController(reg models.RegisterController, store ...*session.Sto
 	// AuthRouter.Get("/", controller.SetPassword)
 	AuthRouter.Get("/hello", controller.Hello)
 	AuthRouter.Use(security.TokenMiddleware(reg.Store))
-	AuthRouter.Get("/logut", controller.Logout)
+	AuthRouter.Get("/logout", controller.Logout)
 	AuthRouter.Get("/", controller.RefreshToken)
 }

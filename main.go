@@ -70,7 +70,12 @@ func main() {
 	// storageMysql, err := databae.InitMysql()
 
 	db, err := databae.Init("mysql")
-	models.Setup(db)
+	if err != nil {
+		panic(err)
+	}
+	if os.Getenv("DEV") == "dev" {
+		models.Setup(db)
+	}
 	storage, err := databae.InitRedis()
 	if err != nil {
 		panic(err)

@@ -41,6 +41,10 @@ type SetPasswordAndCode struct {
 	CodeOne     string `json:"code_one"`
 	CodeTwo     string `json:"code_two"`
 }
+type EmbedSetup struct {
+	EmbeddedID uint   `json:"embedded_id"`
+	Ssshhh     string `json:"ssshhh"`
+}
 type Te interface {
 }
 type RegisterController struct {

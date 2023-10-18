@@ -34,19 +34,31 @@ func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
 	// make a session with that token
 	// send the token back to the client
 	// client/embedded use that token to encrypt the code
+	var emb models.EmbedSetup
 	sess, err := con.store.Get(c)
 	if err != nil {
 		return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
 	}
-	Token, err := security.NewEmbeddedToken()
+	if err := c.BodyParser(&emb); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	if ok, err := con.repo.PostEmbeddedSetup(emb); !ok || err != nil {
+		fmt.Println("Failed to setup")
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	base64, err := security.NewBase64Token()
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	sess.Set("EmbeddedSession", Token)
+	token, err := security.NewEmbeddedToken(base64)
+	sess.Set("EmbeddedSession", token)
 	sess.Save()
-	fmt.Println(Token)
+	fmt.Println(token)
 
-	return nil
+	return c.JSON(&fiber.Map{
+		"session_is": true,
+	})
 }
 func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 	var login Login
@@ -54,10 +66,10 @@ func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 		gg := errors.New("E22: " + err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, gg.Error())
 	}
-	sus, err := con.repo.PostCodeV2(login.Code, "g", login.RoomID)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
+	// sus, err := con.repo.PostCodeV2(login.Code, "g", login.RoomID)
+	// if err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	// }
 	// if !sus {
 	// 	c.JSON(&fiber.Map{
 	// 		"message": "it's dead :-(",
@@ -65,42 +77,43 @@ func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
 	// }
 	return c.JSON(&fiber.Map{
 		"message": "IT IS A LIVE",
-		"data":    sus,
+		// "data":    sus,
 	})
 }
 
-func (con *EmbeddedController) EmbeddedLogin2(c *fiber.Ctx) error {
-	var login models.EmbeddedLogin
-	if err := c.BodyParser(&login); err != nil {
-		// gg := errors.New("E22: " + err.Error())
-		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
-	}
-	result := strings.Split(login.Code, "#")
-	sus, err := con.repo.PostCodeV3(result[0], result[1], login.RoomID)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(&fiber.Map{
-		"message": "IT IS A LIVE",
-		"data":    sus,
-	})
-}
-func (con *EmbeddedController) EmbeddedLogin3(c *fiber.Ctx) error {
-	var login models.EmbeddedLogin
-	if err := c.BodyParser(&login); err != nil {
-		// gg := errors.New("E22: " + err.Error())
-		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
-	}
-	result := strings.Split(login.Code, "#")
-	sus, err := con.repo.PostCodeV4(result[0], result[1], login.RoomID)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(&fiber.Map{
-		"message": "IT IS A LIVE",
-		"data":    sus,
-	})
-}
+//	func (con *EmbeddedController) EmbeddedLogin2(c *fiber.Ctx) error {
+//		var login models.EmbeddedLogin
+//		if err := c.BodyParser(&login); err != nil {
+//			// gg := errors.New("E22: " + err.Error())
+//			return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
+//		}
+//		result := strings.Split(login.Code, "#")
+//		sus, err := con.repo.PostCodeV3(result[0], result[1], login.RoomID)
+//		if err != nil {
+//			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+//		}
+//		return c.JSON(&fiber.Map{
+//			"message": "IT IS A LIVE",
+//			"data":    sus,
+//		})
+//	}
+//
+//	func (con *EmbeddedController) EmbeddedLogin3(c *fiber.Ctx) error {
+//		var login models.EmbeddedLogin
+//		if err := c.BodyParser(&login); err != nil {
+//			// gg := errors.New("E22: " + err.Error())
+//			return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
+//		}
+//		result := strings.Split(login.Code, "#")
+//		sus, err := con.repo.PostCodeV4(result[0], result[1], login.RoomID)
+//		if err != nil {
+//			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+//		}
+//		return c.JSON(&fiber.Map{
+//			"message": "IT IS A LIVE",
+//			"data":    sus,
+//		})
+//	}
 func (con *EmbeddedController) EmbeddedLoginLive(c *fiber.Ctx) error {
 	var login models.EmbeddedLogin
 	if err := c.BodyParser(&login); err != nil {
@@ -127,8 +140,10 @@ func RegisterEmbeddedController(reg models.RegisterController, store ...*session
 
 	EmbeddedRouter := reg.Router.Group("/em")
 
+	EmbeddedRouter.Post("/setup", controller.Setup)
+	EmbeddedRouter.Use(security.TokenEmbeddedMiddleware(store[0]))
 	EmbeddedRouter.Post("/login", controller.EmbeddedLoginLive)
-	EmbeddedRouter.Post("/log1", controller.EmbeddedLogin2)
-	EmbeddedRouter.Post("/log2", controller.EmbeddedLogin3)
+	// EmbeddedRouter.Post("/log1", controller.EmbeddedLogin2)
+	// EmbeddedRouter.Post("/log2", controller.EmbeddedLogin3)
 	// EmbeddedRouter.Use(security.EmbeddedMiddleware(store[0]))
 }
