@@ -5,6 +5,7 @@ type Embedded struct {
 	Name   string `json:"name"`
 	RoomID *uint  `json:"room_id"`
 	Room   Room
+	Scret  string `json:"-"`
 }
 
 type EmbeddedCheck struct {
