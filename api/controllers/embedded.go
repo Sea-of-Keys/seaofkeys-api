@@ -38,13 +38,14 @@ func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
 	if err != nil {
 		return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
 	}
-	g, err := security.NewEmbeddedToken()
-	sess.Set("EmbeddedSession", g)
-	sess.Save()
-	fmt.Println(g)
+	Token, err := security.NewEmbeddedToken()
 	if err != nil {
-		return &pkg.CustomError{Code: "S001", Message: "Failed to token"}
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
+	sess.Set("EmbeddedSession", Token)
+	sess.Save()
+	fmt.Println(Token)
+
 	return nil
 }
 func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {

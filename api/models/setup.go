@@ -181,8 +181,8 @@ func Setup(db *gorm.DB) {
 			EndDateST:   currentTime.Format("2006-01-02"),
 			// StartDate: time.Now(),
 			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(8, 2, 3, 0),
-			EndTime:   datatypes.NewTime(23, 2, 3, 0),
+			StartTime: datatypes.NewTime(8, 2, 0, 0),
+			EndTime:   datatypes.NewTime(23, 2, 0, 0),
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
@@ -195,8 +195,8 @@ func Setup(db *gorm.DB) {
 			EndDateST:   currentTime.Format("2006-01-02"),
 			// StartDate: time.Now(),
 			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(10, 2, 3, 0),
-			EndTime:   datatypes.NewTime(12, 2, 3, 0),
+			StartTime: datatypes.NewTime(10, 2, 0, 0),
+			EndTime:   datatypes.NewTime(12, 2, 0, 0),
 			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
@@ -223,8 +223,8 @@ func Setup(db *gorm.DB) {
 			EndDateST:   currentTime.Format("2006-01-02"),
 			// StartDate: time.Now(),
 			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(6, 2, 3, 0),
-			EndTime:   datatypes.NewTime(8, 2, 3, 0),
+			StartTime: datatypes.NewTime(6, 2, 0, 0),
+			EndTime:   datatypes.NewTime(8, 2, 0, 0),
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}},
 		},
 	}

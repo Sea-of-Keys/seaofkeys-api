@@ -104,59 +104,72 @@ func (con *WebController) PostPasswordAndCode(c *fiber.Ctx) error {
 		panic(err)
 	}
 	sess.Set("Cfailed", false)
-	if err := sess.Save(); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
-	sess, err = con.store.Get(c)
-	if err != nil {
-		panic(err)
-	}
+	// if err := sess.Save(); err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	// }
+	// sess, err = con.store.Get(c)
+	// if err != nil {
+	// 	panic(err)
+	// }
 	sess.Set("Kfailed", false)
-	if err := sess.Save(); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
-	sess, err = con.store.Get(c)
-	if err != nil {
-		panic(err)
-	}
-	if err := sess.Save(); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
-	sess, err = con.store.Get(c)
-	if err != nil {
-		panic(err)
-	}
+	// if err := sess.Save(); err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	// }
+	// sess, err = con.store.Get(c)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// if err := sess.Save(); err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	// }
+	// sess, err = con.store.Get(c)
+	// if err != nil {
+	// 	panic(err)
+	// }
 	if sess.Get("SetToken") == nil {
 		fmt.Println("1")
 		fmt.Printf("sess: %v\n", sess)
+		if err := sess.Save(); err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		}
 		return fiber.NewError(fiber.StatusNetworkAuthenticationRequired, "C105: no session started")
 	}
 	if err := c.BodyParser(&FormData); err != nil {
 		fmt.Println("2")
+		if err := sess.Save(); err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		}
 		return fiber.NewError(fiber.StatusInternalServerError, "C10: "+err.Error())
 	}
 	if FormData.PasswordOne != FormData.PasswordTwo {
 		fmt.Println("3")
-		sess, err = con.store.Get(c)
-		if err != nil {
-			panic(err)
-		}
+		// sess, err = con.store.Get(c)
+		// if err != nil {
+		// 	panic(err)
+		// }
 		sess.Set("Cfailed", true)
-		sess.Save()
-		if FormData.CodeOne != FormData.CodeTwo || FormData.CodeOne == "" {
-			sess, err = con.store.Get(c)
-			if err != nil {
-				panic(err)
-			}
+		// sess.Save()
+		if FormData.CodeOne != FormData.CodeTwo && FormData.CodeOne != "" {
+			// sess, err = con.store.Get(c)
+			// if err != nil {
+			// 	panic(err)
+			// }
+			fmt.Println("4")
+			fmt.Println("4")
+			fmt.Println("4")
+			fmt.Println("4")
 			sess.Set("Kfailed", true)
-			sess.Save()
+			// sess.Save()
 		}
-		sess, err = con.store.Get(c)
-		if err != nil {
-			panic(err)
-		}
+		// sess, err = con.store.Get(c)
+		// if err != nil {
+		// 	panic(err)
+		// }
 		getToken := sess.Get("SetToken")
 		CToken := getToken.(string)
+		if err := sess.Save(); err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		}
 		return c.Redirect(fmt.Sprintf("/web/token/%v", CToken))
 	}
 
@@ -167,6 +180,9 @@ func (con *WebController) PostPasswordAndCode(c *fiber.Ctx) error {
 		FormData.CodeOne,
 		FormData.CodeTwo,
 	)
+	if err := sess.Save(); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
 
 	return c.Redirect("https://api.seaofkeys.com")
 }
@@ -304,7 +320,7 @@ func RegisterWebController(reg models.RegisterController, store ...*session.Stor
 
 	WebRouter := reg.Router.Group("/web")
 	WebRouter.Get("/token/:token?", controller.GetPage)
-	WebRouter.Post("/set", controller.PostPasswordAndCode3)
+	WebRouter.Post("/set", controller.PostPasswordAndCode)
 	// WebRouter.Use(security.TokenMiddleware(store))
 	WebRouter.Get("/test/One", controller.TestOne)
 	WebRouter.Get("/test/Two", controller.TestTwo)

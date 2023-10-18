@@ -41,6 +41,17 @@ func (r *EmbeddedRepo) GetSetup(id uint) error {
 func (r *EmbeddedRepo) PostSetup() error {
 	return nil
 }
+func (r *EmbeddedRepo) GetEmbeddedScrert(sc string, id uint) (bool, error) {
+	var em models.Embedded
+	if err := r.db.Debug().Where("scrert = ?", sc).First(&em, id).Error; err != nil {
+		return false, err
+	}
+	if em.ID == 0 {
+		return false, errors.New("Not Found")
+	}
+
+	return true, nil
+}
 func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
 	var per models.Permission
 	var user models.User
@@ -220,6 +231,7 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 		Find(&pem).Error; err != nil {
 		return false, err
 	}
+
 	fmt.Printf(
 		"permissionsID: %v\n StartTime: %s\n EndTime %s\n",
 		pem.ID,
