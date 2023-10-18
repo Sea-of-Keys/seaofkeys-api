@@ -47,8 +47,12 @@ func NewEmbeddedToken(token string) (string, error) {
 		"token": token,
 		"exp":   time.Now().Add(time.Hour * 28).Unix(), // Token expiration time (1 hour from now)
 	})
-	tokenString, err := claims.SignedString(os.Getenv("ESCRERT"))
+	tokenString, err := claims.SignedString([]byte(os.Getenv("PSCRERT")))
+	fmt.Printf("TokenString: %v\n", tokenString)
 	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		fmt.Printf("error: %v\n", err)
+		fmt.Printf("error: %v\n", err)
 		return "", err
 	}
 	return tokenString, nil
@@ -61,14 +65,15 @@ func TokenEmbeddedMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 		}
 		fmt.Printf("Middleware Session: %v\n", sess)
 		fmt.Printf("Middleware Session: %v\n", sess)
-		tokenInter := sess.Get("ActiveToken")
+		tokenInter := sess.Get("EmbeddedSession")
 		// fmt.Printf("Token1: %v\n", tokenInter)
 		tokenString, ok := tokenInter.(string)
+		fmt.Printf("sess Token: %v\n", tokenString)
 		// fmt.Printf("Token2: %v\n", tokenString)
 		if !ok || tokenString == "" {
 			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
 		}
-		if ok, err := CheckToken(tokenString, os.Getenv("PSCRERT")); !ok || err != nil {
+		if ok, err := CheckToken(tokenString, os.Getenv("ESCRERT")); !ok || err != nil {
 			return c.Status(401).JSON(fiber.Map{
 				// "passed": true,
 				"message": "Unauthorized",

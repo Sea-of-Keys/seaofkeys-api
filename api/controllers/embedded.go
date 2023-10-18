@@ -52,8 +52,17 @@ func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	token, err := security.NewEmbeddedToken(base64)
+	fmt.Println(token)
+	fmt.Println(token)
+	fmt.Println(token)
+	fmt.Println(token)
+	fmt.Println(token)
+	fmt.Println(token)
 	sess.Set("EmbeddedSession", token)
-	sess.Save()
+	if err := sess.Save(); err != nil {
+		fmt.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
 	fmt.Println(token)
 
 	return c.JSON(&fiber.Map{

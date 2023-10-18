@@ -42,14 +42,6 @@ func initApp() (*fiber.App, error) {
 }
 
 func InitRoutes(reg models.RegisterController, stores []*session.Store) {
-	// store := session.New(session.Config{
-	// 	Expiration: 1 * time.Minute,
-	// 	Storage:    storage,
-	// })
-	// store24Hours := session.New(session.Config{
-	// 	Expiration: 1 * time.Minute,
-	// 	Storage:    storage,
-	// })
 	controllers.RegisterAuthController(reg, stores[0])
 	controllers.RegisterUserController(reg)
 	controllers.RegisterEmbeddedController(reg, stores[0])
