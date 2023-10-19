@@ -96,8 +96,7 @@ func (con *AuthController) Logout(c *fiber.Ctx) error {
 		panic(err)
 	}
 	// sess.Set("ActiveToken", nil)
-	sess.Delete("ActiveToken")
-	sess.Save()
+	sess.Destroy()
 
 	return c.JSON(&fiber.Map{
 		"logout": true,
