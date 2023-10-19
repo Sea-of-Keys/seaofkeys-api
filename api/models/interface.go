@@ -7,7 +7,7 @@ import "github.com/gofiber/fiber/v2"
 type RoomInterfaceMethods interface {
 	Posts(*fiber.Ctx) error
 
-	CRUDController
+	CRUDInterface
 }
 
 type TeamInterfaceMethods interface {
@@ -17,9 +17,9 @@ type TeamInterfaceMethods interface {
 	RemoveTeamsFromUser(*fiber.Ctx) error
 	AddTeamsToUser(*fiber.Ctx) error
 
-	CRUDController
+	CRUDInterface
 }
-type CRUDController interface {
+type CRUDInterface interface {
 	Get(*fiber.Ctx) error
 	Gets(*fiber.Ctx) error
 	Post(*fiber.Ctx) error
@@ -31,7 +31,7 @@ type CRUDController interface {
 type UserInterfaceMethods interface {
 	GetTeamsUserIsNotOn(*fiber.Ctx) error
 
-	CRUDController
+	CRUDInterface
 }
 type WebInterfaceMethods interface {
 	GetPage(*fiber.Ctx) error
@@ -44,7 +44,7 @@ type AuthInterfaceMethods interface {
 	RefreshToken(*fiber.Ctx) error
 }
 type HistoryInterfaceMethods interface {
-	CRUDController
+	CRUDInterface
 }
 
 type StatsInterfaceMethods interface {
@@ -56,7 +56,7 @@ type StatsInterfaceMethods interface {
 type PermissionInterfaceMethods interface {
 	GetFindUsersPermissions(*fiber.Ctx) error
 	GetFindTeamsPermissions(*fiber.Ctx) error
-	CRUDController
+	CRUDInterface
 }
 type EmbeddedInterfaceMethods interface {
 	Setup(*fiber.Ctx) error
