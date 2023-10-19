@@ -23,7 +23,7 @@ func PostBody(c *fiber.Ctx) (*models.Permission, error) {
 	}
 	return &permission, nil
 }
-func (con *PermissionController) GetPermission(c *fiber.Ctx) error {
+func (con *PermissionController) Get(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C800: "+err.Error())
@@ -36,7 +36,7 @@ func (con *PermissionController) GetPermission(c *fiber.Ctx) error {
 		"permission": data,
 	})
 }
-func (con *PermissionController) GetPermissions(c *fiber.Ctx) error {
+func (con *PermissionController) Gets(c *fiber.Ctx) error {
 	data, err := con.repo.GetPermissions()
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
@@ -45,7 +45,7 @@ func (con *PermissionController) GetPermissions(c *fiber.Ctx) error {
 		"permissions": data,
 	})
 }
-func (con *PermissionController) PostPermission(c *fiber.Ctx) error {
+func (con *PermissionController) Post(c *fiber.Ctx) error {
 	var permission models.Permission
 	if err := c.BodyParser(&permission); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
@@ -58,7 +58,10 @@ func (con *PermissionController) PostPermission(c *fiber.Ctx) error {
 		"permission": data,
 	})
 }
-func (con *PermissionController) PutPermission(c *fiber.Ctx) error {
+func (con *PermissionController) Posts(c *fiber.Ctx) error {
+	return nil
+}
+func (con *PermissionController) Put(c *fiber.Ctx) error {
 	var permission models.Permission
 	if err := c.BodyParser(&permission); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
@@ -71,7 +74,7 @@ func (con *PermissionController) PutPermission(c *fiber.Ctx) error {
 		"permission": data,
 	})
 }
-func (con *PermissionController) DelPermission(c *fiber.Ctx) error {
+func (con *PermissionController) Del(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C800: "+err.Error())
@@ -84,7 +87,7 @@ func (con *PermissionController) DelPermission(c *fiber.Ctx) error {
 		"permission": data,
 	})
 }
-func (con *PermissionController) DelPermissions(c *fiber.Ctx) error {
+func (con *PermissionController) Dels(c *fiber.Ctx) error {
 	var ids []models.Delete
 	if err := c.BodyParser(&ids); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C801: "+err.Error())
@@ -127,7 +130,7 @@ func (con *PermissionController) GetFindTeamsPermissions(c *fiber.Ctx) error {
 func NewPermissionController(
 	repo *repos.PermissionRepo,
 	store *session.Store,
-) *PermissionController {
+) models.PermissionInterfaceMethods {
 	return &PermissionController{repo, store}
 }
 
@@ -137,12 +140,12 @@ func RegisterPermissionController(reg models.RegisterController) {
 
 	PermissionRouter := reg.Router.Group("/permission")
 	PermissionRouter.Use(security.TokenMiddleware(reg.Store))
-	PermissionRouter.Get("/:id", controller.GetPermission)
-	PermissionRouter.Get("/", controller.GetPermissions)
-	PermissionRouter.Post("/", controller.PostPermission)
-	PermissionRouter.Put("/", controller.PutPermission)
-	PermissionRouter.Delete("/del/:id", controller.DelPermission)
-	PermissionRouter.Delete("/del", controller.DelPermissions)
+	PermissionRouter.Get("/:id", controller.Get)
+	PermissionRouter.Get("/", controller.Gets)
+	PermissionRouter.Post("/", controller.Post)
+	PermissionRouter.Put("/", controller.Put)
+	PermissionRouter.Delete("/del/:id", controller.Del)
+	PermissionRouter.Delete("/del", controller.Dels)
 	PermissionRouter.Get("/user/:id", controller.GetFindUsersPermissions)
 	PermissionRouter.Get("/team/:id", controller.GetFindTeamsPermissions)
 }

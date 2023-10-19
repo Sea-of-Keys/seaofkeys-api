@@ -16,7 +16,7 @@ type UserController struct {
 	store *session.Store
 }
 
-func (con *UserController) GetUser(c *fiber.Ctx) error {
+func (con *UserController) Get(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	UID := uint(id)
 	if err != nil {
@@ -30,14 +30,14 @@ func (con *UserController) GetUser(c *fiber.Ctx) error {
 		"user": data,
 	})
 }
-func (con *UserController) GetUsers(c *fiber.Ctx) error {
+func (con *UserController) Gets(c *fiber.Ctx) error {
 	data, err := con.repo.GetUsers()
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C12: "+err.Error())
 	}
 	return c.JSON(data)
 }
-func (con *UserController) PostUser(c *fiber.Ctx) error {
+func (con *UserController) Post(c *fiber.Ctx) error {
 	var user models.User
 	if err := c.BodyParser(&user); err != nil {
 		return c.JSON(&fiber.Map{
@@ -53,7 +53,7 @@ func (con *UserController) PostUser(c *fiber.Ctx) error {
 		"user": data,
 	})
 }
-func (con *UserController) PostUsers(c *fiber.Ctx) error {
+func (con *UserController) Posts(c *fiber.Ctx) error {
 	var user []models.User
 
 	fmt.Println(user)
@@ -72,7 +72,7 @@ func (con *UserController) PostUsers(c *fiber.Ctx) error {
 		"user": data,
 	})
 }
-func (con *UserController) PutUser(c *fiber.Ctx) error {
+func (con *UserController) Put(c *fiber.Ctx) error {
 	var user models.User
 	if err := c.BodyParser(&user); err != nil {
 		return c.JSON(&fiber.Map{
@@ -88,7 +88,7 @@ func (con *UserController) PutUser(c *fiber.Ctx) error {
 		"user": data,
 	})
 }
-func (con *UserController) DelUser(c *fiber.Ctx) error {
+func (con *UserController) Del(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C19: "+err.Error())
@@ -101,7 +101,7 @@ func (con *UserController) DelUser(c *fiber.Ctx) error {
 		"sus": data,
 	})
 }
-func (con *UserController) DelUsers(c *fiber.Ctx) error {
+func (con *UserController) Dels(c *fiber.Ctx) error {
 	var users []models.Delete
 	if err := c.BodyParser(&users); err != nil {
 		return c.JSON(users)
@@ -125,7 +125,7 @@ func (con *UserController) GetTeamsUserIsNotOn(c *fiber.Ctx) error {
 		"teams": data,
 	})
 }
-func NewUsercontroller(repo *repos.UserRepo, store *session.Store) *UserController {
+func NewUsercontroller(repo *repos.UserRepo, store *session.Store) models.UserInterfaceMethods {
 	return &UserController{repo, store}
 }
 
@@ -136,12 +136,12 @@ func RegisterUserController(reg models.RegisterController, store ...*session.Sto
 	UserRouter := reg.Router.Group("/user")
 
 	UserRouter.Use(security.TokenMiddleware(reg.Store))
-	UserRouter.Get("/:id", controller.GetUser)
-	UserRouter.Get("/", controller.GetUsers)
-	UserRouter.Post("/", controller.PostUser)
-	UserRouter.Post("/more", controller.PostUsers)
-	UserRouter.Put("/", controller.PutUser)
-	UserRouter.Delete("/del/:id", controller.DelUser)
-	UserRouter.Delete("/del", controller.DelUsers)
+	UserRouter.Get("/:id", controller.Get)
+	UserRouter.Get("/", controller.Gets)
+	UserRouter.Post("/", controller.Post)
+	UserRouter.Post("/more", controller.Posts)
+	UserRouter.Put("/", controller.Put)
+	UserRouter.Delete("/del/:id", controller.Del)
+	UserRouter.Delete("/del", controller.Dels)
 	UserRouter.Get("/teams/:id", controller.GetTeamsUserIsNotOn)
 }

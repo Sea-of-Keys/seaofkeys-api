@@ -96,7 +96,7 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 	fmt.Printf("data: %v\n", data)
 	return c.Render("web/index", data)
 }
-func (con *WebController) PostPasswordAndCode(c *fiber.Ctx) error {
+func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 	var FormData models.SetPasswordAndCode
 
 	sess, err := con.store.Get(c)
@@ -180,7 +180,7 @@ func (con *WebController) TestTwo(c *fiber.Ctx) error {
 	})
 }
 
-func NewWebController(repo *repos.WebRepo, store *session.Store) *WebController {
+func NewWebController(repo *repos.WebRepo, store *session.Store) models.WebInterfaceMethods {
 	return &WebController{repo, store}
 }
 
@@ -191,8 +191,8 @@ func RegisterWebController(reg models.RegisterController, store ...*session.Stor
 
 	WebRouter := reg.Router.Group("/web")
 	WebRouter.Get("/token/:token?", controller.GetPage)
-	WebRouter.Post("/set", controller.PostPasswordAndCode)
+	WebRouter.Post("/set", controller.PostNewCodes)
 	// WebRouter.Use(security.TokenMiddleware(store))
 	WebRouter.Get("/test/One", controller.TestOne)
-	WebRouter.Get("/test/Two", controller.TestTwo)
+	// WebRouter.Get("/test/Two", controller.TestTwo)
 }
