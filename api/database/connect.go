@@ -30,7 +30,6 @@ var (
 
 func InitRedis() (*redis.Storage, error) {
 	var err error
-
 	redisOnce.Do(func() {
 		port, err := strconv.Atoi(os.Getenv("REDISPORT"))
 		if err != nil {
