@@ -3,7 +3,6 @@ package repos
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -94,7 +93,7 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 
 		if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
 			for _, v := range pem.Weekdays {
-				fmt.Printf("%v\n", reflect.TypeOf(v.Day))
+				// fmt.Printf("%v\n", reflect.TypeOf(v.Day))
 				if v.Day == dayINT {
 					var newLogin models.History
 					newLogin.UserID = user.ID
