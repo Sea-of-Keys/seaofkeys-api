@@ -23,6 +23,7 @@ func Setup(db *gorm.DB) {
 		&Permission{},
 		&UserPC{},
 		"teams_users",
+		"permissions_weekdays",
 	)
 	db.AutoMigrate(
 		&Room{},
