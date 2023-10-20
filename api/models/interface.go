@@ -37,6 +37,7 @@ type WebInterfaceMethods interface {
 	GetPage(*fiber.Ctx) error
 	PostNewCodes(*fiber.Ctx) error
 	TestOne(*fiber.Ctx) error
+	Error(*fiber.Ctx) error
 }
 type AuthInterfaceMethods interface {
 	Login(*fiber.Ctx) error

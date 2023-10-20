@@ -11,8 +11,9 @@ import (
 )
 
 type WebController struct {
-	repo  *repos.WebRepo
-	store *session.Store
+	repo     *repos.WebRepo
+	userRepo *repos.UserRepo
+	store    *session.Store
 }
 
 func (con *WebController) GetPage(c *fiber.Ctx) error {
@@ -22,7 +23,10 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 	token := c.Params("token")
 	sess, err := con.store.Get(c)
 	if err != nil {
-		panic(err)
+		data := fiber.Map{
+			"message": "failed to get session",
+		}
+		return c.Render("error/index", data)
 	}
 	// sess.Set("Cfailed", false)
 	// sess.Set("SetKronborg", 1)
@@ -101,7 +105,10 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 
 	sess, err := con.store.Get(c)
 	if err != nil {
-		panic(err)
+		data := fiber.Map{
+			"message": "failed to get session",
+		}
+		return c.Render("error/index", data)
 	}
 	sess.Set("Cfailed", false)
 
@@ -120,20 +127,13 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 		}
 		return fiber.NewError(fiber.StatusInternalServerError, "C10: "+err.Error())
 	}
-	if FormData.PasswordOne != FormData.PasswordTwo {
+
+	getToken := sess.Get("SetToken")
+	CToken := getToken.(string)
+	if FormData.CodeOne != FormData.CodeTwo || FormData.CodeOne == "" {
 		fmt.Println("3")
 
 		sess.Set("Cfailed", true)
-		if FormData.CodeOne != FormData.CodeTwo && FormData.CodeOne != "" {
-
-			fmt.Println("4")
-			fmt.Println("4")
-			fmt.Println("4")
-			fmt.Println("4")
-
-		}
-		getToken := sess.Get("SetToken")
-		CToken := getToken.(string)
 		if err := sess.Save(); err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
@@ -150,28 +150,24 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 	if err := sess.Save(); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
+	if ok, err := con.userRepo.PutPassword(FormData.CodeOne, CToken); ok || err == nil {
+		return c.Redirect("http://localhost:8006/web/test/one")
+	}
 
-	return c.Redirect("https://api.seaofkeys.com")
+	return c.Redirect(fmt.Sprintf("/web/token/%v", CToken))
 }
 
 func (con *WebController) TestOne(c *fiber.Ctx) error {
-
 	sess, err := con.store.Get(c)
 	if err != nil {
-		panic(err)
+		data := fiber.Map{
+			"message": "failed to get session",
+		}
+		return c.Render("error/index", data)
 	}
-	fmt.Printf("sess: %v\n", sess)
-	// Check Token HERE
-	// if token is legiget set token in session
-
-	//this is just to test if i get a token
-	// Read and output the session variable
-	name := sess.Get("ActiveToken")
-	fmt.Printf("Name from session: %v\n", name)
-
-	return c.JSON(&fiber.Map{
-		"name": name,
-	})
+	fmt.Println(sess)
+	data := fiber.Map{}
+	return c.Render("home/index", data)
 }
 func (con *WebController) TestTwo(c *fiber.Ctx) error {
 
@@ -179,20 +175,29 @@ func (con *WebController) TestTwo(c *fiber.Ctx) error {
 		"name": "name",
 	})
 }
+func (con *WebController) Error(c *fiber.Ctx) error {
+	data := fiber.Map{}
 
-func NewWebController(repo *repos.WebRepo, store *session.Store) models.WebInterfaceMethods {
-	return &WebController{repo, store}
+	return c.Render("error/index", data)
+}
+func NewWebController(
+	repo *repos.WebRepo,
+	userRepo *repos.UserRepo,
+	store *session.Store,
+) models.WebInterfaceMethods {
+	return &WebController{repo, userRepo, store}
 }
 
 func RegisterWebController(reg models.RegisterController, store ...*session.Store) {
 
 	repo := repos.NewWebRepo(reg.Db)
-	controller := NewWebController(repo, reg.Store)
+	userRepo := repos.NewUserRepo(reg.Db)
+	controller := NewWebController(repo, userRepo, reg.Store)
 
 	WebRouter := reg.Router.Group("/web")
 	WebRouter.Get("/token/:token?", controller.GetPage)
 	WebRouter.Post("/set", controller.PostNewCodes)
 	// WebRouter.Use(security.TokenMiddleware(store))
 	WebRouter.Get("/test/One", controller.TestOne)
-	// WebRouter.Get("/test/Two", controller.TestTwo)
+	WebRouter.Get("/error", controller.Error)
 }
