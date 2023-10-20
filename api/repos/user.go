@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 	"github.com/Sea-of-Keys/seaofkeys-api/pkg"
@@ -107,9 +108,6 @@ func (r *UserRepo) DelUsers(id []models.Delete) (bool, error) {
 	}
 	return true, nil
 }
-func (r *UserRepo) PutPassword(code string, password ...string) (bool, error) {
-	return false, nil
-}
 func (r *UserRepo) GetAllTeamsUserIsNotOn(UserID uint) ([]models.Team, error) {
 	var teams []models.Team
 	var user models.User
@@ -121,6 +119,29 @@ func (r *UserRepo) GetAllTeamsUserIsNotOn(UserID uint) ([]models.Team, error) {
 		return nil, err
 	}
 	return teams, nil
+}
+func (r *UserRepo) PutPassword(code string, token string, password ...string) (bool, error) {
+	var userPC models.UserPC
+	var user models.User
+
+	if err := r.db.Debug().Where("token = ?", token).First(&userPC).Error; err != nil {
+		return false, errors.New("can't find uder with token")
+	}
+	if err := r.db.Debug().First(&user, userPC.ID).Error; err != nil {
+		return false, errors.New("can't find uder with id")
+	}
+	newCode, err := middleware.HashPassword(code)
+	if err != nil {
+		return false, errors.New("failed to hash code")
+	}
+	user.Code = &newCode
+	if err := r.db.Model(&user).Updates(&user).Error; err != nil {
+		return false, errors.New("failed to update users code")
+	}
+	if err := r.db.Model(&userPC).Delete(userPC).Error; err != nil {
+		return false, errors.New("failed to delete userpc")
+	}
+	return true, nil
 }
 
 func NewUserRepo(db *gorm.DB) *UserRepo {
