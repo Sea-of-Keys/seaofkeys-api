@@ -3,6 +3,7 @@ package repos
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -61,18 +62,10 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 	var user models.User
 	var pem models.Permission
 	userIdInt, _ := strconv.Atoi(userID)
-	// now := "13:02:03"
-	// newtime := datatypes.NewTime(18, 0, 0, 0)
 	currentTime := time.Now()
-	day := time.Now().Weekday().String()
+	day := time.Now().Weekday()
+	dayINT := int(day)
 	formattedTime := currentTime.Format("15:04:05")
-
-	// instring := strings.Split(formattedTime, ":")
-	// // igg := strings.Split(formattedTime, ":")
-	// hour, _ := strconv.Atoi(instring[0])
-	// minute, _ := strconv.Atoi(instring[1])
-	// second, _ := strconv.Atoi(instring[2])
-	// newtime2 := datatypes.NewTime(hour, minute, second, 0)
 	// SQL SELECT * FROM permissions AS p WHERE p.user_id = 1 AND p.room_id = 3 OR p.room_id = 3 AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = 1);
 	// if err := r.db.Debug().Raw("SELECT * FROM permissions AS p WHERE p.user_id = ? AND p.room_id = ? OR p.room_id = ? AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = ?)", userIdInt, roomID, roomID, userIdInt).Scan(&pem).Error; err != nil {
 	// 	return models.Permission{}, err
@@ -96,23 +89,24 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 		pemSTime, _ := time.Parse("15:04:05", pemSTimeStr)
 		pemETime, _ := time.Parse("15:04:05", pemETimeStr)
 
-		// Format pemETime without specifying a date
 		pemSTimeFormatted := pemSTime.Format("15:04:05")
 		pemETimeFormatted := pemETime.Format("15:04:05")
 
 		if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
-			fmt.Printf(
-				"Current time is after pemSTime: %v and before pemETime: %v\n",
-				pemSTime,
-				pemETimeFormatted,
-			)
 			for _, v := range pem.Weekdays {
-				if v.Name == day {
-					return true, nil
+				fmt.Printf("%v\n", reflect.TypeOf(v.Day))
+				if v.Day == dayINT {
+					var newLogin models.History
+					newLogin.UserID = user.ID
+					newLogin.PermissionID = pem.ID
+					if ok, err := r.PostHistoryLogin(newLogin); ok && err == nil {
+						return true, nil
+					} else {
+						return false, err
+					}
 				}
 			}
 		}
-
 	}
 
 	return false, nil
