@@ -17,8 +17,6 @@ type WebController struct {
 }
 
 func (con *WebController) GetPage(c *fiber.Ctx) error {
-	// var data = models.UserPC
-	// var userPC models.UserPC
 	var err error
 	token := c.Params("token")
 	sess, err := con.store.Get(c)
@@ -28,15 +26,6 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 		}
 		return c.Render("error/index", data)
 	}
-	// sess.Set("Cfailed", false)
-	// sess.Set("SetKronborg", 1)
-	// if err := sess.Save(); err != nil {
-	// 	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	// }
-	// sess, err = con.store.Get(c)
-	// if err != nil {
-	// 	panic(err)
-	// }
 	fmt.Printf("sess: %v\n", sess)
 	userPC, err := con.repo.GetCheckToken(token)
 	if err != nil {
@@ -68,34 +57,21 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 		)
 	}
 	var Cfail bool
-	// var Kfail bool
 	sess, err = con.store.Get(c)
 	if err != nil {
 		panic(err)
 	}
 	Cfaill := sess.Get("Cfailed")
-	// sess, err = con.store.Get(c)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// Kfaill := sess.Get("Cfailed")
 	if val, ok := Cfaill.(bool); ok {
 		Cfail = val
 	} else {
 		Cfail = false
 	}
-	// if val, ok := Kfaill.(bool); ok {
-	// 	Kfail = val
-	// } else {
-	// 	Kfail = false
-	// }
-	// Kfail = Kfaill.(bool)
 	fmt.Println("1")
 	fmt.Println(sess.Get("SetToken"))
 	data := fiber.Map{
 		"User":    userPC,
 		"Cfailed": Cfail,
-		// "Kfailed": Kfail,
 	}
 	fmt.Printf("data: %v\n", data)
 	return c.Render("web/index", data)
@@ -198,6 +174,6 @@ func RegisterWebController(reg models.RegisterController, store ...*session.Stor
 	WebRouter.Get("/token/:token?", controller.GetPage)
 	WebRouter.Post("/set", controller.PostNewCodes)
 	// WebRouter.Use(security.TokenMiddleware(store))
-	WebRouter.Get("/test/One", controller.TestOne)
+	WebRouter.Get("/home", controller.TestOne)
 	WebRouter.Get("/error", controller.Error)
 }

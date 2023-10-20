@@ -138,6 +138,9 @@ func (r *UserRepo) PutPassword(code string, token string, password ...string) (b
 	if err := r.db.Model(&user).Updates(&user).Error; err != nil {
 		return false, errors.New("failed to update users code")
 	}
+	if err := r.db.Model(&userPC).Delete(userPC).Error; err != nil {
+		return false, errors.New("failed to delete userpc")
+	}
 	return true, nil
 }
 
