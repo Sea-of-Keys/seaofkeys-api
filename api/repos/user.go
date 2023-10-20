@@ -6,8 +6,9 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/Sea-of-Keys/seaofkeys-api/api/middleware"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
+	"github.com/Sea-of-Keys/seaofkeys-api/pkg"
 )
 
 type UserRepo struct {
@@ -35,12 +36,23 @@ func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
 	}
 	UserPC.UserID = user.ID
 	// if err :=
-	token, err := middleware.NewToken(user.ID, *user.Email)
+	token, err := security.NewToken(user.ID, *user.Email)
 	if err != nil {
 		return nil, err
 	}
 	UserPC.Token = token
 	if err := r.db.Debug().Create(&UserPC).Error; err != nil {
+		return nil, err
+	}
+	if err := pkg.SendEmail(*user.Email, user.Name, token); err != nil {
+		UserPC.EmailSend = false
+		if err := r.db.Model(&UserPC).Updates(&UserPC).Error; err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+	UserPC.EmailSend = true
+	if err := r.db.Model(&UserPC).Updates(&UserPC).Error; err != nil {
 		return nil, err
 	}
 	fmt.Println(UserPC)
@@ -94,6 +106,9 @@ func (r *UserRepo) DelUsers(id []models.Delete) (bool, error) {
 		}
 	}
 	return true, nil
+}
+func (r *UserRepo) PutPassword(code string, password ...string) (bool, error) {
+	return false, nil
 }
 func (r *UserRepo) GetAllTeamsUserIsNotOn(UserID uint) ([]models.Team, error) {
 	var teams []models.Team

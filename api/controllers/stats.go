@@ -2,13 +2,16 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
+	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type StatsController struct {
-	repo *repos.StatsRepo
+	repo  *repos.StatsRepo
+	store *session.Store
 }
 
 func (con *StatsController) GetUsersCount(c *fiber.Ctx) error {
@@ -47,16 +50,17 @@ func (con *StatsController) GetLoginsCount(c *fiber.Ctx) error {
 		"user_count": data,
 	})
 }
-func NewStatsController(repo *repos.StatsRepo) *StatsController {
-	return &StatsController{repo}
+func NewStatsController(repo *repos.StatsRepo, store *session.Store) models.StatsInterfaceMethods {
+	return &StatsController{repo, store}
 }
 
-func RegisterStatsController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewStatsRepo(db)
-	controller := NewStatsController(repo)
+func RegisterStatsController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewStatsRepo(reg.Db)
+	controller := NewStatsController(repo, reg.Store)
 
-	StatsRouter := router.Group("/stats")
+	StatsRouter := reg.Router.Group("/stats")
 
+	StatsRouter.Use(security.TokenMiddleware(reg.Store))
 	StatsRouter.Get("/users", controller.GetUsersCount)
 	StatsRouter.Get("/teams", controller.GetTeamsCount)
 	StatsRouter.Get("/rooms", controller.GetRoomsCount)

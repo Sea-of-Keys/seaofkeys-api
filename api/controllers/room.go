@@ -2,17 +2,19 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type RoomController struct {
-	repo *repos.RoomRepo
+	repo  *repos.RoomRepo
+	store *session.Store
 }
 
-func (con *RoomController) GetRoom(c *fiber.Ctx) error {
+func (con *RoomController) Get(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C30: "+err.Error())
@@ -26,7 +28,7 @@ func (con *RoomController) GetRoom(c *fiber.Ctx) error {
 		"room": data,
 	})
 }
-func (con *RoomController) GetRooms(c *fiber.Ctx) error {
+func (con *RoomController) Gets(c *fiber.Ctx) error {
 	data, err := con.repo.GetRooms()
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C31: "+err.Error())
@@ -35,7 +37,7 @@ func (con *RoomController) GetRooms(c *fiber.Ctx) error {
 		"room": data,
 	})
 }
-func (con *RoomController) PostRoom(c *fiber.Ctx) error {
+func (con *RoomController) Post(c *fiber.Ctx) error {
 	var room models.Room
 	if err := c.BodyParser(&room); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C33: "+err.Error())
@@ -48,7 +50,7 @@ func (con *RoomController) PostRoom(c *fiber.Ctx) error {
 		"room": data,
 	})
 }
-func (con *RoomController) PostRooms(c *fiber.Ctx) error {
+func (con *RoomController) Posts(c *fiber.Ctx) error {
 	var rooms []models.Room
 	if err := c.BodyParser(&rooms); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C39: "+err.Error())
@@ -61,7 +63,7 @@ func (con *RoomController) PostRooms(c *fiber.Ctx) error {
 		"room": data,
 	})
 }
-func (con *RoomController) PutRoom(c *fiber.Ctx) error {
+func (con *RoomController) Put(c *fiber.Ctx) error {
 	var room models.Room
 	if err := c.BodyParser(&room); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C35: "+err.Error())
@@ -74,7 +76,7 @@ func (con *RoomController) PutRoom(c *fiber.Ctx) error {
 		"room": data,
 	})
 }
-func (con *RoomController) DelRoom(c *fiber.Ctx) error {
+func (con *RoomController) Del(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C30: "+err.Error())
@@ -89,7 +91,7 @@ func (con *RoomController) DelRoom(c *fiber.Ctx) error {
 	})
 }
 
-func (con *RoomController) DelRooms(c *fiber.Ctx) error {
+func (con *RoomController) Dels(c *fiber.Ctx) error {
 	var ids []models.Delete
 	if err := c.BodyParser(&ids); err != nil {
 		return c.JSON(ids)
@@ -104,22 +106,26 @@ func (con *RoomController) DelRooms(c *fiber.Ctx) error {
 	})
 }
 
-func NewRommController(repo *repos.RoomRepo) *RoomController {
-	return &RoomController{repo}
+//	func NewRommController(repo *repos.RoomRepo, store *session.Store) *RoomController {
+//		return &RoomController{repo, store}
+//	}
+func NewRoomController(repo *repos.RoomRepo, store *session.Store) models.RoomInterfaceMethods {
+	return &RoomController{repo, store}
 }
 
-func RegisterRoomController(db *gorm.DB, router fiber.Router) {
-	repo := repos.NewRoomRepo(db)
-	controller := NewRommController(repo)
+func RegisterRoomController(reg models.RegisterController, store ...*session.Store) {
+	repo := repos.NewRoomRepo(reg.Db)
+	controller := NewRoomController(repo, reg.Store)
 
-	RoomRuter := router.Group("/room")
+	RoomRuter := reg.Router.Group("/room")
 
-	RoomRuter.Get("/:id", controller.GetRoom)
-	RoomRuter.Get("/", controller.GetRooms)
-	RoomRuter.Post("/", controller.PostRoom)
-	RoomRuter.Post("/many", controller.PostRooms)
-	RoomRuter.Put("/", controller.PutRoom)
-	RoomRuter.Delete("/:id", controller.DelRoom)
-	RoomRuter.Delete("/del/many", controller.DelRooms)
+	RoomRuter.Use(security.TokenMiddleware(reg.Store))
+	RoomRuter.Get("/:id", controller.Get)
+	RoomRuter.Get("/", controller.Gets)
+	RoomRuter.Post("/", controller.Post)
+	RoomRuter.Post("/many", controller.Posts)
+	RoomRuter.Put("/", controller.Put)
+	RoomRuter.Delete("/:id", controller.Del)
+	RoomRuter.Delete("/del/many", controller.Del)
 	// RoomRuter.Delete("/", controller.DelRoom)
 }
