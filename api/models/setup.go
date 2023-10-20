@@ -157,16 +157,16 @@ func Setup(db *gorm.DB) {
 	}
 	history := []History{
 		{
-			EmbeddedID: 1,
-			UserID:     1,
+			PermissionID: 1,
+			UserID:       1,
 		},
 		{
-			EmbeddedID: 2,
-			UserID:     1,
+			PermissionID: 2,
+			UserID:       1,
 		},
 		{
-			EmbeddedID: 1,
-			UserID:     2,
+			PermissionID: 1,
+			UserID:       2,
 		},
 	}
 	currentTime := time.Now()
