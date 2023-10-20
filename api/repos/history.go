@@ -12,7 +12,7 @@ type HistoryRepo struct {
 
 func (r *HistoryRepo) GetHistory(id uint) (*models.History, error) {
 	var history models.History
-	if err := r.db.Debug().F.Preload("User").Preload("Permission").First(&history, id).Error; err != nil {
+	if err := r.db.Debug().Preload("User").Preload("Permission").First(&history, id).Error; err != nil {
 		return nil, err
 	}
 	return &history, nil
