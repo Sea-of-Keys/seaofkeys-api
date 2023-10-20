@@ -14,7 +14,7 @@ type TeamController struct {
 	store *session.Store
 }
 
-func (con *TeamController) GetTeam(c *fiber.Ctx) error {
+func (con *TeamController) Get(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	UID := uint(id)
 	if err != nil {
@@ -28,7 +28,7 @@ func (con *TeamController) GetTeam(c *fiber.Ctx) error {
 		"team": data,
 	})
 }
-func (con *TeamController) GetTeams(c *fiber.Ctx) error {
+func (con *TeamController) Gets(c *fiber.Ctx) error {
 	data, err := con.repo.GetTeams()
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
@@ -37,7 +37,7 @@ func (con *TeamController) GetTeams(c *fiber.Ctx) error {
 		"team": data,
 	})
 }
-func (con *TeamController) PostTeam(c *fiber.Ctx) error {
+func (con *TeamController) Post(c *fiber.Ctx) error {
 	var team models.Team
 	if err := c.BodyParser(&team); err != nil {
 		return c.JSON(&fiber.Map{
@@ -52,7 +52,10 @@ func (con *TeamController) PostTeam(c *fiber.Ctx) error {
 		"team": data,
 	})
 }
-func (con *TeamController) PutTeam(c *fiber.Ctx) error {
+func (con *TeamController) Posts(c *fiber.Ctx) error {
+	return nil
+}
+func (con *TeamController) Put(c *fiber.Ctx) error {
 	var team models.Team
 	if err := c.BodyParser(&team); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
@@ -66,7 +69,7 @@ func (con *TeamController) PutTeam(c *fiber.Ctx) error {
 	})
 }
 
-func (con *TeamController) DelTeam(c *fiber.Ctx) error {
+func (con *TeamController) Del(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
@@ -80,7 +83,7 @@ func (con *TeamController) DelTeam(c *fiber.Ctx) error {
 		"sus": data,
 	})
 }
-func (con *TeamController) DelTeams(c *fiber.Ctx) error {
+func (con *TeamController) Dels(c *fiber.Ctx) error {
 	var teams []models.Delete
 	if err := c.BodyParser(&teams); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
@@ -121,20 +124,6 @@ func (con *TeamController) PostAddToTeam(c *fiber.Ctx) error {
 		"team": data,
 	})
 }
-
-// func (con *TeamController) PostRemoveFromTeam(c *fiber.Ctx) error {
-// 	var team models.AddToTeam
-// 	if err := c.BodyParser(&team); err != nil {
-// 		return fiber.NewError(fiber.StatusInternalServerError, "C22: "+err.Error())
-// 	}
-// 	data, err := con.repo.RemoveFromTeam(team.TeamID, team.UserID)
-// 	if err != nil {
-// 		return fiber.NewError(fiber.StatusInternalServerError, "C23: "+err.Error())
-// 	}
-// 	return c.JSON(&fiber.Map{
-// 		"team": data,
-// 	})
-// }
 
 func (con *TeamController) DeleteUsersRemoveFromTeam(c *fiber.Ctx) error {
 	var team models.TeamUsers
@@ -177,7 +166,7 @@ func (con *TeamController) AddTeamsToUser(c *fiber.Ctx) error {
 	})
 }
 
-func NewTeamController(repo *repos.TeamRepo, store *session.Store) *TeamController {
+func NewTeamController(repo *repos.TeamRepo, store *session.Store) models.TeamInterfaceMethods {
 	return &TeamController{repo, store}
 }
 
@@ -190,12 +179,12 @@ func RegisterTeamController(reg models.RegisterController, store ...*session.Sto
 	TeamRouter.Use(security.TokenMiddleware(reg.Store))
 	TeamRouter.Post("/add", controller.PostAddToTeam)
 	TeamRouter.Delete("/remove", controller.DeleteUsersRemoveFromTeam)
-	TeamRouter.Delete("/del/:id", controller.DelTeam)
-	TeamRouter.Delete("/del", controller.DelTeams)
-	TeamRouter.Post("/", controller.PostTeam)
-	TeamRouter.Get("/:id", controller.GetTeam)
-	TeamRouter.Get("/", controller.GetTeams)
-	TeamRouter.Put("/", controller.PutTeam)
+	TeamRouter.Delete("/del/:id", controller.Del)
+	TeamRouter.Delete("/del", controller.Dels)
+	TeamRouter.Post("/", controller.Post)
+	TeamRouter.Get("/:id", controller.Get)
+	TeamRouter.Get("/", controller.Gets)
+	TeamRouter.Put("/", controller.Put)
 	TeamRouter.Get("/users/:id", controller.GetAllUserNotOnTheTeam)
 	TeamRouter.Delete("/user", controller.RemoveTeamsFromUser)
 	TeamRouter.Post("/user", controller.AddTeamsToUser)

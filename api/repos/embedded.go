@@ -3,7 +3,9 @@ package repos
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
+	"time"
 
 	"gorm.io/gorm"
 
@@ -60,9 +62,10 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 	var user models.User
 	var pem models.Permission
 	userIdInt, _ := strconv.Atoi(userID)
-	// now := "12:02:03"
-
-	// Format the time as a string
+	currentTime := time.Now()
+	day := time.Now().Weekday()
+	dayINT := int(day)
+	formattedTime := currentTime.Format("15:04:05")
 	// SQL SELECT * FROM permissions AS p WHERE p.user_id = 1 AND p.room_id = 3 OR p.room_id = 3 AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = 1);
 	// if err := r.db.Debug().Raw("SELECT * FROM permissions AS p WHERE p.user_id = ? AND p.room_id = ? OR p.room_id = ? AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = ?)", userIdInt, roomID, roomID, userIdInt).Scan(&pem).Error; err != nil {
 	// 	return models.Permission{}, err
@@ -73,183 +76,48 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 	if err := r.db.Debug().Table("permissions"). // Use the table name if necessary
 							Preload("Team.Users").
 							Preload("User").
+							Preload("Weekdays").
 							Where("user_id = ? AND room_id = ?", userIdInt, roomID).Or("room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", roomID, userIdInt).
-		// Where("start_time < ? AND end_time > ?", newtime, newtime).
+		// Where("start_time > ?", now).
 		Find(&pem).Error; err != nil {
 		return false, err
 	}
-
-	fmt.Printf(
-		"permissionsID: %v\n StartTime: %s\n EndTime %s\n",
-		pem.ID,
-		pem.StartTime,
-		pem.EndTime,
-	)
 	if pem.ID != 0 {
-		return true, nil
+		pemSTimeStr := pem.StartTime.String()
+		pemETimeStr := pem.EndTime.String()
+
+		pemSTime, _ := time.Parse("15:04:05", pemSTimeStr)
+		pemETime, _ := time.Parse("15:04:05", pemETimeStr)
+
+		pemSTimeFormatted := pemSTime.Format("15:04:05")
+		pemETimeFormatted := pemETime.Format("15:04:05")
+
+		if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
+			for _, v := range pem.Weekdays {
+				fmt.Printf("%v\n", reflect.TypeOf(v.Day))
+				if v.Day == dayINT {
+					var newLogin models.History
+					newLogin.UserID = user.ID
+					newLogin.PermissionID = pem.ID
+					if ok, err := r.PostHistoryLogin(newLogin); ok && err == nil {
+						return true, nil
+					} else {
+						return false, err
+					}
+				}
+			}
+		}
 	}
 
 	return false, nil
+}
+func (r *EmbeddedRepo) PostHistoryLogin(newLogin models.History) (bool, error) {
+	if err := r.db.Debug().Create(&newLogin).Error; err != nil {
+		return false, err
+	}
+	return true, nil
 
 }
-
-// func (r *EmbeddedRepo) PostCode(code string, ID, RoomID uint) (bool, error) {
-// 	var per models.Permission
-// 	var user models.User
-// 	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&per, ID).Error; err != nil {
-// 		return false, err
-// 	}
-// 	if per.Team != nil {
-// 		// var team models.Team
-// 		for _, v := range per.Team.Users {
-// 			UserCode := *user.Code
-// 			if middleware.CheckPasswordHash(code, UserCode) {
-// 				fmt.Println(v.Email)
-// 				fmt.Println("Coden Passer")
-// 				return true, errors.New("det virker")
-// 			}
-// 		}
-// 		if err := r.db.Debug().Find(&user, &per.UserID).Error; err != nil {
-// 			return false, errors.New("LORT PAA LORT")
-// 		}
-// 		UserCode := *user.Code
-// 		if middleware.CheckPasswordHash(code, UserCode) {
-// 			return true, nil
-// 			// ret
-// 		}
-
-// 		// check team frist
-// 		// if err r.db.Debug.
-// 		return false, nil
-// 	}
-// 	return false, nil
-// }
-// func (r *EmbeddedRepo) PostCodeV2(code, UserID string, RoomID uint) (bool, error) {
-// 	var pem []models.Permission
-// 	// var user []models.User
-// 	if err := r.db.Debug().Preload("User").Preload("Team.Users").Where("room_id = ?", RoomID).Find(&pem).Error; err != nil {
-// 		return false, err
-// 	}
-// 	for _, v := range pem {
-// 		if v.Team != nil {
-
-// 			for _, g := range v.Team.Users {
-// 				// UserCode := *g.Code
-// 				if middleware.CheckPasswordHash(code, *g.Code) {
-// 					return true, nil
-// 				}
-// 			}
-// 		}
-// 		// UserCode := *v.User.Code
-// 		if middleware.CheckPasswordHash(code, *v.User.Code) {
-// 			return true, nil
-// 		}
-
-// 	}
-// 	return false, nil
-
-// }
-// func (r *EmbeddedRepo) PostCodeV3(code, userID string, roomID uint) (models.Permission, error) {
-// 	var user models.User
-// 	// var Userpem models.Permission
-// 	var pem models.Permission
-// 	userIdInt, _ := strconv.Atoi(userID)
-// 	// now := "12:02:03"
-// 	currentTime := time.Now()
-
-// 	// Format the time as a string
-// 	formattedTime := currentTime.Format("15:04:05")
-// 	fmt.Println(formattedTime)
-// 	splittime := strings.Split(formattedTime, ":")
-// 	// var one int
-// 	// var two int
-// 	// var tre int
-// 	// var newtime datatypes.Time
-// 	one, _ := strconv.Atoi(splittime[0])
-// 	two, _ := strconv.Atoi(splittime[1])
-// 	tre, _ := strconv.Atoi(splittime[2])
-// 	newtime := datatypes.NewTime(one, two, tre, 0)
-// 	// SQL SELECT * FROM permissions AS p WHERE p.user_id = 1 AND p.room_id = 3 OR p.room_id = 3 AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = 1);
-// 	// if err := r.db.Debug().Raw("SELECT * FROM permissions AS p WHERE p.user_id = ? AND p.room_id = ? OR p.room_id = ? AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = ?)", userIdInt, roomID, roomID, userIdInt).Scan(&pem).Error; err != nil {
-// 	// 	return models.Permission{}, err
-// 	// }
-// 	if err := r.db.Debug().Find(&user, userIdInt).Error; err != nil {
-// 		return models.Permission{}, err
-// 	}
-// 	if err := r.db.Debug().Table("permissions"). // Use the table name if necessary
-// 							Preload("Team.Users").
-// 							Preload("User").
-// 							Where("user_id = ? AND room_id = ?", userIdInt, roomID).Or("room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", roomID, userIdInt).
-// 		// Where("start_time < ? AND end_time > ?", newtime, newtime).
-// 		Find(&pem).Error; err != nil {
-// 		return models.Permission{}, err
-// 	}
-// 	if pem.StartTime < newtime && pem.EndTime > newtime {
-// 		if !middleware.CheckPasswordHash(code, *user.Code) {
-// 			return models.Permission{}, nil
-// 		}
-// 		fmt.Println("kronborg")
-// 		return pem, nil
-// 	}
-// 	fmt.Printf("permissionsID: %v\n", pem.ID)
-// 	fmt.Printf("permissionsID: %v\n", pem.ID)
-// 	fmt.Printf("permissionsID: %v\n", pem.ID)
-
-// 	return pem, nil
-
-// }
-
-// func (r *EmbeddedRepo) PostCodeV4(code, userID string, roomID uint) (models.Permission, error) {
-// 	var user models.User
-// 	// var Userpem models.Permission
-// 	var pem models.Permission
-// 	userIdInt, _ := strconv.Atoi(userID)
-// 	// now := "12:02:03"
-
-// 	// Format the time as a string
-// 	// SQL SELECT * FROM permissions AS p WHERE p.user_id = 1 AND p.room_id = 3 OR p.room_id = 3 AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = 1);
-// 	// if err := r.db.Debug().Raw("SELECT * FROM permissions AS p WHERE p.user_id = ? AND p.room_id = ? OR p.room_id = ? AND p.team_id IN (SELECT team_id FROM teams_users WHERE team_id = p.team_id AND user_id = ?)", userIdInt, roomID, roomID, userIdInt).Scan(&pem).Error; err != nil {
-// 	// 	return models.Permission{}, err
-// 	// }
-// 	if err := r.db.Debug().Find(&user, userIdInt).Error; err != nil {
-// 		return models.Permission{}, err
-// 	}
-// 	if err := r.db.Debug().Table("permissions"). // Use the table name if necessary
-// 							Preload("Team.Users").
-// 							Preload("User").
-// 							Where("user_id = ? AND room_id = ?", userIdInt, roomID).Or("room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", roomID, userIdInt).
-// 		// Where("start_time < ? AND end_time > ?", newtime, newtime).
-// 		Find(&pem).Error; err != nil {
-// 		return models.Permission{}, err
-// 	}
-// 	fmt.Printf(
-// 		"permissionsID: %v\n StartTime: %s\n EndTime %s\n",
-// 		pem.ID,
-// 		pem.StartTime,
-// 		pem.EndTime,
-// 	)
-// 	fmt.Printf(
-// 		"permissionsID: %v\n StartTime: %s\n EndTime %s\n",
-// 		pem.ID,
-// 		pem.StartTime,
-// 		pem.EndTime,
-// 	)
-// 	fmt.Printf(
-// 		"permissionsID: %v\n StartTime: %s\n EndTime %s\n",
-// 		pem.ID,
-// 		pem.StartTime,
-// 		pem.EndTime,
-// 	)
-// 	fmt.Printf(
-// 		"permissionsID: %v\n StartTime: %s\n EndTime %s\n",
-// 		pem.ID,
-// 		pem.StartTime,
-// 		pem.EndTime,
-// 	)
-
-// 	return pem, nil
-
-// }
 func NewEmbeddedRepo(db *gorm.DB) *EmbeddedRepo {
 	return &EmbeddedRepo{db}
 }

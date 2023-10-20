@@ -106,19 +106,6 @@ func RefreshToken(tokenString, secretKey string) (uint, string, error) {
 func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 
-		// HeaderOne := c.Request().Header.Peek("Authorization")
-		// Bearer := string(HeaderOne)
-		// HeaderTwo := c.Request().Header.Peek("kronborg")
-		// HeaderTwo := c.Request().Header.Peek("sessin_id")
-		// sessionID := string(HeaderTwo)
-		// fmt.Printf("Bearer Token: %s\n", sessionID)
-		// fmt.Printf("Bearer Token: %s\n", cookies3)
-		// fmt.Printf("Bearer Token: %s\n", cookies3)
-		// fmt.Printf("Bearer Token: %s\n", cookies3)
-		// fmt.Printf("Bearer Token: %s\n", cookies3)
-		// fmt.Printf("Bearer Token: %s\n", cookies3)
-		// store.getSessionID("g")
-
 		sess, err := store.Get(c)
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
@@ -126,9 +113,7 @@ func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 		fmt.Printf("Middleware Session: %v\n", sess)
 		fmt.Printf("Middleware Session: %v\n", sess)
 		tokenInter := sess.Get("ActiveToken")
-		// fmt.Printf("Token1: %v\n", tokenInter)
 		tokenString, ok := tokenInter.(string)
-		// fmt.Printf("Token2: %v\n", tokenString)
 		if !ok || tokenString == "" {
 			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
 		}
@@ -138,49 +123,6 @@ func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 			})
 		}
 		return c.Next()
-		// sessID := sess.ID()
-		// if sessionID != "" {
-
-		// 	if sessID != sessionID {
-		// 		cookieHeader3 := c.Request().Header.Peek("Authorization")
-		// 		cookies3 := string(cookieHeader3)
-		// 		if cookies3 == "" {
-		// 			return c.Status(401).JSON(fiber.Map{
-		// 				"message": "No Bearer Token Provided ",
-		// 			})
-		// 		}
-		// 		if len(cookies3) < 8 {
-		// 			return c.Status(401).JSON(fiber.Map{
-		// 				"message": "No Token Provided",
-		// 			})
-		// 		}
-		// 		tokenString := cookies3[7:]
-		// 		if ok, err := CheckToken(tokenString, os.Getenv("PSCRERT")); !ok || err != nil {
-		// 			return c.Status(401).JSON(fiber.Map{
-		// 				"message": "Unauthorized",
-		// 			})
-		// 		}
-		// 		fmt.Printf("Im being used\n")
-		// 		return c.Next()
-
-		// 	}
-
-		// }
-		// // fmt.Printf("sess: %v\n", sess)
-		// tokenInter := sess.Get("ActiveToken")
-		// // fmt.Printf("Token1: %v\n", tokenInter)
-		// tokenString, ok := tokenInter.(string)
-		// // fmt.Printf("Token2: %v\n", tokenString)
-		// if !ok || tokenString == "" {
-		// 	return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
-		// }
-		// if ok, err := CheckToken(tokenString, os.Getenv("PSCRERT")); !ok || err != nil {
-		// 	return c.Status(401).JSON(fiber.Map{
-		// 		"message": "Unauthorized",
-		// 	})
-		// }
-		// return c.Next()
-		// fmt.Printf("Token: %v\n", name)
 	}
 }
 func WebsiteTokenmiddleware() func(c *fiber.Ctx) error {
@@ -204,6 +146,11 @@ func WebsiteTokenmiddleware() func(c *fiber.Ctx) error {
 				"message": "Unauthorized",
 			})
 		}
+		return c.Next()
+	}
+}
+func LoggingMiddleware() func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		return c.Next()
 	}
 }

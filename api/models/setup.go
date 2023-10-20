@@ -157,16 +157,16 @@ func Setup(db *gorm.DB) {
 	}
 	history := []History{
 		{
-			EmbeddedID: 1,
-			UserID:     1,
+			PermissionID: 1,
+			UserID:       1,
 		},
 		{
-			EmbeddedID: 2,
-			UserID:     1,
+			PermissionID: 2,
+			UserID:       1,
 		},
 		{
-			EmbeddedID: 1,
-			UserID:     2,
+			PermissionID: 1,
+			UserID:       2,
 		},
 	}
 	currentTime := time.Now()
@@ -191,8 +191,8 @@ func Setup(db *gorm.DB) {
 			EndDateST:   currentTime.Format("2006-01-02"),
 			// StartDate: time.Now(),
 			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(8, 2, 0, 0),
-			EndTime:   datatypes.NewTime(23, 2, 0, 0),
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(22, 0, 0, 0),
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
@@ -252,7 +252,7 @@ func Setup(db *gorm.DB) {
 	db.Create(&embedded)
 	db.Create(&users)
 	db.Create(&userpc)
-	db.Create(&history)
 	db.Create(&teams)
 	db.Create(&permission)
+	db.Create(&history)
 }

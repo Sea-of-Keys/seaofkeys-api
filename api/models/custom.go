@@ -45,6 +45,10 @@ type EmbedSetup struct {
 	EmbeddedID uint   `json:"embedded_id"`
 	Ssshhh     string `json:"ssshhh"`
 }
+type NewHistoryLogin struct {
+	UserID       uint `json:"user_id"`
+	PermissionID uint `json:"permission_id"`
+}
 type Te interface {
 }
 type RegisterController struct {

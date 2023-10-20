@@ -69,7 +69,7 @@ func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
 		"session_is": true,
 	})
 }
-func (con *EmbeddedController) EmbeededLogin(c *fiber.Ctx) error {
+func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 	var login Login
 	if err := c.BodyParser(&login); err != nil {
 		gg := errors.New("E22: " + err.Error())
@@ -129,6 +129,7 @@ func (con *EmbeddedController) EmbeddedLoginLive(c *fiber.Ctx) error {
 		// gg := errors.New("E22: " + err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
 	}
+	fmt.Println("Kronborg")
 	result := strings.Split(login.Code, "#")
 	sus, err := con.repo.PostCodeLive(result[0], result[1], login.RoomID)
 	if err != nil {
@@ -139,7 +140,11 @@ func (con *EmbeddedController) EmbeddedLoginLive(c *fiber.Ctx) error {
 		"data":    sus,
 	})
 }
-func NewEmbeddedController(repo *repos.EmbeddedRepo, store *session.Store) *EmbeddedController {
+
+func NewEmbeddedController(
+	repo *repos.EmbeddedRepo,
+	store *session.Store,
+) models.EmbeddedInterfaceMethods {
 	return &EmbeddedController{repo, store}
 }
 
@@ -150,7 +155,7 @@ func RegisterEmbeddedController(reg models.RegisterController, store ...*session
 	EmbeddedRouter := reg.Router.Group("/em")
 
 	EmbeddedRouter.Post("/setup", controller.Setup)
-	EmbeddedRouter.Use(security.TokenEmbeddedMiddleware(store[0]))
+	// EmbeddedRouter.Use(security.TokenEmbeddedMiddleware(store[0]))
 	EmbeddedRouter.Post("/login", controller.EmbeddedLoginLive)
 	// EmbeddedRouter.Post("/log1", controller.EmbeddedLogin2)
 	// EmbeddedRouter.Post("/log2", controller.EmbeddedLogin3)

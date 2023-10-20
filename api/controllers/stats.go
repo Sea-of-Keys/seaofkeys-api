@@ -50,7 +50,7 @@ func (con *StatsController) GetLoginsCount(c *fiber.Ctx) error {
 		"user_count": data,
 	})
 }
-func NewStatsController(repo *repos.StatsRepo, store *session.Store) *StatsController {
+func NewStatsController(repo *repos.StatsRepo, store *session.Store) models.StatsInterfaceMethods {
 	return &StatsController{repo, store}
 }
 

@@ -107,6 +107,9 @@ func (r *UserRepo) DelUsers(id []models.Delete) (bool, error) {
 	}
 	return true, nil
 }
+func (r *UserRepo) PutPassword(code string, password ...string) (bool, error) {
+	return false, nil
+}
 func (r *UserRepo) GetAllTeamsUserIsNotOn(UserID uint) ([]models.Team, error) {
 	var teams []models.Team
 	var user models.User
