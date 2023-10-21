@@ -60,12 +60,42 @@ func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
 	}
 	fmt.Println(token)
 
-	return c.JSON(&fiber.Map{
-		"session_is": true,
-	})
+	if ok, err := con.repo.UpdateSecrect(emb.Ssshhh, token); ok && err == nil {
+		return c.JSON(&fiber.Map{
+			"session_is": true,
+		})
+	}
+	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+
 }
-func (con *EmbeddedController) Refrech(c *fiber.Ctx) error {
-	return nil
+func (con *EmbeddedController) Refresh(c *fiber.Ctx) error {
+	sess, err := con.store.Get(c)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	if sess.Get("EmbeddedSession") == nil {
+
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	base64, err := security.NewBase64Token()
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	newtoken, err := security.NewEmbeddedToken(base64)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	oldtoken := sess.Get("EmbeddedSession").(string)
+	sess.Set("EmbeddedSession", newtoken)
+	if err := sess.Save(); err != nil {
+		fmt.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	if ok, err := con.repo.UpdateSecrect(oldtoken, newtoken); ok && err == nil {
+		return nil
+	}
+
+	return fiber.NewError(fiber.StatusInternalServerError)
 }
 func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 	var login Login
@@ -117,6 +147,7 @@ func RegisterEmbeddedController(reg models.RegisterController, store ...*session
 
 	EmbeddedRouter.Post("/setup", controller.Setup)
 	EmbeddedRouter.Use(security.TokenEmbeddedMiddleware(store[0]))
+	EmbeddedRouter.Get("/refresh", controller.Refresh)
 	EmbeddedRouter.Post("/login", controller.EmbeddedLoginLive)
 	// EmbeddedRouter.Post("/log1", controller.EmbeddedLogin2)
 	// EmbeddedRouter.Post("/log2", controller.EmbeddedLogin3)

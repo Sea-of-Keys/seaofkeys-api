@@ -61,6 +61,6 @@ type EmbeddedInterfaceMethods interface {
 	Setup(*fiber.Ctx) error
 	Login(*fiber.Ctx) error
 	EmbeddedLoginLive(*fiber.Ctx) error
-
+	Refresh(*fiber.Ctx) error
 	// CRUDController
 }
