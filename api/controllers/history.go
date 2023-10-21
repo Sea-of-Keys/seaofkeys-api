@@ -106,7 +106,7 @@ func (con *HistoryController) Dels(c *fiber.Ctx) error {
 func NewHistoryController(
 	repo *repos.HistoryRepo,
 	store *session.Store,
-) models.HistoryInterfaceMethods {
+) HistoryInterfaceMethods {
 	return &HistoryController{repo, store}
 }
 

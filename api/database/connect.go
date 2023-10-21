@@ -36,7 +36,7 @@ func InitRedis() (*redis.Storage, error) {
 		if err != nil {
 			port = 6379
 		}
-		// time.Sleep(3 * time.Second)
+		//time.Sleep(3 * time.Second)
 		storage := redis.New(redis.Config{
 			Host:      os.Getenv("REDISHOST"),
 			Port:      port,

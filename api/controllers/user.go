@@ -125,7 +125,7 @@ func (con *UserController) GetTeamsUserIsNotOn(c *fiber.Ctx) error {
 		"teams": data,
 	})
 }
-func NewUsercontroller(repo *repos.UserRepo, store *session.Store) models.UserInterfaceMethods {
+func NewUsercontroller(repo *repos.UserRepo, store *session.Store) UserInterfaceMethods {
 	return &UserController{repo, store}
 }
 

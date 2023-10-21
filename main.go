@@ -75,7 +75,7 @@ func main() {
 	// storage.Get()
 	stores := []*session.Store{
 		session.New(session.Config{
-			KeyLookup:  "cookie:kronborg_id",
+			KeyLookup:  "cookie:session_em_id",
 			Expiration: 32 * time.Hour,
 			Storage:    storage,
 		}),

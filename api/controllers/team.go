@@ -166,7 +166,7 @@ func (con *TeamController) AddTeamsToUser(c *fiber.Ctx) error {
 	})
 }
 
-func NewTeamController(repo *repos.TeamRepo, store *session.Store) models.TeamInterfaceMethods {
+func NewTeamController(repo *repos.TeamRepo, store *session.Store) TeamInterfaceMethods {
 	return &TeamController{repo, store}
 }
 

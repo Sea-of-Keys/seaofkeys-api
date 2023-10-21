@@ -137,7 +137,7 @@ func (con *WebController) TestOne(c *fiber.Ctx) error {
 	sess, err := con.store.Get(c)
 	if err != nil {
 		data := fiber.Map{
-			"message": "failed to get session",
+			// "message": "failed to get session",
 		}
 		return c.Render("error/index", data)
 	}
@@ -160,7 +160,7 @@ func NewWebController(
 	repo *repos.WebRepo,
 	userRepo *repos.UserRepo,
 	store *session.Store,
-) models.WebInterfaceMethods {
+) WebInterfaceMethods {
 	return &WebController{repo, userRepo, store}
 }
 
