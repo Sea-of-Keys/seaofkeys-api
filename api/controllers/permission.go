@@ -130,7 +130,7 @@ func (con *PermissionController) GetFindTeamsPermissions(c *fiber.Ctx) error {
 func NewPermissionController(
 	repo *repos.PermissionRepo,
 	store *session.Store,
-) models.PermissionInterfaceMethods {
+) PermissionInterfaceMethods {
 	return &PermissionController{repo, store}
 }
 

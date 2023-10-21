@@ -127,7 +127,7 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	if ok, err := con.userRepo.PutPassword(FormData.CodeOne, CToken); ok || err == nil {
-		return c.Redirect("http://localhost:8006/web/test/one")
+		return c.Redirect("/web/home")
 	}
 
 	return c.Redirect(fmt.Sprintf("/web/token/%v", CToken))
@@ -137,7 +137,7 @@ func (con *WebController) TestOne(c *fiber.Ctx) error {
 	sess, err := con.store.Get(c)
 	if err != nil {
 		data := fiber.Map{
-			"message": "failed to get session",
+			// "message": "failed to get session",
 		}
 		return c.Render("error/index", data)
 	}
@@ -160,7 +160,7 @@ func NewWebController(
 	repo *repos.WebRepo,
 	userRepo *repos.UserRepo,
 	store *session.Store,
-) models.WebInterfaceMethods {
+) WebInterfaceMethods {
 	return &WebController{repo, userRepo, store}
 }
 

@@ -36,7 +36,6 @@ func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
 		return nil, errors.New("ERROR 12: " + err.Error())
 	}
 	UserPC.UserID = user.ID
-	// if err :=
 	token, err := security.NewToken(user.ID, *user.Email)
 	if err != nil {
 		return nil, err
@@ -90,7 +89,6 @@ func (r *UserRepo) DelUser(id uint) (bool, error) {
 }
 func (r *UserRepo) DelUsers(id []models.Delete) (bool, error) {
 	var user models.User
-	// gg := []uint{2, 3}
 	fmt.Println(id)
 	for _, v := range id {
 		if err := r.db.Debug().Model(&user).

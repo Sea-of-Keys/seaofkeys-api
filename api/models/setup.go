@@ -35,7 +35,7 @@ func Setup(db *gorm.DB) {
 		&Permission{},
 		&UserPC{},
 	)
-
+	currentTime := time.Now()
 	room := []Room{
 		{
 			Name: "A1",
@@ -156,21 +156,29 @@ func Setup(db *gorm.DB) {
 			Users: []*User{{ID: 1}},
 		},
 	}
+	layout := "2006-01-02 15:04:05"
+	timeTwo := currentTime.Add(-2 * time.Hour)
+	timeTre := currentTime.Add(-1 * time.Hour)
+	formattedTime := currentTime.Format(layout)
+	formattedTimeTwo := timeTwo.Format(layout)
+	formattedTimeTre := timeTre.Format(layout)
 	history := []History{
 		{
 			PermissionID: 1,
 			UserID:       1,
+			At:           formattedTime,
 		},
 		{
 			PermissionID: 2,
 			UserID:       1,
+			At:           formattedTimeTwo,
 		},
 		{
 			PermissionID: 1,
 			UserID:       2,
+			At:           formattedTimeTre,
 		},
 	}
-	currentTime := time.Now()
 	permission := []Permission{
 		// {
 		// 	RoomID: 1,

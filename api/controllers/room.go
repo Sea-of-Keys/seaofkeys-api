@@ -109,7 +109,7 @@ func (con *RoomController) Dels(c *fiber.Ctx) error {
 //	func NewRommController(repo *repos.RoomRepo, store *session.Store) *RoomController {
 //		return &RoomController{repo, store}
 //	}
-func NewRoomController(repo *repos.RoomRepo, store *session.Store) models.RoomInterfaceMethods {
+func NewRoomController(repo *repos.RoomRepo, store *session.Store) RoomInterfaceMethods {
 	return &RoomController{repo, store}
 }
 

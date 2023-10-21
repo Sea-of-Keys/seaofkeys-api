@@ -114,7 +114,7 @@ func (con *AuthController) RefreshToken(c *fiber.Ctx) error {
 // 	return nil
 // }
 
-func NewAuthController(repo *repos.AuthRepo, store *session.Store) models.AuthInterfaceMethods {
+func NewAuthController(repo *repos.AuthRepo, store *session.Store) AuthInterfaceMethods {
 	return &AuthController{repo, store}
 }
 func RegisterAuthController(reg models.RegisterController, store ...*session.Store) {

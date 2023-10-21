@@ -90,18 +90,19 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 
 		pemSTimeFormatted := pemSTime.Format("15:04:05")
 		pemETimeFormatted := pemETime.Format("15:04:05")
-
-		if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
-			for _, v := range pem.Weekdays {
-				// fmt.Printf("%v\n", reflect.TypeOf(v.Day))
-				if v.Day == dayINT {
-					var newLogin models.History
-					newLogin.UserID = user.ID
-					newLogin.PermissionID = pem.ID
-					if ok, err := r.PostHistoryLogin(newLogin); ok && err == nil {
-						return true, nil
-					} else {
-						return false, err
+		if true {
+			if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
+				for _, v := range pem.Weekdays {
+					// fmt.Printf("%v\n", reflect.TypeOf(v.Day))
+					if v.Day == dayINT {
+						var newLogin models.History
+						newLogin.UserID = user.ID
+						newLogin.PermissionID = pem.ID
+						if ok, err := r.PostHistoryLogin(newLogin); ok && err == nil {
+							return true, nil
+						} else {
+							return false, err
+						}
 					}
 				}
 			}
@@ -111,6 +112,10 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 	return false, nil
 }
 func (r *EmbeddedRepo) PostHistoryLogin(newLogin models.History) (bool, error) {
+	currentTime := time.Now()
+	layout := "2006-01-02 15:04:05"
+	formattedTime := currentTime.Format(layout)
+	newLogin.At = formattedTime
 	if err := r.db.Debug().Create(&newLogin).Error; err != nil {
 		return false, err
 	}
