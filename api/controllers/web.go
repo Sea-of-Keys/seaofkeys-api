@@ -127,7 +127,7 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	if ok, err := con.userRepo.PutPassword(FormData.CodeOne, CToken); ok || err == nil {
-		return c.Redirect("http://localhost:8006/web/test/one")
+		return c.Redirect("/web/home")
 	}
 
 	return c.Redirect(fmt.Sprintf("/web/token/%v", CToken))
