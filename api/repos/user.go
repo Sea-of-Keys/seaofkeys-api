@@ -36,7 +36,7 @@ func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
 		return nil, errors.New("ERROR 12: " + err.Error())
 	}
 	UserPC.UserID = user.ID
-	token, err := security.NewToken(user.ID, *user.Email)
+	token, err := security.NewPasswordToken(user.ID, *user.Email)
 	if err != nil {
 		return nil, err
 	}

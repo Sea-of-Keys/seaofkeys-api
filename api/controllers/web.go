@@ -8,6 +8,7 @@ import (
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type WebController struct {
@@ -27,6 +28,10 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 		return c.Render("error/index", data)
 	}
 	fmt.Printf("sess: %v\n", sess)
+	fmt.Printf("sess: %v\n", sess)
+	fmt.Printf("sess: %v\n", sess)
+	fmt.Printf("sess: %v\n", sess)
+	fmt.Printf("sess: %v\n", sess)
 	userPC, err := con.repo.GetCheckToken(token)
 	if err != nil {
 		return fiber.NewError(
@@ -35,9 +40,9 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 		)
 	}
 	fmt.Println("1")
-	getToken := sess.Get("SetToken")
+	getToken := sess.Get("WebToken")
 	if getToken == nil {
-		sess.Set("SetToken", token)
+		sess.Set("WebToken", token)
 		if err := sess.Save(); err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
@@ -45,35 +50,44 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 		if err != nil {
 			panic(err)
 		}
-		getToken = sess.Get("SetToken")
+		fmt.Println("2")
+		getToken = sess.Get("WebToken")
 	}
 
 	fmt.Println("1")
 	CToken := getToken.(string)
+	fmt.Printf("CToken: %v\n", CToken)
+
+	fmt.Println("2")
 	if CToken != userPC.Token {
 		return fiber.NewError(
 			fiber.StatusInternalServerError,
 			"sessin token does not match provide token",
 		)
 	}
+	fmt.Println("3")
 	var Cfail bool
 	sess, err = con.store.Get(c)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("4")
 	Cfaill := sess.Get("Cfailed")
 	if val, ok := Cfaill.(bool); ok {
 		Cfail = val
 	} else {
 		Cfail = false
 	}
-	fmt.Println("1")
-	fmt.Println(sess.Get("SetToken"))
+	fmt.Println("5")
+
 	data := fiber.Map{
 		"User":    userPC,
 		"Cfailed": Cfail,
 	}
 	fmt.Printf("data: %v\n", data)
+	if err := sess.Save(); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
 	return c.Render("web/index", data)
 }
 func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
@@ -88,7 +102,7 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 	}
 	sess.Set("Cfailed", false)
 
-	if sess.Get("SetToken") == nil {
+	if sess.Get("WebToken") == nil {
 		fmt.Println("1")
 		fmt.Printf("sess: %v\n", sess)
 		if err := sess.Save(); err != nil {
@@ -104,7 +118,12 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "C10: "+err.Error())
 	}
 
-	getToken := sess.Get("SetToken")
+	getToken := sess.Get("WebToken")
+	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
+	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
+	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
+	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
+	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
 	CToken := getToken.(string)
 	if FormData.CodeOne != FormData.CodeTwo || FormData.CodeOne == "" {
 		fmt.Println("3")
@@ -126,6 +145,10 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 	if err := sess.Save(); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
+	fmt.Println("4")
+	fmt.Println("4")
+	fmt.Println("4")
+	fmt.Println("4")
 	if ok, err := con.userRepo.PutPassword(FormData.CodeOne, CToken); ok || err == nil {
 		return c.Redirect("/web/home")
 	}
@@ -172,8 +195,8 @@ func RegisterWebController(reg models.RegisterController, store ...*session.Stor
 
 	WebRouter := reg.Router.Group("/web")
 	WebRouter.Get("/token/:token?", controller.GetPage)
+	WebRouter.Use(security.WebsiteTokenMiddleware(reg.Store))
 	WebRouter.Post("/set", controller.PostNewCodes)
-	// WebRouter.Use(security.TokenMiddleware(store))
 	WebRouter.Get("/home", controller.TestOne)
 	WebRouter.Get("/error", controller.Error)
 }
