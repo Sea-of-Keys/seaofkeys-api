@@ -72,10 +72,10 @@ func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 	var login models.EmbeddedLogin
 	sess, err := con.store.Get(c)
 	if err != nil {
-		return nil
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	if sess.Get("EmbeddedSession") == nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E21: "+err.Error())
 	}
 	if err := c.BodyParser(&login); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
@@ -84,7 +84,7 @@ func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 	result := strings.Split(login.Code, "#")
 	sus, err := con.repo.PostCodeLive(result[0], result[1], login.RoomID)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E23: "+err.Error())
 	}
 	return c.JSON(&fiber.Map{
 		"message": "IT IS A LIVE",
@@ -94,31 +94,31 @@ func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 func (con *EmbeddedController) Refresh(c *fiber.Ctx) error {
 	sess, err := con.store.Get(c)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E24: "+err.Error())
 	}
 	if sess.Get("EmbeddedSession") == nil {
 
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E25: "+err.Error())
 	}
 	base64, err := security.NewBase64Token()
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E26: "+err.Error())
 	}
 	newtoken, err := security.NewEmbeddedToken(base64)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E27: "+err.Error())
 	}
 	oldtoken := sess.Get("EmbeddedSession").(string)
 	sess.Set("EmbeddedSession", newtoken)
 	if err := sess.Save(); err != nil {
 		fmt.Println(err)
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "E28: "+err.Error())
 	}
 	if ok, err := con.repo.UpdateSecrect(oldtoken, newtoken); ok && err == nil {
 		return nil
 	}
 
-	return fiber.NewError(fiber.StatusInternalServerError)
+	return fiber.NewError(fiber.StatusInternalServerError, "E29: "+err.Error())
 }
 func NewEmbeddedController(
 	repo *repos.EmbeddedRepo,
