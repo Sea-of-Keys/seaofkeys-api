@@ -37,19 +37,7 @@ func Setup(db *gorm.DB) {
 		&Permission{},
 		&UserPC{},
 	)
-	expirationTime := time.Now().Add(32 * time.Hour)
-	claims := &Claims{
-		ID:    1,
-		Email: "mkronborg7@gmail.com",
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(os.Getenv("PSCRERT")))
-	if err != nil {
-		panic(err)
-	}
+
 	currentTime := time.Now()
 	room := []Room{
 		{
@@ -92,8 +80,7 @@ func Setup(db *gorm.DB) {
 			Name: "Sunday",
 		},
 	}
-	var RoomOne uint
-	RoomOne = 1
+	var RoomOne uint = 1
 
 	embedded := []Embedded{
 		{
@@ -224,6 +211,19 @@ func Setup(db *gorm.DB) {
 			EndTime:     datatypes.NewTime(23, 30, 0, 0),
 			Weekdays:    []*Weekdays{{ID: 1}, {ID: 5}},
 		},
+	}
+	expirationTime := time.Now().Add(32 * time.Hour)
+	claims := &Claims{
+		ID:    1,
+		Email: "mkronborg7@gmail.com",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(os.Getenv("PSCRERT")))
+	if err != nil {
+		panic(err)
 	}
 	userpc := []UserPC{
 		{

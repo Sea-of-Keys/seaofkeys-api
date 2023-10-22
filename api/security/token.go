@@ -96,7 +96,6 @@ func GetTokenData(tokenString, secretKey string) (uint, string, error) {
 	email := claims["Email"].(string)
 	ID := uint(id)
 	Email := email
-	// newToken, err := NewToken(id, email)
 	if err != nil {
 		return 0, "", errors.New("Failed to make a new token")
 	}
@@ -105,18 +104,12 @@ func GetTokenData(tokenString, secretKey string) (uint, string, error) {
 
 func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-
 		sess, err := store.Get(c)
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
-		fmt.Printf("Middleware Session: %v\n", sess)
-		fmt.Printf("Middleware Session: %v\n", sess)
 		tokenInter := sess.Get("ActiveToken")
 		tokenString, ok := tokenInter.(string)
-		// fmt.Printf("tokenString: %v\n", tokenString)
-		// fmt.Printf("tokenString: %v\n", tokenString)
-		fmt.Printf("tokenString: %v\n", tokenString)
 		if !ok || tokenString == "" {
 			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
 		}
@@ -135,11 +128,7 @@ func WebsiteTokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
-		fmt.Printf("Middleware Session: %v\n", sess)
-		fmt.Printf("Middleware Session: %v\n", sess)
-		fmt.Printf("Middleware Session: %v\n", sess)
-		fmt.Printf("Middleware Session: %v\n", sess)
-		fmt.Printf("Middleware Session: %v\n", sess)
+
 		tokenInter := sess.Get("WebToken")
 		tokenString, ok := tokenInter.(string)
 		// fmt.Printf("tokenString: %v\n", tokenString)

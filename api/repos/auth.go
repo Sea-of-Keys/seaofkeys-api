@@ -18,24 +18,21 @@ func (repo *AuthRepo) PostLogin(user models.Login) (*models.User, error) {
 	var checkUser models.User
 
 	if err := repo.db.Debug().First(&checkUser, "email = ?", user.Email).Error; err != nil {
-		return nil, errors.New("CAN'T FIND YOU NIGGA")
+		return nil, errors.New("cant find a user")
+	}
+	if checkUser.ID == 0 {
+		return nil, errors.New("cant find a user")
 	}
 
 	if !middleware.CheckPasswordHash(user.Password, *checkUser.Password) {
-		return nil, errors.New("PLZ BE THIS")
+		return nil, errors.New("password or email not a match")
 	}
-	checkUser.Password = nil
-	checkUser.Code = nil
-
 	return &checkUser, nil
 }
 func (repo *AuthRepo) PostLogout() (bool, error) {
 	return true, nil
 }
 
-// func (repo *AuthRepo)
-
-// Change Embedde Password ### CHANGE CODE TO int ?????
 func (repo *AuthRepo) PutPassword(id uint, code string) (*models.User, error) {
 	return nil, nil
 }
@@ -47,8 +44,6 @@ func (repo *AuthRepo) CheckTokenData(id uint, email string) (string, error) {
 	if user.ID != id || *user.Email != email {
 		return "", errors.New("user id or email does not match")
 	}
-	// tokenData.ID = user.ID
-	// tokenData.Token = user.Email
 	token, _ := security.NewToken(id, email)
 	return token, nil
 }

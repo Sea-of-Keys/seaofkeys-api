@@ -19,7 +19,7 @@ func (r *HistoryRepo) GetHistory(id uint) (*models.History, error) {
 }
 func (r *HistoryRepo) GetHistorys() ([]models.History, error) {
 	var history []models.History
-	if err := r.db.Debug().Preload("User").Preload("Permission").Find(&history).Error; err != nil {
+	if err := r.db.Debug().Unscoped().Preload("User").Preload("Permission").Find(&history).Error; err != nil {
 		return nil, err
 	}
 	return history, nil

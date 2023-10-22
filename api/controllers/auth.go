@@ -18,18 +18,18 @@ type AuthController struct {
 	Logging pkg.CustomLogginAndErrorInterface
 }
 
-var jwtKey = []byte("my_secret_key")
-
 func (con *AuthController) Login(c *fiber.Ctx) error {
 	var user models.Login
+	sess, err := con.store.Get(c)
+	if err != nil {
+		con.Logging.Log("session", err)
+		return fiber.NewError(fiber.StatusNoContent, "failed to start a session")
+	}
 	if err := c.BodyParser(&user); err != nil {
 		con.Logging.Log("AC100", err)
 		return fiber.NewError(fiber.StatusNoContent, "not the right body")
 	}
-	sess, err := con.store.Get(c)
-	if err != nil {
-		panic(err)
-	}
+
 	data, err := con.repo.PostLogin(user)
 	if err != nil {
 		con.Logging.Log("AC101", err)
@@ -42,7 +42,6 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 	}
 	sess.Set("ActiveToken", tokenString)
 	sess.Save()
-	c.Set("Authorization", "Bearer "+tokenString)
 	return c.JSON(&fiber.Map{
 		"token": tokenString,
 		"user":  data,
@@ -52,8 +51,8 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 func (con *AuthController) Logout(c *fiber.Ctx) error {
 	sess, err := con.store.Get(c)
 	if err != nil {
-		con.Logging.Log("AC103", err)
-		panic(err)
+		con.Logging.Log("session", err)
+		return fiber.NewError(fiber.StatusNoContent, "failed to find the session")
 	}
 	sess.Destroy()
 
@@ -91,11 +90,7 @@ func (con *AuthController) RefreshToken(c *fiber.Ctx) error {
 	return c.SendStatus(200)
 }
 
-func NewAuthController(
-	repo repos.AuthRepoInterface,
-	store *session.Store,
-	log pkg.CustomLogginAndErrorInterface,
-) AuthInterfaceMethods {
+func NewAuthController(repo repos.AuthRepoInterface, store *session.Store, log pkg.CustomLogginAndErrorInterface) AuthInterfaceMethods {
 	return &AuthController{repo, store, log}
 }
 func RegisterAuthController(reg models.RegisterController, store ...*session.Store) {
