@@ -1,7 +1,5 @@
 package main
 
-// ######TODO######
-
 import (
 	"html/template"
 	"log"
