@@ -60,7 +60,7 @@ func (r *EmbeddedRepo) PostEmbeddedSetup(emb models.EmbedSetup) (bool, error) {
 	fmt.Printf("embeebedID: %v\n", em.ID)
 	if em.ID == 0 {
 		// fmt.
-		return false, errors.New("Not Found")
+		return false, errors.New("not found")
 	}
 	fmt.Printf("ssshhh: %v\nScret: %v\n", emb.Ssshhh, em.Scret)
 	if emb.Ssshhh != em.Scret {
