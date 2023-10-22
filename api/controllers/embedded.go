@@ -35,6 +35,7 @@ func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
 	var emb models.EmbedSetup
 	sess, err := con.store.Get(c)
 	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		// return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
 	}
 	if err := c.BodyParser(&emb); err != nil {
