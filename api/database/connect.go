@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gofiber/storage/redis/v3"
 	"gorm.io/driver/mysql"
@@ -30,13 +31,12 @@ var (
 
 func InitRedis() (*redis.Storage, error) {
 	var err error
-
 	redisOnce.Do(func() {
 		port, err := strconv.Atoi(os.Getenv("REDISPORT"))
 		if err != nil {
 			port = 6379
 		}
-		//time.Sleep(3 * time.Second)
+		time.Sleep(3 * time.Second)
 		storage := redis.New(redis.Config{
 			Host:      os.Getenv("REDISHOST"),
 			Port:      port,
