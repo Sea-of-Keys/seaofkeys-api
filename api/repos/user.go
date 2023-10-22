@@ -73,6 +73,7 @@ func (r *UserRepo) PutUser(user models.User) (*models.User, error) {
 }
 func (r *UserRepo) DelUser(id uint) (bool, error) {
 	var user models.User
+	var userPc models.UserPC
 	if err := r.db.Debug().Model(&user).
 		Where("ID = ?", id).
 		Updates(map[string]interface{}{
@@ -83,6 +84,9 @@ func (r *UserRepo) DelUser(id uint) (bool, error) {
 		return false, errors.New("ERROR 13: " + err.Error())
 	}
 	if err := r.db.Debug().Delete(&user, id).Error; err != nil {
+		return false, errors.New("ERROR 13: " + err.Error())
+	}
+	if err := r.db.Debug().Where("user_id = ?", user.ID).Delete(&userPc).Error; err != nil {
 		return false, errors.New("ERROR 13: " + err.Error())
 	}
 	return true, nil
