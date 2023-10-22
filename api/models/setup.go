@@ -4,8 +4,10 @@ package models
 
 import (
 	"log"
+	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 
@@ -35,6 +37,19 @@ func Setup(db *gorm.DB) {
 		&Permission{},
 		&UserPC{},
 	)
+	expirationTime := time.Now().Add(32 * time.Hour)
+	claims := &Claims{
+		ID:    1,
+		Email: "mkronborg7@gmail.com",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(os.Getenv("PSCRERT")))
+	if err != nil {
+		panic(err)
+	}
 	currentTime := time.Now()
 	room := []Room{
 		{
@@ -247,10 +262,14 @@ func Setup(db *gorm.DB) {
 			Weekdays:  []*Weekdays{{ID: 1}, {ID: 5}},
 		},
 	}
+	// token, err := security.NewPasswordToken(1, "mkronborg7@gmail.com")
+	// if err != nil {
+	// 	panic(err)
+	// }
 	userpc := []UserPC{
 		{
 			UserID:    1,
-			Token:     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6NCwiRW1haWwiOiJta3JvbmJvcmc2NkBnbWFpbC5jb20iLCJleHAiOjE2OTc0NjkwOTV9.-0JXwf6-vAKuCxB8g0br9ZVaWvHUOHQq7ikRr2EbVJk",
+			Token:     tokenString,
 			Password:  true,
 			EmailSend: true,
 		},

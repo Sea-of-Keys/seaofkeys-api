@@ -23,7 +23,7 @@ type Claims struct {
 
 // ##### Nedds to return a token (maby a string) ######
 func NewPasswordToken(id uint, email string) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(32 * time.Hour)
 	claims := &Claims{
 		ID:    id,
 		Email: email,
@@ -39,7 +39,7 @@ func NewPasswordToken(id uint, email string) (string, error) {
 	return tokenString, nil
 }
 func NewToken(id uint, email string) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(2 * time.Hour)
 	claims := &Claims{
 		ID:    id,
 		Email: email,
@@ -114,6 +114,9 @@ func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 		fmt.Printf("Middleware Session: %v\n", sess)
 		tokenInter := sess.Get("ActiveToken")
 		tokenString, ok := tokenInter.(string)
+		// fmt.Printf("tokenString: %v\n", tokenString)
+		// fmt.Printf("tokenString: %v\n", tokenString)
+		fmt.Printf("tokenString: %v\n", tokenString)
 		if !ok || tokenString == "" {
 			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
 		}
@@ -125,22 +128,26 @@ func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 		return c.Next()
 	}
 }
-func WebsiteTokenmiddleware() func(c *fiber.Ctx) error {
+func WebsiteTokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		cookieHeader3 := c.Request().Header.Peek("Authorization")
-		cookies3 := string(cookieHeader3)
 
-		if cookies3 == "" {
-			return c.Status(401).JSON(fiber.Map{
-				"message": "No Token Provided",
-			})
+		sess, err := store.Get(c)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
-		if len(cookies3) < 8 {
-			return c.Status(401).JSON(fiber.Map{
-				"message": "No Token Provided",
-			})
+		fmt.Printf("Middleware Session: %v\n", sess)
+		fmt.Printf("Middleware Session: %v\n", sess)
+		fmt.Printf("Middleware Session: %v\n", sess)
+		fmt.Printf("Middleware Session: %v\n", sess)
+		fmt.Printf("Middleware Session: %v\n", sess)
+		tokenInter := sess.Get("WebToken")
+		tokenString, ok := tokenInter.(string)
+		// fmt.Printf("tokenString: %v\n", tokenString)
+		// fmt.Printf("tokenString: %v\n", tokenString)
+		fmt.Printf("tokenString: %v\n", tokenString)
+		if !ok || tokenString == "" {
+			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
 		}
-		tokenString := cookies3[7:]
 		if ok, err := CheckToken(tokenString, os.Getenv("PSCRERT")); !ok || err != nil {
 			return c.Status(401).JSON(fiber.Map{
 				"message": "Unauthorized",

@@ -42,15 +42,15 @@ func initApp() (*fiber.App, error) {
 }
 
 func InitRoutes(reg models.RegisterController, stores []*session.Store) {
-	controllers.RegisterAuthController(reg, stores[0])
+	controllers.RegisterAuthController(reg)
 	controllers.RegisterUserController(reg)
 	controllers.RegisterEmbeddedController(reg, stores[0])
 	controllers.RegisterTeamController(reg)
-	controllers.RegisterHistoryController(reg, stores[0])
+	controllers.RegisterHistoryController(reg)
 	controllers.RegisterRoomController(reg)
 	controllers.RegisterStatsController(reg)
 	controllers.RegisterPermissionController(reg)
-	controllers.RegisterWebController(reg, stores[0])
+	controllers.RegisterWebController(reg)
 
 }
 
@@ -81,7 +81,7 @@ func main() {
 		}),
 		session.New(session.Config{
 			KeyLookup:  "cookie:kronborg_id",
-			Expiration: 15 * time.Hour,
+			Expiration: 2 * time.Hour,
 			// Expiration: 24 * time.Hour,
 			Storage: storage,
 		}),
@@ -93,7 +93,7 @@ func main() {
 	}
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com, https://www.seaofkeys.com",
+		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com, https://www.seaofkeys.com, http://localhost:8006",
 		AllowCredentials: true,
 	}))
 	// app.Use(cors.New())
@@ -110,34 +110,3 @@ func main() {
 	log.Fatal(app.Listen(getPort()))
 
 }
-
-// func main() {
-// 	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
-// 	db, err := databae.Init("mysql")
-// 	models.Setup(db)
-
-// 	// engine := CreateEngine()
-// 	// app := fiber.New()
-// 	// db, err := databae.Init("postgres")
-// 	fmt.Println("im gona be runed")
-// 	app, err := initApp()
-// 	if err != nil {
-// 		log.Panic(err)
-// 	}
-// 	app.Use(logger.New())
-// 	app.Use(cors.New())
-// 	store := session.New(session.Config{
-// 		KeyLookup:  "cookie:sessionid",
-// 		Expiration: time.Hour * 24, // Session expiration time
-// 	})
-// 	// app.Use(store)
-// 	app.Static("/static", "./web/static")
-// 	api := app.Group("/")
-// 	Endpoints(db, api, store)
-
-// 	log.Fatal(app.Listen(getPort()))
-// 	log.Fatal(app.Listen(os.Getenv("PORT")))
-// 	log.Fatal(app.Listen(":8001"))
-// 	log.Fatal(app.Listen(getPort()))
-
-// }

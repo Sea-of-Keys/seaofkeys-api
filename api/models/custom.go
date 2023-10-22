@@ -63,6 +63,7 @@ type Token struct {
 	Token string
 }
 type Claims struct {
-	Email string `json:"email"`
+	ID    uint
+	Email string
 	jwt.RegisteredClaims
 }
