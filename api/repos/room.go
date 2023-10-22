@@ -75,6 +75,6 @@ func (r *RoomRepo) DelRooms(id []models.Delete) (bool, error) {
 	return true, nil
 }
 
-func NewRoomRepo(db *gorm.DB) *RoomRepo {
+func NewRoomRepo(db *gorm.DB) RoomRepoInterface {
 	return &RoomRepo{db}
 }

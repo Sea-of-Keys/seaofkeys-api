@@ -210,6 +210,6 @@ func (r *TeamRepo) RemoveTeamsFromUser(UT models.UserTeams) (*models.User, error
 	}
 	return &user, nil
 }
-func NewTeamRepo(db *gorm.DB) *TeamRepo {
+func NewTeamRepo(db *gorm.DB) TeamRepoInterface {
 	return &TeamRepo{db}
 }

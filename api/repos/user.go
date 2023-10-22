@@ -142,6 +142,6 @@ func (r *UserRepo) PutPassword(code string, token string, password ...string) (b
 	return true, nil
 }
 
-func NewUserRepo(db *gorm.DB) *UserRepo {
+func NewUserRepo(db *gorm.DB) UserRepoInterface {
 	return &UserRepo{db}
 }

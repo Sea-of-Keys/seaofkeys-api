@@ -15,10 +15,8 @@ type Login struct {
 	Password string `json:"password"`
 }
 type EmbeddedLogin struct {
-	ID     uint   `json:"id"`
 	Code   string `json:"code"`
 	RoomID uint   `json:"room_id"`
-	UserID uint   `json:"user_id"`
 }
 
 type TeamUsers struct {

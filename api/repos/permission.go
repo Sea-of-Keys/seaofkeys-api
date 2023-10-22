@@ -91,6 +91,6 @@ func (r *PermissionRepo) CleanPermission() error {
 	return nil
 }
 
-func NewPermissionRepo(db *gorm.DB) *PermissionRepo {
+func NewPermissionRepo(db *gorm.DB) PermissionRepoInterface {
 	return &PermissionRepo{db}
 }

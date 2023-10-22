@@ -10,7 +10,7 @@ import (
 )
 
 type RoomController struct {
-	repo  *repos.RoomRepo
+	repo  repos.RoomRepoInterface
 	store *session.Store
 }
 
@@ -109,7 +109,7 @@ func (con *RoomController) Dels(c *fiber.Ctx) error {
 //	func NewRommController(repo *repos.RoomRepo, store *session.Store) *RoomController {
 //		return &RoomController{repo, store}
 //	}
-func NewRoomController(repo *repos.RoomRepo, store *session.Store) RoomInterfaceMethods {
+func NewRoomController(repo repos.RoomRepoInterface, store *session.Store) RoomInterfaceMethods {
 	return &RoomController{repo, store}
 }
 

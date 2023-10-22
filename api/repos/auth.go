@@ -53,6 +53,6 @@ func (repo *AuthRepo) CheckTokenData(id uint, email string) (string, error) {
 	return token, nil
 }
 
-func NewAuthRepo(db *gorm.DB) *AuthRepo {
+func NewAuthRepo(db *gorm.DB) AuthRepoInterface {
 	return &AuthRepo{db}
 }

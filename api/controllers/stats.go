@@ -10,7 +10,7 @@ import (
 )
 
 type StatsController struct {
-	repo  *repos.StatsRepo
+	repo  repos.StatsRepoInterface
 	store *session.Store
 }
 
@@ -50,7 +50,7 @@ func (con *StatsController) GetLoginsCount(c *fiber.Ctx) error {
 		"user_count": data,
 	})
 }
-func NewStatsController(repo *repos.StatsRepo, store *session.Store) StatsInterfaceMethods {
+func NewStatsController(repo repos.StatsRepoInterface, store *session.Store) StatsInterfaceMethods {
 	return &StatsController{repo, store}
 }
 

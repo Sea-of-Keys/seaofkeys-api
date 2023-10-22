@@ -35,7 +35,7 @@ func (r *StatsRepo) GetRoomsCount() (int, error) {
 	return int(count), nil
 }
 func (r *StatsRepo) GetLoginsCount() (int, error) {
-	var login models.User
+	var login models.History
 	var count int64
 	if err := r.db.Debug().Model(&login).Count(&count).Error; err != nil {
 		return 0, nil
@@ -43,6 +43,6 @@ func (r *StatsRepo) GetLoginsCount() (int, error) {
 	return int(count), nil
 }
 
-func NewStatsRepo(db *gorm.DB) *StatsRepo {
+func NewStatsRepo(db *gorm.DB) StatsRepoInterface {
 	return &StatsRepo{db}
 }

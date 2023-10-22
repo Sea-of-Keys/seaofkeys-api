@@ -3,3 +3,5 @@ makefile
 ./web/misc/node_modules
 ./web/misc/*/*
 web/misc/node_modules
+log.txt
+log.log

@@ -79,7 +79,7 @@ func DecodeToken(tokenString, secretKey string, test models.Token) (map[string]i
 	}
 	return nil, fmt.Errorf("Invalid Token")
 }
-func RefreshToken(tokenString, secretKey string) (uint, string, error) {
+func GetTokenData(tokenString, secretKey string) (uint, string, error) {
 	var mToken models.Token
 	fmt.Print(mToken)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

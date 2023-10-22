@@ -44,6 +44,6 @@ func (r *HistoryRepo) DelHistory(id uint) (bool, error) {
 	return true, nil
 }
 
-func NewHistoryRepo(db *gorm.DB) *HistoryRepo {
+func NewHistoryRepo(db *gorm.DB) HistoryRepoInterface {
 	return &HistoryRepo{db}
 }

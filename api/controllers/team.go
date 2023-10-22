@@ -10,7 +10,7 @@ import (
 )
 
 type TeamController struct {
-	repo  *repos.TeamRepo
+	repo  repos.TeamRepoInterface
 	store *session.Store
 }
 
@@ -166,7 +166,7 @@ func (con *TeamController) AddTeamsToUser(c *fiber.Ctx) error {
 	})
 }
 
-func NewTeamController(repo *repos.TeamRepo, store *session.Store) TeamInterfaceMethods {
+func NewTeamController(repo repos.TeamRepoInterface, store *session.Store) TeamInterfaceMethods {
 	return &TeamController{repo, store}
 }
 

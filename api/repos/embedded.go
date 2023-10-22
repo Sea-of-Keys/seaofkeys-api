@@ -71,7 +71,7 @@ func (r *EmbeddedRepo) PostEmbeddedSetup(emb models.EmbedSetup) (bool, error) {
 	return true, nil
 }
 
-func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, error) {
+func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, error) {
 	var user models.User
 	var pem models.Permission
 	userIdInt, _ := strconv.Atoi(userID)
@@ -107,7 +107,6 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 		if true {
 			if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
 				for _, v := range pem.Weekdays {
-					// fmt.Printf("%v\n", reflect.TypeOf(v.Day))
 					if v.Day == dayINT {
 						var newLogin models.History
 						newLogin.UserID = user.ID
@@ -136,6 +135,6 @@ func (r *EmbeddedRepo) PostHistoryLogin(newLogin models.History) (bool, error) {
 	return true, nil
 
 }
-func NewEmbeddedRepo(db *gorm.DB) *EmbeddedRepo {
+func NewEmbeddedRepo(db *gorm.DB) EmbeddedRepoInterface {
 	return &EmbeddedRepo{db}
 }
