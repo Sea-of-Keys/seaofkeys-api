@@ -94,35 +94,23 @@ func Setup(db *gorm.DB) {
 	}
 	var RoomOne uint
 	RoomOne = 1
-	// hashed, err := middleware.HashPassword("Kronborg")
-	// if err != nil {
-	// 	panic(err)
-	// }
+
 	embedded := []Embedded{
 		{
-			Name: "KeypadOne123",
-			// Room:  Room{Name: "A1"},
+			Name:   "KeypadOne123",
 			RoomID: &RoomOne,
 			Scret:  "kronborg",
 		},
 		{
-			Name: "RFIDOne",
-			// Room: Room{Name: "dfg"},
+			Name:   "RFIDOne",
 			RoomID: &RoomOne,
 		},
-		// {
-		// 	Name: "TestOne",
-		// 	// Room: Room{Name: "dfg"},
-		// 	RoomID: &RoomOne,
-		// 	Scret:  "Kronborg er kogen",
-		// },
 	}
 	userOneCode, err := middleware.HashPassword("2589")
 	if err != nil {
 		log.Panic(err)
 	}
 	userOnePassword, err := middleware.HashPassword("Test")
-	// fmt.Println(userOnePassword)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -143,21 +131,17 @@ func Setup(db *gorm.DB) {
 			Email:    &emailOne,
 			Password: &userOnePassword,
 			Code:     &userOneCode,
-			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 		{
 			Name:  "Pissic",
 			Email: &emailTwo,
-			// Password: "Test",
-			Code: &userTwoCode,
-			// Teams: []Team{{ID: 1}},
+			Code:  &userTwoCode,
 		},
 		{
 			Name:     "Test",
 			Email:    &emailTre,
 			Password: &userOnePassword,
 			Code:     &userTreCode,
-			// Teams:    []Team{{ID: 1}, {ID: 2}},
 		},
 	}
 
@@ -195,16 +179,6 @@ func Setup(db *gorm.DB) {
 		},
 	}
 	permission := []Permission{
-		// {
-		// 	RoomID: 1,
-		// 	// UserID:    1,
-		// 	TeamID:    1,
-		// 	StartDate: time.Now(),
-		// 	EndDate:   time.Now(),
-		// 	StartTime: time.Now(),
-		// 	EndTime:   time.Now(),
-		// 	// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
-		// },
 		{
 			RoomID: 1,
 			UserID: 1,
@@ -213,59 +187,44 @@ func Setup(db *gorm.DB) {
 			EndDate:     datatypes.Date(currentTime),
 			StartDateST: currentTime.Format("2006-01-02"),
 			EndDateST:   currentTime.Format("2006-01-02"),
-			// StartDate: time.Now(),
-			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(9, 0, 0, 0),
-			EndTime:   datatypes.NewTime(22, 0, 0, 0),
-			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}, {ID: 7}},
+			StartTime:   datatypes.NewTime(9, 0, 0, 0),
+			EndTime:     datatypes.NewTime(22, 0, 0, 0),
+			Weekdays:    []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}, {ID: 7}},
 		},
 		{
-			RoomID: 1,
-			UserID: 2,
-			// TeamID:    1,
+			RoomID:      1,
+			UserID:      2,
 			StartDate:   datatypes.Date(currentTime),
 			EndDate:     datatypes.Date(currentTime),
 			StartDateST: currentTime.Format("2006-01-02"),
 			EndDateST:   currentTime.Format("2006-01-02"),
-			// StartDate: time.Now(),
-			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(10, 0, 0, 0),
-			EndTime:   datatypes.NewTime(12, 0, 0, 0),
-			// Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
+			StartTime:   datatypes.NewTime(10, 0, 0, 0),
+			EndTime:     datatypes.NewTime(12, 0, 0, 0),
+			Weekdays:    []*Weekdays{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}, {ID: 6}},
 		},
 		{
-			// RoomID:    &RoomOne,
 			RoomID:      2,
 			UserID:      1,
 			StartDate:   datatypes.Date(currentTime),
 			EndDate:     datatypes.Date(currentTime),
 			StartDateST: currentTime.Format("2006-01-02"),
 			EndDateST:   currentTime.Format("2006-01-02"),
-			// StartDate: time.Now(),
-			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(0, 0, 0, 0),
-			EndTime:   datatypes.NewTime(23, 59, 0, 0),
-			Weekdays:  []*Weekdays{{ID: 1}, {ID: 2}},
+			StartTime:   datatypes.NewTime(0, 0, 0, 0),
+			EndTime:     datatypes.NewTime(23, 59, 0, 0),
+			Weekdays:    []*Weekdays{{ID: 1}, {ID: 2}},
 		},
 		{
-			RoomID: 3,
-			// UserID:    1,
+			RoomID:      3,
 			TeamID:      1,
 			StartDate:   datatypes.Date(currentTime),
 			EndDate:     datatypes.Date(currentTime),
 			StartDateST: currentTime.Format("2006-01-02"),
 			EndDateST:   currentTime.Format("2006-01-02"),
-			// StartDate: time.Now(),
-			// EndDate:   time.Now(),
-			StartTime: datatypes.NewTime(6, 0, 0, 0),
-			EndTime:   datatypes.NewTime(23, 30, 0, 0),
-			Weekdays:  []*Weekdays{{ID: 1}, {ID: 5}},
+			StartTime:   datatypes.NewTime(6, 0, 0, 0),
+			EndTime:     datatypes.NewTime(23, 30, 0, 0),
+			Weekdays:    []*Weekdays{{ID: 1}, {ID: 5}},
 		},
 	}
-	// token, err := security.NewPasswordToken(1, "mkronborg7@gmail.com")
-	// if err != nil {
-	// 	panic(err)
-	// }
 	userpc := []UserPC{
 		{
 			UserID:    1,
@@ -274,7 +233,6 @@ func Setup(db *gorm.DB) {
 			EmailSend: true,
 		},
 	}
-	// create domy data in the database
 	db.Create(&room)
 	db.Create(&weekday)
 	db.Create(&embedded)
