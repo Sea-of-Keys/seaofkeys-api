@@ -12,8 +12,8 @@ import (
 )
 
 type WebController struct {
-	repo     *repos.WebRepo
-	userRepo *repos.UserRepo
+	repo     repos.WebRepoInterface
+	userRepo repos.UserRepoInterface
 	store    *session.Store
 }
 
@@ -180,8 +180,8 @@ func (con *WebController) Error(c *fiber.Ctx) error {
 	return c.Render("error/index", data)
 }
 func NewWebController(
-	repo *repos.WebRepo,
-	userRepo *repos.UserRepo,
+	repo repos.WebRepoInterface,
+	userRepo repos.UserRepoInterface,
 	store *session.Store,
 ) WebInterfaceMethods {
 	return &WebController{repo, userRepo, store}

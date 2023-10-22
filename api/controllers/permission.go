@@ -12,7 +12,7 @@ import (
 )
 
 type PermissionController struct {
-	repo  *repos.PermissionRepo
+	repo  repos.PermissionRepoInterface
 	store *session.Store
 }
 
@@ -128,7 +128,7 @@ func (con *PermissionController) GetFindTeamsPermissions(c *fiber.Ctx) error {
 }
 
 func NewPermissionController(
-	repo *repos.PermissionRepo,
+	repo repos.PermissionRepoInterface,
 	store *session.Store,
 ) PermissionInterfaceMethods {
 	return &PermissionController{repo, store}

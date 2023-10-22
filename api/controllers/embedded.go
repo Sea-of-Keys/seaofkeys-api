@@ -10,11 +10,10 @@ import (
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
-	"github.com/Sea-of-Keys/seaofkeys-api/pkg"
 )
 
 type EmbeddedController struct {
-	repo  *repos.EmbeddedRepo
+	repo  repos.EmbeddedRepoInterface
 	store *session.Store
 }
 
@@ -36,7 +35,8 @@ func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
 	var emb models.EmbedSetup
 	sess, err := con.store.Get(c)
 	if err != nil {
-		return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		// return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
 	}
 	if err := c.BodyParser(&emb); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
@@ -82,7 +82,7 @@ func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 	}
 	fmt.Println("Kronborg")
 	result := strings.Split(login.Code, "#")
-	sus, err := con.repo.PostCodeLive(result[0], result[1], login.RoomID)
+	sus, err := con.repo.PostCodeLogin(result[0], result[1], login.RoomID)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "E23: "+err.Error())
 	}
@@ -121,7 +121,7 @@ func (con *EmbeddedController) Refresh(c *fiber.Ctx) error {
 	return fiber.NewError(fiber.StatusInternalServerError, "E29: "+err.Error())
 }
 func NewEmbeddedController(
-	repo *repos.EmbeddedRepo,
+	repo repos.EmbeddedRepoInterface,
 	store *session.Store,
 ) EmbeddedInterfaceMethods {
 	return &EmbeddedController{repo, store}

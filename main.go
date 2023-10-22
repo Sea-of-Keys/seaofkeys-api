@@ -55,11 +55,6 @@ func InitRoutes(reg models.RegisterController, stores []*session.Store) {
 }
 
 func main() {
-	// db, err := databae.Init(os.Getenv("DATABASETYPE"))
-	// pkg.SendEmail("mkronborg7@gmail.com", "Kronborg", "KronborgErGud!@#")
-	// token, _ := security.NewEmbeddedToken()
-	// fmt.Println(token)
-	// storageMysql, err := databae.InitMysql()
 
 	db, err := databae.Init("mysql")
 	if err != nil {
@@ -72,7 +67,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// storage.Get()
 	stores := []*session.Store{
 		session.New(session.Config{
 			KeyLookup:  "cookie:session_em_id",
@@ -81,12 +75,10 @@ func main() {
 		}),
 		session.New(session.Config{
 			KeyLookup:  "cookie:kronborg_id",
-			Expiration: 2 * time.Hour,
-			// Expiration: 24 * time.Hour,
-			Storage: storage,
+			Expiration: 5 * time.Hour,
+			Storage:    storage,
 		}),
 	}
-	// fmt.Println("im gona be runed")
 	app, err := initApp()
 	if err != nil {
 		log.Panic(err)
@@ -96,7 +88,6 @@ func main() {
 		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com, https://www.seaofkeys.com, http://localhost:8006",
 		AllowCredentials: true,
 	}))
-	// app.Use(cors.New())
 	app.Static("/static", "./web/static")
 	api := app.Group("/")
 	reg := &models.RegisterController{
@@ -105,7 +96,6 @@ func main() {
 		Store:  stores[1],
 	}
 	InitRoutes(*reg, stores)
-	// InitRoutes(db, api, stores)
 
 	log.Fatal(app.Listen(getPort()))
 

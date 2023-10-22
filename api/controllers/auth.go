@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,43 +9,39 @@ import (
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/repos"
 	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
+	"github.com/Sea-of-Keys/seaofkeys-api/pkg"
 )
 
 type AuthController struct {
-	repo  *repos.AuthRepo
-	store *session.Store
+	repo    repos.AuthRepoInterface
+	store   *session.Store
+	Logging pkg.CustomLogginAndErrorInterface
 }
 
-var jwtKey = []byte("my_secret_key")
-
 func (con *AuthController) Login(c *fiber.Ctx) error {
-	// var token models.Token
 	var user models.Login
-	if err := c.BodyParser(&user); err != nil {
-		return fiber.NewError(fiber.StatusNoContent, err.Error())
-	}
 	sess, err := con.store.Get(c)
 	if err != nil {
-		panic(err)
+		con.Logging.Log("session", err)
+		return fiber.NewError(fiber.StatusNoContent, "failed to start a session")
 	}
-	fmt.Printf("LoginSess: %v\n", sess)
-	fmt.Printf("LoginSess: %v\n", sess)
-	fmt.Printf("LoginSess: %v\n", sess)
+	if err := c.BodyParser(&user); err != nil {
+		con.Logging.Log("AC100", err)
+		return fiber.NewError(fiber.StatusNoContent, "not the right body")
+	}
+
 	data, err := con.repo.PostLogin(user)
 	if err != nil {
-		return fiber.NewError(fiber.StatusNoContent, err.Error())
+		con.Logging.Log("AC101", err)
+		return fiber.NewError(fiber.StatusNoContent, "AC101: email or password did not match")
 	}
 	tokenString, err := security.NewToken(data.ID, *data.Email)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "C003: "+err.Error())
+		con.Logging.Log("AC102", err)
+		return fiber.NewError(fiber.StatusInternalServerError, "AC101: failed to create token")
 	}
 	sess.Set("ActiveToken", tokenString)
 	sess.Save()
-	// fmt.Println(tokenString)
-	// fmt.Printf("sess: %v\n token: %v\n", sess, tokenString)
-	c.Set("Authorization", "Bearer "+tokenString)
-	// c.Set("Authorization", "Bearer "+tokenString)
-
 	return c.JSON(&fiber.Map{
 		"token": tokenString,
 		"user":  data,
@@ -56,9 +51,9 @@ func (con *AuthController) Login(c *fiber.Ctx) error {
 func (con *AuthController) Logout(c *fiber.Ctx) error {
 	sess, err := con.store.Get(c)
 	if err != nil {
-		panic(err)
+		con.Logging.Log("session", err)
+		return fiber.NewError(fiber.StatusNoContent, "failed to find the session")
 	}
-	// sess.Set("ActiveToken", nil)
 	sess.Destroy()
 
 	return c.JSON(&fiber.Map{
@@ -69,64 +64,42 @@ func (con *AuthController) RefreshToken(c *fiber.Ctx) error {
 
 	sess, err := con.store.Get(c)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		con.Logging.Log("CC104", err)
+		return fiber.NewError(fiber.StatusInternalServerError, "AC104 failed to find your session")
 	}
 	sToken := sess.Get("ActiveToken")
 	tokenStr := sToken.(string)
-	// secretKey := os.Getenv("PSCRERT")
-	id, email, err := security.RefreshToken(tokenStr, os.Getenv("PSCRERT"))
+	id, email, err := security.GetTokenData(tokenStr, os.Getenv("PSCRERT"))
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		con.Logging.Log("AC105", err)
+		return fiber.NewError(
+			fiber.StatusInternalServerError,
+			"AC105: failed to get token data",
+		)
 	}
 	newToken, err := con.repo.CheckTokenData(id, email)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		con.Logging.Log("AC106", err)
+		return fiber.NewError(
+			fiber.StatusInternalServerError,
+			"AC106: failed to create a new token",
+		)
 	}
-	// NewToken, err := securhty.NewToken(newTokenData.ID, newTokenData.Email)
-	// if err != nil {
-	// 	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	// }
 	sess.Set("ActiveToken", newToken)
 	sess.Save()
 	return c.SendStatus(200)
 }
 
-// ############# Func to show your password one time ###############
-// func (con *AuthController) Code(c *fiber.Ctx) error {
-// 	data := fiber.Map{
-// 		"user": "Joe",
-// 	}
-// 	return c.Render("auth/index", data)
-// }
-
-// // ########### Change Password ##############
-// func (con *AuthController) RestCode(c *fiber.Ctx) error {
-// 	return c.SendStatus(200)
-// }
-
-// // ############ Maby Make it so you get a email to set ure password #############
-// func (con *AuthController) SetPassword(c *fiber.Ctx) error {
-// 	data := fiber.Map{}
-// 	return c.Render("home/index", data)
-// }
-// func (con *AuthController) Hello(c *fiber.Ctx) error {
-// 	fmt.Println("Kronborg er gud")
-// 	return nil
-// }
-
-func NewAuthController(repo *repos.AuthRepo, store *session.Store) AuthInterfaceMethods {
-	return &AuthController{repo, store}
+func NewAuthController(repo repos.AuthRepoInterface, store *session.Store, log pkg.CustomLogginAndErrorInterface) AuthInterfaceMethods {
+	return &AuthController{repo, store, log}
 }
 func RegisterAuthController(reg models.RegisterController, store ...*session.Store) {
 	repo := repos.NewAuthRepo(reg.Db)
-	controller := NewAuthController(repo, reg.Store)
+	log := pkg.NewCustomLogginAndError()
+	controller := NewAuthController(repo, reg.Store, log)
 
 	AuthRouter := reg.Router.Group("/auth")
-	// AuthRouter.Static("/static", "./static")
 	AuthRouter.Post("/login", controller.Login)
-	// AuthRouter.Get("/test", controller.Code)
-	// AuthRouter.Get("/", controller.SetPassword)
-	// AuthRouter.Get("/hello", controller.Hello)
 	AuthRouter.Use(security.TokenMiddleware(reg.Store))
 	AuthRouter.Get("/logout", controller.Logout)
 	AuthRouter.Get("/", controller.RefreshToken)

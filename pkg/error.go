@@ -6,13 +6,30 @@ import (
 	"time"
 )
 
-type CustomError struct {
+type CustomLogginAndErrorInterface interface {
+	Log(string, error)
+	Error() string
+}
+
+type CustomLogginAndError struct {
 	Code    string
 	Message string
 	// CreateAt time.Time
 }
 
-func (c *CustomError) Error() string {
+func (c *CustomLogginAndError) Log(code string, message error) {
+	file, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+	}
+	defer file.Close()
+	t := time.Now()
+	logMessage := fmt.Sprintf("%v: %s: %v\n", t.Format("2006-01-02 15:04:05"), code, message)
+	_, writeErr := file.WriteString(logMessage)
+	if writeErr != nil {
+	}
+
+}
+func (c *CustomLogginAndError) Error() string {
 	file, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return fmt.Sprintf("Error opening log file: %v", err)
@@ -26,4 +43,8 @@ func (c *CustomError) Error() string {
 	}
 
 	return logMessage
+}
+
+func NewCustomLogginAndError() CustomLogginAndErrorInterface {
+	return &CustomLogginAndError{}
 }

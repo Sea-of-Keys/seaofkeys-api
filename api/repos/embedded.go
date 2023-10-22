@@ -44,7 +44,7 @@ func (r *EmbeddedRepo) UpdateSecrect(oldtoken string, newtoken string) (bool, er
 		return false, err
 	}
 	if em.ID == 0 {
-		return false, errors.New("Not Found")
+		return false, errors.New("not found")
 	}
 	em.Scret = newtoken
 	if err := r.db.Debug().Model(&em).Updates(&em).Error; err != nil {
@@ -60,7 +60,7 @@ func (r *EmbeddedRepo) PostEmbeddedSetup(emb models.EmbedSetup) (bool, error) {
 	fmt.Printf("embeebedID: %v\n", em.ID)
 	if em.ID == 0 {
 		// fmt.
-		return false, errors.New("Not Found")
+		return false, errors.New("not found")
 	}
 	fmt.Printf("ssshhh: %v\nScret: %v\n", emb.Ssshhh, em.Scret)
 	if emb.Ssshhh != em.Scret {
@@ -71,7 +71,7 @@ func (r *EmbeddedRepo) PostEmbeddedSetup(emb models.EmbedSetup) (bool, error) {
 	return true, nil
 }
 
-func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, error) {
+func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, error) {
 	var user models.User
 	var pem models.Permission
 	userIdInt, _ := strconv.Atoi(userID)
@@ -86,12 +86,11 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 	if err := r.db.Debug().Find(&user, userIdInt).Error; err != nil {
 		return false, err
 	}
-	if err := r.db.Debug().Table("permissions"). // Use the table name if necessary
-							Preload("Team.Users").
-							Preload("User").
-							Preload("Weekdays").
-							Where("user_id = ? AND room_id = ?", userIdInt, roomID).Or("room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", roomID, userIdInt).
-		// Where("start_time > ?", now).
+	if err := r.db.Debug().Table("permissions").
+		Preload("Team.Users").
+		Preload("User").
+		Preload("Weekdays").
+		Where("user_id = ? AND room_id = ?", userIdInt, roomID).Or("room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", roomID, userIdInt).
 		Find(&pem).Error; err != nil {
 		return false, err
 	}
@@ -107,7 +106,6 @@ func (r *EmbeddedRepo) PostCodeLive(code, userID string, roomID uint) (bool, err
 		if true {
 			if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
 				for _, v := range pem.Weekdays {
-					// fmt.Printf("%v\n", reflect.TypeOf(v.Day))
 					if v.Day == dayINT {
 						var newLogin models.History
 						newLogin.UserID = user.ID
@@ -136,6 +134,6 @@ func (r *EmbeddedRepo) PostHistoryLogin(newLogin models.History) (bool, error) {
 	return true, nil
 
 }
-func NewEmbeddedRepo(db *gorm.DB) *EmbeddedRepo {
+func NewEmbeddedRepo(db *gorm.DB) EmbeddedRepoInterface {
 	return &EmbeddedRepo{db}
 }

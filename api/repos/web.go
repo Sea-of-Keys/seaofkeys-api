@@ -18,6 +18,6 @@ func (r *WebRepo) GetCheckToken(token string) (*models.UserPC, error) {
 	return &userPC, nil
 }
 
-func NewWebRepo(db *gorm.DB) *WebRepo {
+func NewWebRepo(db *gorm.DB) WebRepoInterface {
 	return &WebRepo{db}
 }

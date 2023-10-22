@@ -10,7 +10,7 @@ import (
 )
 
 type HistoryController struct {
-	repo  *repos.HistoryRepo
+	repo  repos.HistoryRepoInterface
 	store *session.Store
 }
 
@@ -104,7 +104,7 @@ func (con *HistoryController) Dels(c *fiber.Ctx) error {
 //}
 
 func NewHistoryController(
-	repo *repos.HistoryRepo,
+	repo repos.HistoryRepoInterface,
 	store *session.Store,
 ) HistoryInterfaceMethods {
 	return &HistoryController{repo, store}

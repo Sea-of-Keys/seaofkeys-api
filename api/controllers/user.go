@@ -12,7 +12,7 @@ import (
 )
 
 type UserController struct {
-	repo  *repos.UserRepo
+	repo  repos.UserRepoInterface
 	store *session.Store
 }
 
@@ -125,7 +125,7 @@ func (con *UserController) GetTeamsUserIsNotOn(c *fiber.Ctx) error {
 		"teams": data,
 	})
 }
-func NewUsercontroller(repo *repos.UserRepo, store *session.Store) UserInterfaceMethods {
+func NewUsercontroller(repo repos.UserRepoInterface, store *session.Store) UserInterfaceMethods {
 	return &UserController{repo, store}
 }
 
