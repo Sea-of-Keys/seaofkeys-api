@@ -94,7 +94,6 @@ func (con *RoomController) Del(c *fiber.Ctx) error {
 func (con *RoomController) Dels(c *fiber.Ctx) error {
 	var ids []models.Delete
 	if err := c.BodyParser(&ids); err != nil {
-		return c.JSON(ids)
 		return fiber.NewError(fiber.StatusInternalServerError, "C30: "+err.Error())
 	}
 	data, err := con.repo.DelRooms(ids)
