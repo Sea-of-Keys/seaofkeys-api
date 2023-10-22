@@ -45,7 +45,7 @@ func (repo *AuthRepo) CheckTokenData(id uint, email string) (string, error) {
 		return "", err
 	}
 	if user.ID != id || *user.Email != email {
-		return "", errors.New("User id or email does not match")
+		return "", errors.New("user id or email does not match")
 	}
 	// tokenData.ID = user.ID
 	// tokenData.Token = user.Email

@@ -44,7 +44,7 @@ func (r *EmbeddedRepo) UpdateSecrect(oldtoken string, newtoken string) (bool, er
 		return false, err
 	}
 	if em.ID == 0 {
-		return false, errors.New("Not Found")
+		return false, errors.New("not found")
 	}
 	em.Scret = newtoken
 	if err := r.db.Debug().Model(&em).Updates(&em).Error; err != nil {
@@ -86,12 +86,11 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 	if err := r.db.Debug().Find(&user, userIdInt).Error; err != nil {
 		return false, err
 	}
-	if err := r.db.Debug().Table("permissions"). // Use the table name if necessary
-							Preload("Team.Users").
-							Preload("User").
-							Preload("Weekdays").
-							Where("user_id = ? AND room_id = ?", userIdInt, roomID).Or("room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", roomID, userIdInt).
-		// Where("start_time > ?", now).
+	if err := r.db.Debug().Table("permissions").
+		Preload("Team.Users").
+		Preload("User").
+		Preload("Weekdays").
+		Where("user_id = ? AND room_id = ?", userIdInt, roomID).Or("room_id = ? AND team_id IN (SELECT team_id FROM teams_users WHERE team_id = permissions.team_id AND user_id = ?)", roomID, userIdInt).
 		Find(&pem).Error; err != nil {
 		return false, err
 	}
