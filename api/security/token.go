@@ -64,7 +64,7 @@ func CheckToken(tokenString, secretKey string) (bool, error) {
 	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return true, nil
 	}
-	return false, fmt.Errorf("Invalid Token")
+	return false, fmt.Errorf("invalid token")
 }
 func DecodeToken(tokenString, secretKey string, test models.Token) (map[string]interface{}, error) {
 
@@ -77,7 +77,7 @@ func DecodeToken(tokenString, secretKey string, test models.Token) (map[string]i
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	}
-	return nil, fmt.Errorf("Invalid Token")
+	return nil, fmt.Errorf("invalid token")
 }
 func GetTokenData(tokenString, secretKey string) (uint, string, error) {
 	var mToken models.Token
@@ -90,14 +90,14 @@ func GetTokenData(tokenString, secretKey string) (uint, string, error) {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok && !token.Valid {
-		return 0, "", fmt.Errorf("Invalid Token")
+		return 0, "", fmt.Errorf("invalid token")
 	}
 	id := claims["ID"].(float64)
 	email := claims["Email"].(string)
 	ID := uint(id)
 	Email := email
 	if err != nil {
-		return 0, "", errors.New("Failed to make a new token")
+		return 0, "", errors.New("failed to make a new token")
 	}
 	return ID, Email, nil
 }
