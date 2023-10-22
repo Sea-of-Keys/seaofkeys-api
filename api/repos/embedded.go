@@ -38,6 +38,20 @@ func (r *EmbeddedRepo) GetSetup(id uint) error {
 func (r *EmbeddedRepo) PostSetup() error {
 	return nil
 }
+func (r *EmbeddedRepo) UpdateSecrect(oldtoken string, newtoken string) (bool, error) {
+	var em models.Embedded
+	if err := r.db.Debug().Where("scret = ?", oldtoken).Find(&em).Error; err != nil {
+		return false, err
+	}
+	if em.ID == 0 {
+		return false, errors.New("Not Found")
+	}
+	em.Scret = newtoken
+	if err := r.db.Debug().Model(&em).Updates(&em).Error; err != nil {
+		return false, err
+	}
+	return true, nil
+}
 func (r *EmbeddedRepo) PostEmbeddedSetup(emb models.EmbedSetup) (bool, error) {
 	var em models.Embedded
 	if err := r.db.Debug().First(&em, emb.EmbeddedID).Error; err != nil {

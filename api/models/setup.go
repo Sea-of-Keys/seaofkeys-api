@@ -79,16 +79,16 @@ func Setup(db *gorm.DB) {
 	}
 	var RoomOne uint
 	RoomOne = 1
-	hashed, err := middleware.HashPassword("Kronborg")
-	if err != nil {
-		panic(err)
-	}
+	// hashed, err := middleware.HashPassword("Kronborg")
+	// if err != nil {
+	// 	panic(err)
+	// }
 	embedded := []Embedded{
 		{
 			Name: "KeypadOne123",
 			// Room:  Room{Name: "A1"},
 			RoomID: &RoomOne,
-			Scret:  hashed,
+			Scret:  "kronborg",
 		},
 		{
 			Name: "RFIDOne",
