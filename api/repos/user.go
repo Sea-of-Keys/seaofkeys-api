@@ -44,7 +44,7 @@ func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
 	if err := r.db.Debug().Create(&UserPC).Error; err != nil {
 		return nil, err
 	}
-	if err := pkg.SendEmail(*user.Email, user.Name, token); err != nil {
+	if err := pkg.SendEmail(*user.Email, user.Name, user.ID, token); err != nil {
 		UserPC.EmailSend = false
 		if err := r.db.Model(&UserPC).Updates(&UserPC).Error; err != nil {
 			return nil, err
