@@ -18,7 +18,7 @@ func (repo *AuthRepo) PostLogin(user models.Login) (*models.User, error) {
 	var checkUser models.User
 
 	if err := repo.db.Debug().First(&checkUser, "email = ?", user.Email).Error; err != nil {
-		return nil, errors.New("arcant find a user")
+		return nil, errors.New("cant find a user")
 	}
 	if checkUser.ID == 0 {
 		return nil, errors.New("cant find a user")
