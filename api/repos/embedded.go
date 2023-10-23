@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type EmbeddedRepo struct {
@@ -95,6 +96,9 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 		return false, err
 	}
 	if pem.ID != 0 {
+		if !security.CheckPasswordHash(code, *user.Code) {
+			return false, errors.New("code or user not a match")
+		}
 		pemSTimeStr := pem.StartTime.String()
 		pemETimeStr := pem.EndTime.String()
 
