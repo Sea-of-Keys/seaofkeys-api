@@ -44,7 +44,7 @@ func (r *UserRepo) PostUser(user models.User) (*models.User, error) {
 	if err := r.db.Debug().Create(&UserPC).Error; err != nil {
 		return nil, err
 	}
-	if err := pkg.SendEmail(*user.Email, user.Name, token); err != nil {
+	if err := pkg.SendEmail(*user.Email, user.Name, user.ID, token); err != nil {
 		UserPC.EmailSend = false
 		if err := r.db.Model(&UserPC).Updates(&UserPC).Error; err != nil {
 			return nil, err
@@ -129,7 +129,7 @@ func (r *UserRepo) PutPassword(code string, token string, password ...string) (b
 	if err := r.db.Debug().Where("token = ?", token).First(&userPC).Error; err != nil {
 		return false, errors.New("can't find uder with token")
 	}
-	if err := r.db.Debug().First(&user, userPC.ID).Error; err != nil {
+	if err := r.db.Debug().First(&user, userPC.UserID).Error; err != nil {
 		return false, errors.New("can't find uder with id")
 	}
 	newCode, err := middleware.HashPassword(code)

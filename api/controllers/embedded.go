@@ -80,7 +80,7 @@ func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 	if err := c.BodyParser(&login); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
 	}
-	fmt.Println("Kronborg")
+	fmt.Println(login.Code)
 	result := strings.Split(login.Code, "#")
 	sus, err := con.repo.PostCodeLogin(result[0], result[1], login.RoomID)
 	if err != nil {

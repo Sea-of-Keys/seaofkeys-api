@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/Sea-of-Keys/seaofkeys-api/api/models"
+	"github.com/Sea-of-Keys/seaofkeys-api/api/security"
 )
 
 type EmbeddedRepo struct {
@@ -75,7 +76,7 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 	var user models.User
 	var pem models.Permission
 	userIdInt, _ := strconv.Atoi(userID)
-	currentTime := time.Now()
+	currentTime := time.Now().Add(2 * time.Hour)
 	day := time.Now().Weekday()
 	dayINT := int(day)
 	formattedTime := currentTime.Format("15:04:05")
@@ -86,6 +87,9 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 	if err := r.db.Debug().Find(&user, userIdInt).Error; err != nil {
 		return false, err
 	}
+	if &user != nil && user.ID == 0 {
+		return false, errors.New("user not found")
+	}
 	if err := r.db.Debug().Table("permissions").
 		Preload("Team.Users").
 		Preload("User").
@@ -94,19 +98,33 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 		Find(&pem).Error; err != nil {
 		return false, err
 	}
-	if pem.ID != 0 {
+	fmt.Println(pem.ID)
+	fmt.Println(pem.ID)
+	fmt.Println(pem.ID)
+	fmt.Println(pem.ID)
+	if &pem != nil || pem.ID != 0 {
+		if user.Code != nil && !security.CheckPasswordHash(code, *user.Code) {
+			return false, errors.New("code or user not a match")
+		}
 		pemSTimeStr := pem.StartTime.String()
 		pemETimeStr := pem.EndTime.String()
-
+		datenow := time.Now().Add(2 * time.Hour)
+		pemSDateStr := datenow.Format("2006-01-02")
+		// pemEDateStr := pem.EndDateST
 		pemSTime, _ := time.Parse("15:04:05", pemSTimeStr)
 		pemETime, _ := time.Parse("15:04:05", pemETimeStr)
 
 		pemSTimeFormatted := pemSTime.Format("15:04:05")
 		pemETimeFormatted := pemETime.Format("15:04:05")
-		if true {
-			if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
+		if pem.StartDateST <= pemSDateStr && pem.EndDateST >= pemSDateStr {
+			if pemSTimeFormatted <= formattedTime && pemETimeFormatted >= formattedTime {
 				for _, v := range pem.Weekdays {
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
 					if v.Day == dayINT {
+						fmt.Printf("Day: %v\n", v.Day)
 						var newLogin models.History
 						newLogin.UserID = user.ID
 						newLogin.PermissionID = pem.ID
@@ -121,10 +139,10 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 		}
 	}
 
-	return false, nil
+	return false, errors.New("not found")
 }
 func (r *EmbeddedRepo) PostHistoryLogin(newLogin models.History) (bool, error) {
-	currentTime := time.Now()
+	currentTime := time.Now().Add(2 * time.Hour)
 	layout := "2006-01-02 15:04:05"
 	formattedTime := currentTime.Format(layout)
 	newLogin.At = formattedTime

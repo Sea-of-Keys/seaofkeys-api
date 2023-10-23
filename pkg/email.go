@@ -1,11 +1,12 @@
 package pkg
 
 import (
+	"fmt"
 	"net/smtp"
 	"os"
 )
 
-func SendEmail(email string, name string, token string) error {
+func SendEmail(email string, name string, id uint, token string) error {
 	emailServer := "smtp.gmail.com"
 	emailPort := "587"
 	senderEmail := "x.seaofkeys@gmail.com"
@@ -15,7 +16,7 @@ func SendEmail(email string, name string, token string) error {
 	// recipientEmail := "mkronborg7@gmail.com"
 
 	// Compose the email message
-	subject := "Set Your Code/Password SeaOfKeys.com"
+	subject := "Sæt din kode - SeaOfKeys.com"
 	// body := `
 	// <html>
 	// <body>
@@ -28,9 +29,9 @@ func SendEmail(email string, name string, token string) error {
 	body := `
         <html>
             <body>
-                <h1>Hello, ` + name + `</h1>
-                <p>We Need you to set a code to acesse are buildings</p>
-    <b><a href="http://localhost:8000/web/set/` + token + `">set your code</a></b>
+                <h1>Hej, ` + fmt.Sprintf("%v#%v", id, name) + `</h1>
+                <p>Sæt din kode ved at følge linket</p>
+    <b><a href="https://api.seaofkeys.com/web/token/` + token + `">set your code</a></b>
             </body>
         </html>
     `
