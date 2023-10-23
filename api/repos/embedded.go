@@ -108,14 +108,16 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 		}
 		pemSTimeStr := pem.StartTime.String()
 		pemETimeStr := pem.EndTime.String()
-
+		datenow := time.Now().Add(2 * time.Hour)
+		pemSDateStr := datenow.Format("2006-01-02")
+		// pemEDateStr := pem.EndDateST
 		pemSTime, _ := time.Parse("15:04:05", pemSTimeStr)
 		pemETime, _ := time.Parse("15:04:05", pemETimeStr)
 
 		pemSTimeFormatted := pemSTime.Format("15:04:05")
 		pemETimeFormatted := pemETime.Format("15:04:05")
-		if true {
-			if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
+		if pem.StartDateST <= pemSDateStr && pem.EndDateST >= pemSDateStr {
+			if pemSTimeFormatted <= formattedTime && pemETimeFormatted >= formattedTime {
 				for _, v := range pem.Weekdays {
 					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
 					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)

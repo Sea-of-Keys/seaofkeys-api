@@ -115,11 +115,6 @@ func (con *WebController) PostNewCodes(c *fiber.Ctx) error {
 	}
 
 	getToken := sess.Get("WebToken")
-	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
-	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
-	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
-	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
-	fmt.Printf("in post token is %v\n", sess.Get("SetToken"))
 	CToken := getToken.(string)
 	if FormData.CodeOne != FormData.CodeTwo || FormData.CodeOne == "" {
 		fmt.Println("3")

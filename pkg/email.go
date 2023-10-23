@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func SendEmail(email string, name string, token string) error {
+func SendEmail(email string, name string, id uint, token string) error {
 	emailServer := "smtp.gmail.com"
 	emailPort := "587"
 	senderEmail := "x.seaofkeys@gmail.com"
