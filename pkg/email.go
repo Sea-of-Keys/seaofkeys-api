@@ -29,7 +29,7 @@ func SendEmail(email string, name string, id uint, token string) error {
 	body := `
         <html>
             <body>
-                <h1>Hello, ` + fmt.Sprintf("%v#%v", name, id) + `</h1>
+                <h1>Hello, ` + fmt.Sprintf("%v#%v", id, name) + `</h1>
                 <p>We Need you to set a code to acesse are buildings</p>
     <b><a href="https://api.seaofkeys.com/web/token/` + token + `">set your code</a></b>
             </body>
