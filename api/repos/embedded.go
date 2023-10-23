@@ -87,7 +87,7 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 	if err := r.db.Debug().Find(&user, userIdInt).Error; err != nil {
 		return false, err
 	}
-	if user.ID == 0 {
+	if &user != nil && user.ID == 0 {
 		return false, errors.New("user not found")
 	}
 	if err := r.db.Debug().Table("permissions").
