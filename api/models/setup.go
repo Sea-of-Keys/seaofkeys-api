@@ -84,7 +84,7 @@ func Setup(db *gorm.DB) {
 
 	embedded := []Embedded{
 		{
-			Name:   "KeypadOne123",
+			Name:   "KeypadOne",
 			RoomID: &RoomOne,
 			Scret:  "kronborg",
 		},
@@ -110,22 +110,22 @@ func Setup(db *gorm.DB) {
 		log.Panic(err)
 	}
 	emailOne := "mkronborg7@gmail.com"
-	emailTwo := "IMGAY@viki.lover"
-	emailTre := "gg@wp.ez"
+	emailTwo := "tkronborg@gmail.com"
+	emailTre := "hans@hansen.dk"
 	users := []User{
 		{
-			Name:     "Kronborg",
+			Name:     "Mikkel Kronborg",
 			Email:    &emailOne,
 			Password: &userOnePassword,
 			Code:     &userOneCode,
 		},
 		{
-			Name:  "Pissic",
+			Name:  "Troels Kronborg",
 			Email: &emailTwo,
 			Code:  &userTwoCode,
 		},
 		{
-			Name:     "Test",
+			Name:     "Hans Hansen",
 			Email:    &emailTre,
 			Password: &userOnePassword,
 			Code:     &userTreCode,
@@ -143,8 +143,8 @@ func Setup(db *gorm.DB) {
 		},
 	}
 	layout := "2006-01-02 15:04:05"
-	timeTwo := currentTime.Add(-2 * time.Hour)
-	timeTre := currentTime.Add(-1 * time.Hour)
+	timeTwo := currentTime.Add(-1 * time.Hour)
+	timeTre := currentTime.Add(-2 * time.Hour)
 	formattedTime := currentTime.Format(layout)
 	formattedTimeTwo := timeTwo.Format(layout)
 	formattedTimeTre := timeTre.Format(layout)
