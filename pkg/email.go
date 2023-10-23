@@ -16,7 +16,7 @@ func SendEmail(email string, name string, id uint, token string) error {
 	// recipientEmail := "mkronborg7@gmail.com"
 
 	// Compose the email message
-	subject := "Set Your Code/Password SeaOfKeys.com"
+	subject := "Sæt din kode - SeaOfKeys.com"
 	// body := `
 	// <html>
 	// <body>
@@ -29,8 +29,8 @@ func SendEmail(email string, name string, id uint, token string) error {
 	body := `
         <html>
             <body>
-                <h1>Hello, ` + fmt.Sprintf("%v#%v", id, name) + `</h1>
-                <p>We Need you to set a code to acesse are buildings</p>
+                <h1>Hej, ` + fmt.Sprintf("%v#%v", id, name) + `</h1>
+                <p>Sæt din kode ved at følge linket</p>
     <b><a href="https://api.seaofkeys.com/web/token/` + token + `">set your code</a></b>
             </body>
         </html>
