@@ -102,8 +102,8 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 	fmt.Println(pem.ID)
 	fmt.Println(pem.ID)
 	fmt.Println(pem.ID)
-	if pem.ID != 0 {
-		if !security.CheckPasswordHash(code, *user.Code) {
+	if &pem != nil || pem.ID != 0 {
+		if user.Code != nil && !security.CheckPasswordHash(code, *user.Code) {
 			return false, errors.New("code or user not a match")
 		}
 		pemSTimeStr := pem.StartTime.String()
