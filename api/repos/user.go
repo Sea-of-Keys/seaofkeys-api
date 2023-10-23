@@ -129,7 +129,7 @@ func (r *UserRepo) PutPassword(code string, token string, password ...string) (b
 	if err := r.db.Debug().Where("token = ?", token).First(&userPC).Error; err != nil {
 		return false, errors.New("can't find uder with token")
 	}
-	if err := r.db.Debug().First(&user, userPC.ID).Error; err != nil {
+	if err := r.db.Debug().First(&user, userPC.UserID).Error; err != nil {
 		return false, errors.New("can't find uder with id")
 	}
 	newCode, err := middleware.HashPassword(code)

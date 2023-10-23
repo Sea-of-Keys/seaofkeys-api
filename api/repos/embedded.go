@@ -142,7 +142,7 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 	return false, errors.New("not found")
 }
 func (r *EmbeddedRepo) PostHistoryLogin(newLogin models.History) (bool, error) {
-	currentTime := time.Now()
+	currentTime := time.Now().Add(2 * time.Hour)
 	layout := "2006-01-02 15:04:05"
 	formattedTime := currentTime.Format(layout)
 	newLogin.At = formattedTime
