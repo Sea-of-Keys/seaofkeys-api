@@ -3,7 +3,7 @@ module github.com/Sea-of-Keys/seaofkeys-api
 go 1.21
 
 require (
-	github.com/gofiber/fiber/v2 v2.49.2
+	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/gofiber/storage/redis/v3 v3.0.0
 	github.com/gofiber/template/django/v3 v3.1.6
 	github.com/golang-jwt/jwt/v5 v5.0.0

@@ -3,6 +3,7 @@ package security
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -15,16 +16,16 @@ import (
 
 // ##### make a type struck?? ######
 
-type Claims struct {
-	ID    uint
-	Email string
-	jwt.RegisteredClaims
-}
+// type Claims struct {
+// 	ID    uint
+// 	Email string
+// 	jwt.RegisteredClaims
+// }
 
 // ##### Nedds to return a token (maby a string) ######
 func NewPasswordToken(id uint, email string) (string, error) {
 	expirationTime := time.Now().Add(32 * time.Hour)
-	claims := &Claims{
+	claims := &models.Claims{
 		ID:    id,
 		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -40,7 +41,7 @@ func NewPasswordToken(id uint, email string) (string, error) {
 }
 func NewToken(id uint, email string) (string, error) {
 	expirationTime := time.Now().Add(2 * time.Hour)
-	claims := &Claims{
+	claims := &models.Claims{
 		ID:    id,
 		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -106,14 +107,18 @@ func TokenMiddleware(store *session.Store) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		sess, err := store.Get(c)
 		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+			log.Println(err)
+			return fiber.NewError(fiber.StatusInternalServerError, "failed to find session")
 		}
 		tokenInter := sess.Get("ActiveToken")
 		tokenString, ok := tokenInter.(string)
 		if !ok || tokenString == "" {
+			log.Println(err)
 			return fiber.NewError(fiber.StatusNonAuthoritativeInformation, "M101 No token providet")
 		}
 		if ok, err := CheckToken(tokenString, os.Getenv("PSCRERT")); !ok || err != nil {
+			log.Println(err)
+			log.Println(ok)
 			return c.Status(401).JSON(fiber.Map{
 				"message": "Unauthorized",
 			})
@@ -150,27 +155,3 @@ func LoggingMiddleware() func(c *fiber.Ctx) error {
 		return c.Next()
 	}
 }
-
-// func RefreshTokenV2(tokenString, secretKey string) (*models.Token, error) {
-// 	var mToken models.Token
-// 	fmt.Print(mToken)
-// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-// 		return []byte(secretKey), nil
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	claims, ok := token.Claims.(jwt.MapClaims)
-// 	if !ok && !token.Valid {
-// 		return nil, fmt.Errorf("Invalid Token")
-// 	}
-// 	id := claims["ID"].(uint)
-// 	email := claims["Email"].(string)
-// 	mToken.ID = id
-// 	mToken.Email = email
-// 	// newToken, err := NewToken(id, email)
-// 	if err != nil {
-// 		return nil, errors.New("Failed to make a new token")
-// 	}
-// 	return &mToken, nil
-// }

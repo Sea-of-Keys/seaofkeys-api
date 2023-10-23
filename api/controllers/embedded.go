@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,54 +18,40 @@ type EmbeddedController struct {
 	store *session.Store
 }
 
-// Just for testing
-type Login struct {
-	// ID     uint   `json:"id"`
-	Code   string `json:"code"`
-	RoomID uint   `json:"room_id"`
-	UserID uint   `json:"user_id"`
-}
-
 func (con *EmbeddedController) Setup(c *fiber.Ctx) error {
-	// ####### TODO #######
-	// make a table in database to check somfig
-	// make a randowm token
-	// make a session with that token
-	// send the token back to the client
-	// client/embedded use that token to encrypt the code
 	var emb models.EmbedSetup
+
 	sess, err := con.store.Get(c)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-		// return &pkg.CustomError{Code: "SES001", Message: "Failed to get session"}
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to start a new session")
 	}
 	if err := c.BodyParser(&emb); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to proces the body")
 	}
 	if ok, err := con.repo.PostEmbeddedSetup(emb); !ok || err != nil {
-		fmt.Println("Failed to setup")
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "error in the setup")
 	}
 
 	base64, err := security.NewBase64Token()
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "error when getting a new token")
 	}
 	token, err := security.NewEmbeddedToken(base64)
-	fmt.Printf("What is set as token %v\n", token)
 	sess.Set("EmbeddedSession", token)
 	if err := sess.Save(); err != nil {
-		fmt.Println(err)
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to save the token")
 	}
-	fmt.Println(token)
-
 	if ok, err := con.repo.UpdateSecrect(emb.Ssshhh, token); ok && err == nil {
 		return c.JSON(&fiber.Map{
 			"session_is": true,
 		})
 	}
-	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	log.Println(err)
+	return fiber.NewError(fiber.StatusInternalServerError, "failed to make a setup")
 
 }
 
@@ -94,31 +81,35 @@ func (con *EmbeddedController) Login(c *fiber.Ctx) error {
 func (con *EmbeddedController) Refresh(c *fiber.Ctx) error {
 	sess, err := con.store.Get(c)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "E24: "+err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to find session")
 	}
 	if sess.Get("EmbeddedSession") == nil {
 
-		return fiber.NewError(fiber.StatusInternalServerError, "E25: "+err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "Session token not set")
 	}
 	base64, err := security.NewBase64Token()
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "E26: "+err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to make a new base64 token")
 	}
 	newtoken, err := security.NewEmbeddedToken(base64)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "E27: "+err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to make a new jwt token")
 	}
 	oldtoken := sess.Get("EmbeddedSession").(string)
 	sess.Set("EmbeddedSession", newtoken)
 	if err := sess.Save(); err != nil {
-		fmt.Println(err)
-		return fiber.NewError(fiber.StatusInternalServerError, "E28: "+err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to save token in session")
 	}
 	if ok, err := con.repo.UpdateSecrect(oldtoken, newtoken); ok && err == nil {
 		return nil
 	}
-
-	return fiber.NewError(fiber.StatusInternalServerError, "E29: "+err.Error())
+	log.Println(err)
+	return fiber.NewError(fiber.StatusInternalServerError, "failed in makeing a refresh off token")
 }
 func NewEmbeddedController(
 	repo repos.EmbeddedRepoInterface,

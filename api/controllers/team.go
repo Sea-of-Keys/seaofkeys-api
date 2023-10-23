@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
@@ -31,7 +33,8 @@ func (con *TeamController) Get(c *fiber.Ctx) error {
 func (con *TeamController) Gets(c *fiber.Ctx) error {
 	data, err := con.repo.GetTeams()
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to get users")
 	}
 	return c.JSON(&fiber.Map{
 		"team": data,
@@ -40,13 +43,14 @@ func (con *TeamController) Gets(c *fiber.Ctx) error {
 func (con *TeamController) Post(c *fiber.Ctx) error {
 	var team models.Team
 	if err := c.BodyParser(&team); err != nil {
-		return c.JSON(&fiber.Map{
-			"team": team,
-		})
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to parse body")
+
 	}
 	data, err := con.repo.PostTeam(team)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "C20: "+err.Error())
+		log.Println(err)
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to create a new team")
 	}
 	return c.JSON(&fiber.Map{
 		"team": data,
@@ -168,13 +172,11 @@ func (con *TeamController) AddTeamsToUser(c *fiber.Ctx) error {
 func NewTeamController(repo repos.TeamRepoInterface, store *session.Store) TeamInterfaceMethods {
 	return &TeamController{repo, store}
 }
-
 func RegisterTeamController(reg models.RegisterController, store ...*session.Store) {
 	repo := repos.NewTeamRepo(reg.Db)
 	controller := NewTeamController(repo, reg.Store)
 
 	TeamRouter := reg.Router.Group("/team")
-
 	TeamRouter.Use(security.TokenMiddleware(reg.Store))
 	TeamRouter.Post("/add", controller.PostAddToTeam)
 	TeamRouter.Delete("/remove", controller.DeleteUsersRemoveFromTeam)
@@ -187,5 +189,4 @@ func RegisterTeamController(reg models.RegisterController, store ...*session.Sto
 	TeamRouter.Get("/users/:id", controller.GetAllUserNotOnTheTeam)
 	TeamRouter.Delete("/user", controller.RemoveTeamsFromUser)
 	TeamRouter.Post("/user", controller.AddTeamsToUser)
-	// TeamRouter.Delete("/remove/more", controller.PostRemoveUsersFromTeam)
 }

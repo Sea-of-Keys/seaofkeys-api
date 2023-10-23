@@ -55,6 +55,11 @@ func InitRoutes(reg models.RegisterController, stores []*session.Store) {
 func main() {
 
 	db, err := databae.Init("mysql")
+	singleton, _ := databae.Init("mysql")
+
+	if db != singleton {
+		log.Println("db is not singleton")
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +88,7 @@ func main() {
 	}
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:8000, http://127.0.0.1, https://seaofkeys.com, https://www.seaofkeys.com, http://localhost:8006",
+		AllowOrigins:     "http://127.0.0.1, https://seaofkeys.com, https://www.seaofkeys.com",
 		AllowCredentials: true,
 	}))
 	app.Static("/static", "./web/static")

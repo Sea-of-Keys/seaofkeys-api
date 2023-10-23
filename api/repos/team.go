@@ -27,8 +27,6 @@ func (r *TeamRepo) GetTeams() ([]models.Team, error) {
 	}
 	return team, nil
 }
-
-// ##### Maby make a find after create
 func (r *TeamRepo) PostTeam(team models.Team) (*models.Team, error) {
 	if err := r.db.Debug().Preload("User").Create(&team).Error; err != nil {
 		return nil, err
