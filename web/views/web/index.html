@@ -4,11 +4,13 @@
         <!-- <p class="text-pink-800">{{ User.Token }}</p> -->
         {% if Cfailed %}
         <div class="text-center bg-red-200">
-            <p>password does not match</p>
+            <p>Koderne matcher ikke</p>
         </div>
         {% endif %}
         {% if Kfailed %}
-        <h1 class="text-pink-800">KKKKKROOOONNNNBBBBORRRRG</h1>
+        <div class="text-center bg-red-200">
+            <p>Koderne matcher ikke</p>
+        </div>
         {% endif %}
         {% if User.Password %}
     <h1 class="text-7xl text-gray-100 text-center">Set Keypad Kode</h1>
