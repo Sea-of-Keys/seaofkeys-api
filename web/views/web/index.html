@@ -3,7 +3,9 @@
   <div class="bg-gray-800 p-32 rounded">
         <!-- <p class="text-pink-800">{{ User.Token }}</p> -->
         {% if Cfailed %}
-        <h1 class="text-pink-800">KKKKKROOOONNNNBBBBORRRRG</h1>
+        <div class="text-center bg-red-200">
+            <p>password does not match</p>
+        </div>
         {% endif %}
         {% if Kfailed %}
         <h1 class="text-pink-800">KKKKKROOOONNNNBBBBORRRRG</h1>
@@ -23,6 +25,7 @@
             class="border text-red-800 border-black w-full"
             type="password"
             name="CodeOne"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
             value=""
           />
         </div>
@@ -32,6 +35,7 @@
             class="border text-red-800 border-black w-full"
             type="password"
             name="CodeTwo"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
             value=""
           />
         </div>
