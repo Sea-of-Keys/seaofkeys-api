@@ -95,11 +95,10 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 		Find(&pem).Error; err != nil {
 		return false, err
 	}
-	fmt.Println(pem.UserID)
-	fmt.Println(pem.UserID)
-	fmt.Println(pem.UserID)
-	fmt.Println(pem.UserID)
-	fmt.Println(pem.UserID)
+	fmt.Println(pem.ID)
+	fmt.Println(pem.ID)
+	fmt.Println(pem.ID)
+	fmt.Println(pem.ID)
 	if pem.ID != 0 {
 		if !security.CheckPasswordHash(code, *user.Code) {
 			return false, errors.New("code or user not a match")
