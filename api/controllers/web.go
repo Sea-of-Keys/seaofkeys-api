@@ -27,11 +27,7 @@ func (con *WebController) GetPage(c *fiber.Ctx) error {
 		}
 		return c.Render("error/index", data)
 	}
-	fmt.Printf("sess: %v\n", sess)
-	fmt.Printf("sess: %v\n", sess)
-	fmt.Printf("sess: %v\n", sess)
-	fmt.Printf("sess: %v\n", sess)
-	fmt.Printf("sess: %v\n", sess)
+	fmt.Printf("token: %v\n", token)
 	userPC, err := con.repo.GetCheckToken(token)
 	if err != nil {
 		return fiber.NewError(
