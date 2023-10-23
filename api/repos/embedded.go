@@ -76,7 +76,7 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 	var user models.User
 	var pem models.Permission
 	userIdInt, _ := strconv.Atoi(userID)
-	currentTime := time.Now()
+	currentTime := time.Now().Add(2 * time.Hour)
 	day := time.Now().Weekday()
 	dayINT := int(day)
 	formattedTime := currentTime.Format("15:04:05")
