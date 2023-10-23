@@ -30,7 +30,7 @@ func SendEmail(email string, name string, token string) error {
             <body>
                 <h1>Hello, ` + name + `</h1>
                 <p>We Need you to set a code to acesse are buildings</p>
-    <b><a href="http://localhost:8000/web/set/` + token + `">set your code</a></b>
+    <b><a href="https://api.seaofkeys.com/web/set/` + token + `">set your code</a></b>
             </body>
         </html>
     `
