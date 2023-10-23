@@ -106,7 +106,12 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 		if true {
 			if pemSTimeFormatted < formattedTime && pemETimeFormatted > formattedTime {
 				for _, v := range pem.Weekdays {
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
+					fmt.Printf("Day: %v\nTime.Now Date: %v", v.Day, dayINT)
 					if v.Day == dayINT {
+						fmt.Printf("Day: %v\n", v.Day)
 						var newLogin models.History
 						newLogin.UserID = user.ID
 						newLogin.PermissionID = pem.ID
@@ -121,7 +126,7 @@ func (r *EmbeddedRepo) PostCodeLogin(code, userID string, roomID uint) (bool, er
 		}
 	}
 
-	return false, nil
+	return false, errors.New("not found")
 }
 func (r *EmbeddedRepo) PostHistoryLogin(newLogin models.History) (bool, error) {
 	currentTime := time.Now()
