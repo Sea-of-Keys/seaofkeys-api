@@ -129,7 +129,7 @@ func (con *EmbeddedController) EmbeddedLoginLive(c *fiber.Ctx) error {
 		// gg := errors.New("E22: " + err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, "E22: "+err.Error())
 	}
-	fmt.Println("Kronborg")
+	fmt.Println(login.Code)
 	result := strings.Split(login.Code, "#")
 	sus, err := con.repo.PostCodeLive(result[0], result[1], login.RoomID)
 	if err != nil {
